@@ -2,7 +2,9 @@ import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 import 'package:fitness_admin_chat/features/chat/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
+import 'package:hive/hive.dart';
 
+import '../../main.dart';
 import 'chat.dart';
 import 'chat_card_widget.dart';
 
@@ -37,15 +39,19 @@ class ChatScreen extends StatelessWidget {
                     final openRoom = snapshot.data![index];
 
                     return GestureDetector(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) {
-                            return ChatPage(
-                              room: openRoom,
-                              name: getChatMember(openRoom.users).lastName ?? '',
-                            );
-                          },
-                        ));
+                      onTap: () async {
+                        roomMessage = await Hive.openBox<String>(openRoom.id);
+                        if (context.mounted) {
+                          await Navigator.push(context, MaterialPageRoute(
+                            builder: (context) {
+                              return ChatPage(
+                                room: openRoom,
+                                name: getChatMember(openRoom.users).lastName ?? '',
+                              );
+                            },
+                          ));
+                        }
+                          roomMessage.close();
                         // Get.toNamed(AppRoutes.conversationScreen,
                         //   arguments: [chatainer!.name!, chat.channelId]);
                       },

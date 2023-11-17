@@ -1,20 +1,14 @@
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
-import 'package:fitness_admin_chat/core/util/shared_preferences.dart';
 import 'package:fitness_admin_chat/main.dart';
-
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 
 import 'my_room_object.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
 
 List<types.User> localListUsers = [];
 
@@ -55,7 +49,7 @@ bool isMe(types.Room room) {
   return false;
 }
 
-Future<List<types.Room>> getChatRooms({bool myRoom = false}) async {
+Future<List<types.Room>> getChatRooms() async {
   if (firebaseUser == null) return [];
   if (localListRooms.isNotEmpty) return localListRooms;
 
@@ -183,7 +177,7 @@ Future<void> sendNotificationMessage(
     'notification': {'title': message.title, 'body': message.body},
     'to': myRoomObject.fcmToken,
   };
-  APIService().postApi(url: 'fcm/send', host: 'fcm.googleapis.com', body: data);
+  // APIService().postApi(url: 'fcm/send', host: 'fcm.googleapis.com', body: data);
 
   myRoomObject.needToSendNotification = false;
 }

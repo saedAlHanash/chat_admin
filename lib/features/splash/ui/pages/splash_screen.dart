@@ -17,11 +17,15 @@ class SplashScreenPage extends StatefulWidget {
 class _SplashScreenPageState extends State<SplashScreenPage> {
   @override
   void initState() {
-    Future.delayed(Duration(seconds: 2),() {
-      Navigator.pushReplacementNamed(context, RouteName.home);
-    },);
+    Future.delayed(
+      const Duration(seconds: 2),
+      () {
+        Navigator.pushReplacementNamed(context, RouteName.home);
+      },
+    );
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     ////log(controller.title);

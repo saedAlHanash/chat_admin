@@ -6,7 +6,9 @@ import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../features/chat/room_messages_bloc/room_messages_cubit.dart';
 import '../../features/chat/util.dart';
+import '../../features/main/get_chats_rooms_bloc/get_rooms_cubit.dart';
 import '../network/network_info.dart';
 import '../util/shared_preferences.dart';
 
@@ -19,12 +21,13 @@ Future<void> init() async {
   sl.registerLazySingleton(() => InternetConnectionChecker());
 
   sl.registerLazySingleton(() => GlobalKey<NavigatorState>());
+  sl.registerFactory(() => GetRoomsCubit());
+  sl.registerFactory(() => RoomMessagesCubit());
   initFirebaseChat();
   //endregion
 }
 
 Future<void> initFirebaseChat() async {
-
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     firebaseUser = user;
     if (user == null) {

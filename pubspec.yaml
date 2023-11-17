@@ -50,6 +50,7 @@ dependencies:
   shared_preferences: any
   shimmer_animation: ^2.1.0+1
   bloc:
+  hive: ^2.2.3
 
   flutter_screenutil: any
 
@@ -60,6 +61,7 @@ dependencies:
   package_info_plus: ^4.1.0
   awesome_dialog: any
   flutter_bloc: any
+  hive_flutter: any
 
 
 dev_dependencies:

@@ -3,23 +3,37 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:logger/logger.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/app/app_widget.dart';
+import 'core/injection/injection_container.dart';
 import 'core/util/shared_preferences.dart';
+import 'features/main/get_chats_rooms_bloc/get_rooms_cubit.dart';
 import 'firebase_options.dart';
 import 'core/injection/injection_container.dart' as di;
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 //adb shell setprop debug.firebase.analytics.app com.slf.sadaf
 final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+late Box<String> roomsBox;
+late Box usersBox;
+late Box<String> roomMessage;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await Hive.initFlutter();
+  roomsBox = await Hive.openBox('rooms');
+  usersBox = await Hive.openBox('users');
   await Note.initialize();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -31,7 +45,12 @@ void main() async {
   await di.init();
 
   HttpOverrides.global = MyHttpOverrides();
-  runApp(const MyApp());
+  runApp(
+    BlocProvider(
+      create: (context) => sl<GetRoomsCubit>()..getChatRooms(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 Future<String> getFireToken() async {
@@ -52,13 +71,11 @@ Future<String> getFireToken() async {
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // await Firebase.initializeApp();
-
   final notification = message.notification;
 
-  // // If you're going to use other Firebase services in the background, such as Firestore,
-  // // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   String title = '';
   String body = '';
@@ -92,7 +109,7 @@ class Note {
     var androidInitialize = const AndroidInitializationSettings('mipmap/ic_launcher');
     var iOSInitialize = const DarwinInitializationSettings();
     var initializationsSettings =
-    InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+        InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
     await flutterLocalNotificationsPlugin.initialize(initializationsSettings);
   }
 
