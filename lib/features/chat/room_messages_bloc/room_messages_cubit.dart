@@ -6,12 +6,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 
+import '../../../core/error/error_manager.dart';
 import '../../../core/strings/enum_manager.dart';
 import '../../../main.dart';
 import '../../chat/util.dart';
+import '../../main/get_chats_rooms_bloc/get_rooms_cubit.dart';
 
 part 'room_messages_state.dart';
 
@@ -36,6 +38,7 @@ class RoomMessagesCubit extends Cubit<RoomMessagesInitial> {
         );
 
     final stream = query.snapshots().listen((snapshot) {
+      final newMessages = <types.Message>[];
       for (var doc in snapshot.docs) {
         final data = doc.data();
         final author = room.users.firstWhere(
@@ -49,21 +52,25 @@ class RoomMessagesCubit extends Cubit<RoomMessagesInitial> {
         data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
 
         roomMessage.put(doc.id, jsonEncode(data));
+
+        newMessages.add(types.Message.fromJson(data));
       }
+
       if (!isClosed) {
         emit(
           state.copyWith(
             allMessages: roomMessage.values
                 .map((e) => types.Message.fromJson(jsonDecode(e)))
                 .toList()
-              ..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0)),
+              ..sort((a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0)),
           ),
         );
       }
-      loggerObject.w('saed');
     });
 
-    emit(state.copyWith(stream: stream));
+    latestUpdateMessagesBox.put(room.id, room.updatedAt ?? 0);
+
+    emit(state.copyWith(stream: stream, roomId: room.id));
   }
 
   int get getLatestUpdatedFromHive {
@@ -74,6 +81,9 @@ class RoomMessagesCubit extends Cubit<RoomMessagesInitial> {
   Future<Function> close() async {
     super.close();
     state.stream?.cancel();
+    // if (state.oldLength < state.allMessages.length) {
+    //   ctx?.read<GetRoomsCubit>().getChatRooms();
+    // }
     return () {};
   }
 }

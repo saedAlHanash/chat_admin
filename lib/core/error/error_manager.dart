@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 
-
 import '../injection/injection_container.dart';
 import '../util/abstract_cubit_state.dart';
 import '../util/shared_preferences.dart';
-
 
 class ErrorManager {
   static String getApiError(Response response) {
@@ -21,8 +19,6 @@ class ErrorManager {
       case 481:
         return 'لا يوجد اتصال بالانترنت' '${response.statusCode}';
       case 482:
-
-
       case 404:
       case 500:
       default:
@@ -53,7 +49,8 @@ class ErrorBody {
 }
 
 showErrorFromApi(AbstractCubit state) {
-  final ctx = sl<GlobalKey<NavigatorState>>().currentContext;
-  if (ctx == null) return;
 
+  if (ctx == null) return;
 }
+
+BuildContext? get ctx => sl<GlobalKey<NavigatorState>>().currentContext;

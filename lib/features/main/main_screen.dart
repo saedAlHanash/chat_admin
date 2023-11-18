@@ -1,5 +1,6 @@
 import 'package:drawable_text/drawable_text.dart';
 import 'package:fitness_admin_chat/core/extensions/extensions.dart';
+import 'package:fitness_admin_chat/features/chat/users.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,6 +9,7 @@ import 'package:hive/hive.dart';
 import '../../core/api_manager/api_service.dart';
 import '../../core/util/my_style.dart';
 import '../../main.dart';
+import '../../router/app_router.dart';
 import '../chat/chat.dart';
 import '../chat/chat_card_widget.dart';
 import '../chat/util.dart';
@@ -52,44 +54,37 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, RouteName.search);
+              },
+              icon: const Icon(Icons.search),
+            ),
+          ],
         ),
         body: TabBarView(
           children: [
             BlocBuilder<GetRoomsCubit, GetRoomsInitial>(
               builder: (context, state) {
-                if (state.statuses.isLoading) {
-                  return MyStyle.loadingWidget();
-                }
                 return RefreshIndicator(
                   color: Colors.white,
-                  onRefresh: () async {},
-                  child: ListView.builder(
+                  onRefresh: () async {
+                    // context.read<GetRoomsCubit>().getChatRooms();
+                  },
+                  child: ListView.separated(
                     shrinkWrap: true,
+                    separatorBuilder: (context, i) {
+                      return Divider(
+                        color: Colors.grey[100],
+                      );
+                    },
                     itemCount: state.otherRooms.length,
                     itemBuilder: (context, index) {
                       final openRoom = state.otherRooms[index];
 
-                      return GestureDetector(
-                        onTap: () async {
-                          roomMessage = await Hive.openBox<String>(openRoom.id);
-                          if (context.mounted) {
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) {
-                                return ChatPage(
-                                  room: openRoom,
-                                  name: getChatMember(openRoom.users).lastName ?? '',
-                                );
-                              },
-                            )).then((value) {
-                              roomMessage.close();
-                            });
-                          }
-                          // Get.toNamed(AppRoutes.conversationScreen,
-                          //   arguments: [chatainer!.name!, chat.channelId]);
-                        },
-                        child: ChatCardWidget(
-                          room: openRoom,
-                        ),
+                      return ChatCardWidget(
+                        room: openRoom,
                       );
                     },
                   ),
@@ -98,44 +93,31 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             BlocBuilder<GetRoomsCubit, GetRoomsInitial>(
               builder: (context, state) {
-                if (state.statuses.isLoading) {
-                  return MyStyle.loadingWidget();
-                }
                 return RefreshIndicator(
                   color: Colors.white,
-                  onRefresh: () async {},
-                  child: ListView.builder(
+                  onRefresh: () async {
+                    // context.read<GetRoomsCubit>().getChatRooms();
+                  },
+                  child: ListView.separated(
                     shrinkWrap: true,
                     itemCount: state.myRooms.length,
+                    separatorBuilder: (context, i) {
+                      return Divider(
+                        color: Colors.grey[100],
+                      );
+                    },
                     itemBuilder: (_, i) {
                       final openRoom = state.myRooms[i];
 
-                      return GestureDetector(
-                        onTap: () async {
-                          roomMessage = await Hive.openBox<String>(openRoom.id);
-                          if (context.mounted) {
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) {
-                                return ChatPage(
-                                  room: openRoom,
-                                  name: getChatMember(openRoom.users).lastName ?? '',
-                                );
-                              },
-                            )).then((value) {
-                              roomMessage.close();
-                            });
-                          }
-                        },
-                        child: ChatCardWidget(
-                          room: openRoom,
-                        ),
+                      return ChatCardWidget(
+                        room: openRoom,
                       );
                     },
                   ),
                 );
               },
             ),
-            Icon(Icons.directions_bike),
+            const UsersPage(),
           ],
         ),
       ),

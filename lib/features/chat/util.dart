@@ -19,7 +19,7 @@ var myRoomObject = MyRoomObject();
 firebase.User? firebaseUser = FirebaseChatCore.instance.firebaseUser;
 
 Future<List<types.User>> getChatUsers() async {
-  // if (localListUsers.isNotEmpty) return localListUsers;
+  if (localListUsers.isNotEmpty) return localListUsers;
 
   final users = await FirebaseFirestore.instance.collection('users').get();
 
@@ -73,27 +73,7 @@ Future<List<types.Room>> getChatRooms() async {
   return listRooms;
 }
 
-Future<types.Room?> getRoomByUser(String? id) async {
-  if (id == null) return null;
 
-  final rooms = await getChatRooms();
-  for (var e in rooms) {
-    for (var e1 in e.users) {
-      if (e1.firstName == id) {
-        return e;
-      }
-    }
-  }
-
-  for (var e in await getChatUsers()) {
-    if (e.firstName == id) {
-      var newRoom = await FirebaseChatCore.instance.createRoom(e);
-      localListRooms.add(newRoom);
-      return newRoom;
-    }
-  }
-  return null;
-}
 
 types.User getChatMember(List<types.User> list, {bool? me}) {
   for (var e in list) {
@@ -177,7 +157,8 @@ Future<void> sendNotificationMessage(
     'notification': {'title': message.title, 'body': message.body},
     'to': myRoomObject.fcmToken,
   };
-  // APIService().postApi(url: 'fcm/send', host: 'fcm.googleapis.com', body: data);
+
+  APIService().postApi(url: 'fcm/send', host: 'fcm.googleapis.com', body: data);
 
   myRoomObject.needToSendNotification = false;
 }
@@ -200,5 +181,4 @@ Color getUserAvatarNameColor(types.User user) {
   return colors[index];
 }
 
-String getUserName(types.User user) =>
-    '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim();
+String getUserName(types.User user) => (user.lastName ?? '').trim();

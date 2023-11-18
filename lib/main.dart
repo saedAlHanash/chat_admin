@@ -24,6 +24,7 @@ final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 late Box<String> roomsBox;
 late Box usersBox;
 late Box<String> roomMessage;
+late Box<int> latestUpdateMessagesBox;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +34,7 @@ void main() async {
 
   await Hive.initFlutter();
   roomsBox = await Hive.openBox('rooms');
+  latestUpdateMessagesBox = await Hive.openBox('messages');
   usersBox = await Hive.openBox('users');
   await Note.initialize();
 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fitness_admin_chat/main.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/date_symbol_data_local.dart';
@@ -8,6 +9,8 @@ import 'package:intl/intl.dart';
 import '../error/error_manager.dart';
 import '../strings/enum_manager.dart';
 import '../util/pair_class.dart';
+import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 extension UpdateTypeHelper on UpdateType {
   String get getName {
@@ -234,4 +237,13 @@ extension ScrollMax on ScrollController {
   bool get isMax => position.maxScrollExtent == offset;
 
   bool get isMin => offset == 0;
+}
+
+extension TypesRoom on types.Room {
+  bool get isNotReed {
+    if (createdAt == updatedAt) return false;
+    final result = (updatedAt ?? 0) - (latestUpdateMessagesBox.get(id) ?? 0);
+    // loggerObject.w('$id $updatedAt - ${(latestUpdateMessagesBox.get(id))} = $result');
+    return result > 2000;
+  }
 }
