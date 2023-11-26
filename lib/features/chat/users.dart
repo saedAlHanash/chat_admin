@@ -19,25 +19,10 @@ import 'util.dart';
 class UsersPage extends StatelessWidget {
   const UsersPage({super.key});
 
-  Widget _buildAvatar(types.User user) {
-    final color = getUserAvatarNameColor(user);
-    final hasImage = user.imageUrl != null;
-    final name = getUserName(user);
-
-    return Container(
-      margin: const EdgeInsets.only(right: 16),
-      child: CircleAvatar(
-        backgroundColor: hasImage ? Colors.transparent : color,
-        backgroundImage: hasImage ? CachedNetworkImageProvider(user.imageUrl!) : null,
-        radius: 20,
-      ),
-    );
-  }
-
   void _handlePressed(types.User otherUser, BuildContext context) async {
     final room = await context.read<GetRoomsCubit>().getRoomByUser(otherUser.id);
     if (context.mounted && room != null) {
-    roomMessage = await Hive.openBox<String>(room.id);
+      roomMessage = await Hive.openBox<String>(room.id);
       if (context.mounted) {
         context.read<GetRoomsCubit>().state.stream?.pause();
         Navigator.pushNamed(context, RouteName.chat, arguments: room).then((value) {

@@ -21,7 +21,10 @@ firebase.User? firebaseUser = FirebaseChatCore.instance.firebaseUser;
 Future<List<types.User>> getChatUsers() async {
   if (localListUsers.isNotEmpty) return localListUsers;
 
-  final users = await FirebaseFirestore.instance.collection('users').get();
+  final users = await FirebaseFirestore.instance
+      .collection('users')
+      .orderBy('lastName')
+      .get();
 
   final listUsers = users.docs.map((doc) {
     final data = doc.data();
@@ -72,8 +75,6 @@ Future<List<types.Room>> getChatRooms() async {
 
   return listRooms;
 }
-
-
 
 types.User getChatMember(List<types.User> list, {bool? me}) {
   for (var e in list) {

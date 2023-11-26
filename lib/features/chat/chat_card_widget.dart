@@ -30,8 +30,8 @@ class _ChatCardWidgetState extends State<ChatCardWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: ()  {
-         openRoom(context);
+      onTap: () {
+        openRoom(context);
         // Get.toNamed(AppRoutes.conversationScreen,
         //   arguments: [chatainer!.name!, chat.channelId]);
       },
@@ -66,17 +66,30 @@ class _ChatCardWidgetState extends State<ChatCardWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                DrawableText(
-                  size: 12.0.sp,
-                  text: widget.room.users.first.lastName.toString(),
-                  drawableStart: ImageMultiType(
-                    url: Icons.person,
-                    color: Colors.black,
-                    height: 20.0.r,
-                    width: 20.0.r,
+                if (isMe(widget.room))
+                  DrawableText(
+                    size: 12.0.sp,
+                    text: (widget.room.users.first.id == firebaseUser?.uid)
+                        ? widget.room.users.last.lastName.toString()
+                        : widget.room.users.first.lastName.toString(),
+                    drawableStart: ImageMultiType(
+                      url: Icons.person,
+                      color: Colors.black,
+                      height: 20.0.r,
+                      width: 20.0.r,
+                    ),
+                  )
+                else ...[
+                  DrawableText(
+                    size: 12.0.sp,
+                    text: widget.room.users.first.lastName.toString(),
+                    drawableStart: ImageMultiType(
+                      url: Icons.person,
+                      color: Colors.black,
+                      height: 20.0.r,
+                      width: 20.0.r,
+                    ),
                   ),
-                ),
-                if (!isMe(widget.room))
                   DrawableText(
                     size: 12.0.sp,
                     text: widget.room.users.last.lastName.toString(),
@@ -87,6 +100,7 @@ class _ChatCardWidgetState extends State<ChatCardWidget> {
                       width: 20.0.r,
                     ),
                   ),
+                ],
                 const Divider(),
                 DrawableText(
                   color: Colors.grey,
@@ -117,8 +131,7 @@ class _ChatCardWidgetState extends State<ChatCardWidget> {
     roomMessage = await Hive.openBox<String>(widget.room.id);
     if (context.mounted) {
       context.read<GetRoomsCubit>().state.stream?.pause();
-      Navigator.pushNamed(context, RouteName.chat, arguments: widget.room)
-          .then((value) {
+      Navigator.pushNamed(context, RouteName.chat, arguments: widget.room).then((value) {
         roomMessage.close();
         context.read<GetRoomsCubit>().state.stream?.resume();
 

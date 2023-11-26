@@ -290,9 +290,11 @@ class _ChatPageState extends State<ChatPage> {
             onSendPressed: _handleSendPressed,
             theme: const DarkChatTheme(),
             customBottomWidget: isMe(widget.room) ? null : const SizedBox(),
-            user: types.User(
-              id: FirebaseChatCore.instance.firebaseUser?.uid ?? '',
-            ),
+            user: isMe(widget.room)
+                ? types.User(
+                    id: FirebaseChatCore.instance.firebaseUser?.uid ?? '',
+                  )
+                : widget.room.users.last,
           );
         },
       ),
