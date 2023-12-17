@@ -17,16 +17,16 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -49,21 +49,22 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDAuR_lww1x-IjXaDS3e8LPemq0QsiHEPA',
-    appId: '1:644714333877:web:aada7e374ee7c4e6b820fc',
-    messagingSenderId: '644714333877',
-    projectId: 'fitness-strom-1',
-    authDomain: 'fitness-strom-1.firebaseapp.com',
-    storageBucket: 'fitness-strom-1.appspot.com',
-    measurementId: 'G-8F4H2X6EEP',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAQNJPPpwccWSWZuBk-8IJsBcIuMMkuxX8',
     appId: '1:644714333877:android:d2e5621631ddf36db820fc',
     messagingSenderId: '644714333877',
     projectId: 'fitness-strom-1',
     storageBucket: 'fitness-strom-1.appspot.com',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyAg6BBIOzBi4B5LuSjh1sBO34uTOhzbjco',
+    appId: '1:644714333877:ios:35eb7d052a3be6fab820fc',
+    messagingSenderId: '644714333877',
+    projectId: 'fitness-strom-1',
+    storageBucket: 'fitness-strom-1.appspot.com',
+    androidClientId: '644714333877-46uebmts9jf82k8r33e21oc4jltai9d7.apps.googleusercontent.com',
+    iosClientId: '644714333877-127paomqothq0epvrjrqdqfc9jfqsh97.apps.googleusercontent.com',
+    iosBundleId: 'com.chi.fitnessStorm.chatAdmin',
   );
 }

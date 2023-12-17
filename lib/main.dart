@@ -20,7 +20,8 @@ import 'core/injection/injection_container.dart' as di;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 //adb shell setprop debug.firebase.analytics.app com.slf.sadaf
-final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
+
 late Box<String> roomsBox;
 late Box usersBox;
 late Box<String> roomMessage;
@@ -75,6 +76,9 @@ Future<String> getFireToken() async {
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   final notification = message.notification;
 
+  if (flutterLocalNotificationsPlugin == null) {
+    Note.initialize();
+  }
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -108,11 +112,12 @@ class MyHttpOverrides extends HttpOverrides {
 
 class Note {
   static Future initialize() async {
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     var androidInitialize = const AndroidInitializationSettings('mipmap/ic_launcher');
     var iOSInitialize = const DarwinInitializationSettings();
     var initializationsSettings =
         InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
-    await flutterLocalNotificationsPlugin.initialize(initializationsSettings);
+    await flutterLocalNotificationsPlugin!.initialize(initializationsSettings);
   }
 
   static Future showBigTextNotification({
@@ -139,7 +144,7 @@ class Note {
       iOS: DarwinNotificationDetails(),
     );
 
-    await flutterLocalNotificationsPlugin.show(
+    await flutterLocalNotificationsPlugin?.show(
         (DateTime.now().millisecondsSinceEpoch ~/ 1000), title, body, not);
   }
 }
