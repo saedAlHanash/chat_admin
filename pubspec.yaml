@@ -23,14 +23,14 @@ dependencies:
       url: https://github.com/saedAlHanash/image_multi_type
 
   cupertino_icons: #^1.0.2
-  firebase_auth: #^4.6.3
-  firebase_analytics: #any
-  firebase_dynamic_links: #^5.3.6
-  firebase_messaging: #^14.6.3
-  firebase_core: #^2.14.0
-  firebase_storage: #^11.2.3
+  firebase_auth: ^4.17.9
+  firebase_analytics: ^10.8.10
+  firebase_dynamic_links: ^5.4.18
+  firebase_messaging: ^14.7.20
+  firebase_core: ^2.27.1
+  firebase_storage: ^11.6.10
   flutter_chat_types: #^3.6.1
-  cloud_firestore: #^4.8.1
+  cloud_firestore: ^4.15.9
   flutter_chat_ui: #^1.6.9
   flutter_firebase_chat_core: #^1.6.7
 
