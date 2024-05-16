@@ -23,7 +23,7 @@ Future<List<types.User>> getChatUsers() async {
 
   final users = await FirebaseFirestore.instance
       .collection('users')
-      .orderBy('lastName')
+      .orderBy('updatedAt',descending: true)
       .get();
 
   final listUsers = users.docs.map((doc) {

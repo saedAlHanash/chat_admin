@@ -62,7 +62,6 @@ class _MyAppState extends State<MyApp> {
           initialHeightText: 1.5.sp,
           titleSizeText: 20.0.sp,
           initialSize: 16.0.sp,
-          renderHtml: false,
           selectable: false,
           initialColor: AppColorManager.black,
         );
