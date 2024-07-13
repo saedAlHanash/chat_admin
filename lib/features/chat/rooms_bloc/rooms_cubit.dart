@@ -73,8 +73,7 @@ class RoomsCubit extends MCubit<RoomsInitial> {
         (await getListCached()).map((e) => types.Room.fromJson(e)).toList();
 
     final dataList = data
-      ..sort((a, b) =>
-          a.isRead ? 1 : (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
+      ..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
 
     var roomsCached = <Room>[];
     if (state.search.isEmpty) {

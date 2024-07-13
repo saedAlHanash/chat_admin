@@ -76,7 +76,7 @@ class UsersCubit extends MCubit<UsersInitial> {
     final data =
         (await getListCached()).map((e) => types.User.fromJson(e)).toList();
     final dataList = data
-      ..sort((a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
+      ..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
 
     var usersCached = <types.User>[];
     if (state.search.isEmpty) {

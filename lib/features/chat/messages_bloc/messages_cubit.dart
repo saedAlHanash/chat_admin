@@ -27,7 +27,7 @@ class MessagesCubit extends MCubit<MessagesInitial> {
         (await getListCached()).map((e) => types.Message.fromJson(e)).toList();
 
     final allMessages = data
-      ..sort((a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
+      ..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
 
     emit(
       state.copyWith(
