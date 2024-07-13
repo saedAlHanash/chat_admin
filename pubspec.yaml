@@ -54,7 +54,7 @@ dependencies:
 
   flutter_screenutil: any
 
-  logger: ^1.1.0
+  logger: ^2.3.0
   collection: any
   path: any
   flutter_local_notifications: ^15.1.0+1
@@ -62,6 +62,7 @@ dependencies:
   awesome_dialog: any
   flutter_bloc: any
   hive_flutter: any
+  pull_to_refresh: any
 
 
 dev_dependencies:

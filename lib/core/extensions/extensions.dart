@@ -1,8 +1,15 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
+import 'package:drawable_text/drawable_text.dart';
+import 'package:fitness_admin_chat/core/strings/app_color_manager.dart';
+import 'package:fitness_admin_chat/core/strings/app_color_manager.dart';
 import 'package:fitness_admin_chat/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_multi_type/image_multi_type.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
@@ -167,13 +174,14 @@ extension DateUtcHelper on DateTime {
     initializeDateFormatting();
     return DateFormat('EEEE', 'ar_SA').format(this);
   }
-
+  String get formatDateTimeVertical => '$formatDate\n$formatTime';
   DateTime addFromNow({int? year, int? month, int? day}) {
-    return DateTime(
-        this.year + (year ?? 0), this.month + (month ?? 0), this.day + (day ?? 0));
+    return DateTime(this.year + (year ?? 0), this.month + (month ?? 0),
+        this.day + (day ?? 0));
   }
 
-  DateTime initialFromDateTime({required DateTime date, required TimeOfDay time}) {
+  DateTime initialFromDateTime(
+      {required DateTime date, required TimeOfDay time}) {
     return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
 
@@ -239,11 +247,67 @@ extension ScrollMax on ScrollController {
   bool get isMin => offset == 0;
 }
 
-extension TypesRoom on types.Room {
-  bool get isNotReed {
-    if (createdAt == updatedAt) return false;
-    final result = (updatedAt ?? 0) - (latestUpdateMessagesBox.get(id) ?? 0);
-    // loggerObject.w('$id $updatedAt - ${(latestUpdateMessagesBox.get(id))} = $result');
-    return result > 2000;
+
+extension RoomH on types.Room {
+  types.User? get me =>
+      users.firstWhereOrNull((e) => e.id == '0');
+
+  String get usersName => users.map((e) => e.name).join(' ');
+
+  types.User get otherUser =>
+      users.firstWhere((e) => e.id != '0');
+
+  int get latestSeen => metadata?['latestSeen'] ?? 0;
+
+  bool get isRead {
+    if ((lastMessages ?? []).isEmpty) return true;
+
+    final latestMessage = lastMessages!.first;
+
+    return ((latestMessage.author.id == '0') ||
+        ((latestSeen - (updatedAt ?? 0)) > 0));
+  }
+
+  bool get isNotRead => !isRead;
+}
+
+extension UserH on types.User {
+  String get name => '$firstName';
+}
+
+extension MessageH on types.Message {
+  Widget latestMessage(types.Room room) {
+    bool isRead = room.isRead;
+    String message = '';
+    dynamic icon;
+
+    if (this is types.CustomMessage) {
+      return 0.0.verticalSpace;
+    } else if (this is types.FileMessage) {
+      message = 'ملف';
+      icon = Icons.file_copy;
+    } else if (this is types.ImageMessage) {
+      message = 'صورة';
+      icon = Icons.image;
+    } else if (this is types.TextMessage) {
+      message = (this as types.TextMessage).text;
+      icon = Icons.message;
+    }
+
+    return DrawableText(
+      text: message,
+      matchParent: true,
+      maxLines: 1,
+      size: 14.0.sp,
+      color: isRead ? Colors.grey : AppColorManager.mainColor,
+      fontFamily: isRead ? null : FontManager.cairoBold.name,
+      drawablePadding: 7.0.w,
+      drawableStart: ImageMultiType(
+        color: isRead ? Colors.grey : AppColorManager.mainColor,
+        url: icon,
+        height: 17.0.r,
+        width: 17.0.r,
+      ),
+    );
   }
 }

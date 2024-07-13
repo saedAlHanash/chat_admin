@@ -82,4 +82,4 @@ class DeleteUrl {
 }
 
 const additionalConst = 'api/mobile/';
-const baseUrl = '5.bandtech.co';
+const baseUrl = 'api.fitnessstorm.org';

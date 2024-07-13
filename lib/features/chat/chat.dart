@@ -1,44 +1,39 @@
-import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drawable_text/drawable_text.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
-import 'package:fitness_admin_chat/core/util/shared_preferences.dart';
-import 'package:fitness_admin_chat/core/util/shared_preferences.dart';
-import 'package:fitness_admin_chat/features/chat/room_messages_bloc/room_messages_cubit.dart';
+import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 import 'package:fitness_admin_chat/features/chat/util.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_multi_type/circle_image_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../core/injection/injection_container.dart';
-import '../../core/util/my_style.dart';
-import '../../main.dart';
-import '../main/get_chats_rooms_bloc/get_rooms_cubit.dart';
+import '../../core/helper/launcher_helper.dart';
+import '../../core/strings/app_color_manager.dart';
+import '../../core/widgets/app_bar/app_bar_widget.dart';
+import '../../services/chat_service/core/firebase_chat_core.dart';
+import 'messages_bloc/messages_cubit.dart';
 import 'my_room_object.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({
     super.key,
     required this.room,
-    required this.name,
   });
 
   final types.Room room;
-  final String name;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -48,33 +43,17 @@ class _ChatPageState extends State<ChatPage> {
   // late final
   List<types.Message>? initialMessage;
 
-  late final RoomMessagesCubit cubit;
+  late final MyRoomObject myRoomObject;
 
   @override
   void initState() {
     myRoomObject = MyRoomObject(
       roomId: widget.room.id,
-      fcmToken: (getChatMember(widget.room.users).metadata ?? {})['fcm'] ?? '',
+      fcmToken: (widget.room.otherUser.metadata ?? {})['fcm'] ?? '',
     );
-    cubit = context.read<RoomMessagesCubit>();
+
+    context.read<MessagesCubit>().getChatRoomMessage(widget.room);
     super.initState();
-  }
-
-  @override
-  void deactivate() {
-    if (cubit.state.allMessages.isNotEmpty) {
-      final m = cubit.state.allMessages.first;
-
-      latestUpdateMessagesBox.put(cubit.state.roomId, m.updatedAt ?? 0);
-      var room =
-          types.Room.fromJson(jsonDecode(roomsBox.get(cubit.state.roomId) ?? '{}'));
-      if (room.updatedAt == m.updatedAt) return;
-      room = room.copyWith(updatedAt: m.updatedAt);
-      roomsBox.put(cubit.state.roomId, jsonEncode(room));
-      context.read<GetRoomsCubit>().updateRooms();
-    }
-
-    super.deactivate();
   }
 
   bool _isAttachmentUploading = false;
@@ -237,12 +216,22 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _handleSendPressed(types.PartialText message) {
-    sendNotificationMessage(
+    if (myRoomObject.needToSendNotification) {
+      sendNotificationMessage(
         myRoomObject,
         ChatNotification(
-          title: getChatMember(widget.room.users, me: true).lastName ?? '',
           body: message.text,
-        ));
+          title: 'رسالة جديدة',
+        ),
+      ).then(
+        (value) {
+          if (value) {
+            ///for send notification to first message
+            myRoomObject.needToSendNotification = false;
+          }
+        },
+      );
+    }
 
     FirebaseChatCore.instance.sendMessage(
       message,
@@ -259,44 +248,86 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        title: isMe(widget.room)
-            ? Text(widget.name)
-            : Row(
-                children: [
-                  DrawableText(
-                    size: 14.0.sp,
-                    text: widget.room.users.first.lastName.toString(),
-                    color: Colors.white,
-                  ),
-                  const Text(' | '),
-                  DrawableText(
-                    size: 14.0.sp,
-                    text: widget.room.users.last.lastName.toString(),
-                    color: Colors.white,
-                  ),
-                ],
+      appBar: AppBarWidget(
+        actions: [
+          if (widget.room.me != null)
+            Row(
+              children: [       CircleImageWidget(
+                url: widget.room.otherUser.imageUrl,
+                size: 40.0.r,
               ),
+
+                10.0.horizontalSpace,
+                DrawableText(
+                  text: widget.room.otherUser.name,
+                  color: Colors.white,
+                ),
+                10.0.horizontalSpace,
+              ],
+            )
+          else
+            Row(
+              children: [
+                SizedBox(
+                width: 60.0.w,
+                height: 40.0.h,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      right: 0,
+                      child: CircleImageWidget(
+                        url: widget.room.users.firstOrNull?.imageUrl,
+                        size: 35.0.r,
+                      ),
+                    ),
+                    Positioned(
+                      left: 0,
+                      child: CircleImageWidget(
+                        url: widget.room.users.lastOrNull?.imageUrl,
+                        size: 35.0.r,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+                10.0.horizontalSpace,
+                SizedBox(
+                  width: 0.7.sw,
+                  child: DrawableText(
+                    matchParent: true,
+                    textAlign: TextAlign.start,
+                    text: '${widget.room.users.firstOrNull?.name}\n${widget.room.users.lastOrNull?.name}',
+                    color: Colors.white,
+                  ),
+                ),
+                10.0.horizontalSpace,
+              ],
+            ),
+        ],
       ),
-      body: BlocBuilder<RoomMessagesCubit, RoomMessagesInitial>(
-        builder: (context, state) {
-          return Chat(
-            isAttachmentUploading: _isAttachmentUploading,
-            messages: state.allMessages,
-            onAttachmentPressed: _handleAtachmentPressed,
-            onMessageTap: _handleMessageTap,
-            onPreviewDataFetched: _handlePreviewDataFetched,
-            onSendPressed: _handleSendPressed,
-            theme: const DarkChatTheme(),
-            customBottomWidget: isMe(widget.room) ? null : const SizedBox(),
-            user: isMe(widget.room)
-                ? types.User(
-                    id: FirebaseChatCore.instance.firebaseUser?.uid ?? '',
-                  )
-                : widget.room.users.last,
-          );
-        },
+      body: BlocBuilder<MessagesCubit, MessagesInitial>(
+        builder: (context, state) => Chat(
+          textMessageOptions: TextMessageOptions(
+            onLinkPressed: (p0) {
+              LauncherHelper.openPage(p0);
+            },
+          ),
+          isAttachmentUploading: _isAttachmentUploading,
+          messages: state.result,
+          onAttachmentPressed: _handleAtachmentPressed,
+          onMessageTap: _handleMessageTap,
+          onPreviewDataFetched: _handlePreviewDataFetched,
+          onSendPressed: _handleSendPressed,
+          theme: const DarkChatTheme(
+              backgroundColor: Colors.white,
+              primaryColor: AppColorManager.mainColor,
+              secondaryColor: AppColorManager.mainColorDark,
+              inputBackgroundColor: AppColorManager.mainColor),
+          customBottomWidget: widget.room.me != null ? null : const SizedBox(),
+          user: widget.room.me == null
+              ? widget.room.otherUser
+              : const types.User(id: '0'),
+        ),
       ),
     );
   }

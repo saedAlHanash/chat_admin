@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
+import 'package:fitness_admin_chat/services/caching_service/caching_service.dart';
+import 'package:fitness_admin_chat/services/chat_service/chat_service_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -14,7 +17,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/app/app_widget.dart';
 import 'core/injection/injection_container.dart';
 import 'core/util/shared_preferences.dart';
-import 'features/main/get_chats_rooms_bloc/get_rooms_cubit.dart';
+import 'features/chat/messages_bloc/messages_cubit.dart';
+import 'features/chat/open_room_cubit/open_room_cubit.dart';
+import 'features/chat/rooms_bloc/rooms_cubit.dart';
+import 'features/chat/userss_bloc/users_bloc.dart';
 import 'firebase_options.dart';
 import 'core/injection/injection_container.dart' as di;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -22,21 +28,15 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 //adb shell setprop debug.firebase.analytics.app com.slf.sadaf
 FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
 
-late Box<String> roomsBox;
-late Box usersBox;
-late Box<String> roomMessage;
-late Box<int> latestUpdateMessagesBox;
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await Hive.initFlutter();
-  roomsBox = await Hive.openBox('rooms');
-  latestUpdateMessagesBox = await Hive.openBox('messages');
-  usersBox = await Hive.openBox('users');
+  await CachingService.initial();
+
+
   await Note.initialize();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -47,10 +47,18 @@ void main() async {
 
   await di.init();
 
+  await ChatServiceCore.initFirebaseChat();
+  loggerObject.w(await getFireToken());
   HttpOverrides.global = MyHttpOverrides();
   runApp(
-    BlocProvider(
-      create: (context) => sl<GetRoomsCubit>()..getChatRooms(),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => sl<OpenRoomCubit>()),
+        BlocProvider(create: (_) => sl<RoomsCubit>()..getChatRooms()),
+        BlocProvider(create: (_) => sl<UsersCubit>()..getChatUsers()),
+        BlocProvider(create: (_) => sl<MessagesCubit>()),
+
+      ],
       child: const MyApp(),
     ),
   );

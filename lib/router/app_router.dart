@@ -7,9 +7,8 @@ import '../core/injection/injection_container.dart' as di;
 import '../core/injection/injection_container.dart';
 import '../features/chat/chat.dart';
 import '../features/chat/chat_screen.dart';
-import '../features/chat/room_messages_bloc/room_messages_cubit.dart';
 import '../features/chat/util.dart';
-import '../features/main/main_screen.dart';
+import '../features/main_screen.dart';
 import '../features/splash/ui/pages/splash_screen.dart';
 
 class AppRoutes {
@@ -35,30 +34,15 @@ class AppRoutes {
           return MaterialPageRoute(
             builder: (context) {
               final room = settings.arguments as Room;
-              return BlocProvider(
-                create: (context) => sl<RoomMessagesCubit>()..getChatRoomMessage(room),
-                child: ChatPage(
-                  room: room,
-                  name: getChatMember(room.users).lastName ?? '',
-                ),
-              );
-            },
-          );
-        }
-      case RouteName.search:
-        //region
-        {
-          return MaterialPageRoute(
-            builder: (context) {
-              return const ChatScreen();
+              return ChatPage(room: room);
             },
           );
         }
 
-      //endregion
     }
 
-    return MaterialPageRoute(builder: (_) => const Scaffold(backgroundColor: Colors.red));
+    return MaterialPageRoute(
+        builder: (_) => const Scaffold(backgroundColor: Colors.red));
   }
 }
 
@@ -66,5 +50,4 @@ class RouteName {
   static const splash = '/';
   static const chat = '/1';
   static const home = '/2';
-  static const search = '/3';
 }

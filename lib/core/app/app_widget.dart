@@ -4,7 +4,9 @@ import 'package:fitness_admin_chat/core/strings/app_color_manager.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_multi_type/image_multi_type.dart';
 
+import '../../generated/assets.dart';
 import '../../main.dart';
 import '../../router/app_router.dart';
 import '../app_theme.dart';
@@ -26,6 +28,17 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
+
+    setImageMultiTypeErrorImage(
+      const Opacity(
+        opacity: 0.3,
+        child: ImageMultiType(
+          url: Assets.imagesLogo,
+          height: 30.0,
+          width: 30.0,
+        ),
+      ),
+    );
     FirebaseMessaging.onMessage.listen((message) {
       final notification = message.notification;
       String title = '';
@@ -52,7 +65,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(375, 812),
+      designSize: MediaQuery.of(context).size,
       // designSize: const Size(14440, 972),
       minTextAdapt: true,
       // splitScreenMode: true,

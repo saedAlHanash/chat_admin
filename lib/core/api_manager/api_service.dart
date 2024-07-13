@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
-import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 
 import '../injection/injection_container.dart';
 import '../network/network_info.dart';
-import '../util/shared_preferences.dart';
+import '../strings/enum_manager.dart';
 import 'api_url.dart';
+import 'helpers_api/helper_api_service.dart';
+import 'helpers_api/log_api.dart';
 
 var loggerObject = Logger(
   printer: PrettyPrinter(
@@ -27,269 +28,167 @@ var loggerObject = Logger(
   ),
 );
 
-var serverDateTime = DateTime.now();
-
-typedef OnUploadProgressCallback = void Function(int sentBytes, int totalBytes);
-
-const _connectionTimeOut = Duration(seconds: 40);
-
-final _noInternet = http.Response('No Internet', 481);
-
-final _timeOut = http.Response('connectionTimeOut ', 482);
+Map<String, String> get innerHeader => {
+      'Content-Type': 'application/json',
+      'Accept': 'Application/json',
+    };
 
 class APIService {
-  static APIService _singleton = APIService._internal();
-
-  final network = sl<NetworkInfo>();
-
-  factory APIService.reInitial() {
-    _singleton = APIService._internal();
-    return _singleton;
-  }
-
-  factory APIService() => _singleton;
-
-  final innerHeader = {
-    'Content-Type': 'application/json',
-    'Authorization':
-    'key=AAAAlhv4BrU:APA91bGDGCjqhQRkl69cqUwENh7jpw3nE8wxUuZiifz4T5Pz_rbNdHzKdqZD13V6y49Oh70enJ2BvCULLBshlu6V1PhvPb_THE36hv7p7qyl3NbKVXEzhapbrUKSUg_c3W3_vmG0i-hd',
-
-
-  };
+  static final APIService _singleton = APIService._internal();
 
   APIService._internal();
 
-  Future<http.Response> getApi({
+  factory APIService() => _singleton;
+
+  final network = sl<NetworkInfo>();
+
+  Future<http.Response> callApi({
     required String url,
-    Map<String, dynamic>? query,
-    String? path,
-  }) async {
-    if (!await network.isConnected) _noInternet;
-
-    url = additionalConst + url;
-
-    _fixQuery(query);
-
-    if (path != null) url = '$url/$path';
-
-    var uri = Uri.https(baseUrl, url, query);
-
-    logRequest(url, query);
-
-    final response = await http
-        .get(uri, headers: innerHeader)
-        .timeout(_connectionTimeOut, onTimeout: () => _timeOut);
-
-    logResponse(url, response);
-
-    return response;
-  }
-
-  Future<http.Response> getApiFromUrl({
-    required String url,
-  }) async {
-    if (!await network.isConnected) _noInternet;
-    url = additionalConst + url;
-    var uri = Uri.parse(url);
-
-    logRequest(url, null);
-
-    final response = await http
-        .get(uri, headers: innerHeader)
-        .timeout(_connectionTimeOut, onTimeout: () => _timeOut);
-
-    logResponse(url, response);
-    return response;
-  }
-
-  Future<http.Response> postApi({
-    required String url,
-    required String host,
+    required ApiType type,
     Map<String, dynamic>? body,
     Map<String, dynamic>? query,
+    Map<String, String>? header,
     String? path,
+    String? additional,
+    String? hostName,
   }) async {
-    if (!await network.isConnected) _noInternet;
+    if (!await network.isConnected) noInternet;
 
+    final uri = getUri(
+        additional: additional ?? additionalConst,
+        url: url,
+        query: query,
+        path: path,
+        body: body,
+        type: type);
 
-    body?.removeWhere((key, value) => (value == null || value.toString().isEmpty));
+    try {
+      late final http.Response response;
 
-    _fixQuery(query);
+      switch (type) {
+        case ApiType.get:
+          response = await http
+              .get(uri, headers: (header ?? innerHeader))
+              .timeout(connectionTimeOut, onTimeout: () => timeOut);
+          break;
+        case ApiType.post:
+          response = await http
+              .post(uri,
+                  body: jsonEncode(body), headers: (header ?? innerHeader))
+              .timeout(connectionTimeOut, onTimeout: () => timeOut);
+          break;
+        case ApiType.put:
+          response = await http
+              .put(uri,
+                  body: jsonEncode(body), headers: (header ?? innerHeader))
+              .timeout(connectionTimeOut, onTimeout: () => timeOut);
+          break;
+        case ApiType.patch:
+          response = await http
+              .patch(uri,
+                  body: jsonEncode(body), headers: (header ?? innerHeader))
+              .timeout(connectionTimeOut, onTimeout: () => timeOut);
+          break;
+        case ApiType.delete:
+          response = await http
+              .delete(uri,
+                  body: jsonEncode(body), headers: (header ?? innerHeader))
+              .timeout(connectionTimeOut, onTimeout: () => timeOut);
+          break;
+      }
 
-    if (path != null) url = '$url/$path';
+      logResponse(url: url, response: response, type: type);
 
-    final uri = Uri.https(host, url, query);
-
-    logRequest(
-        url,
-        {}
-          ..addAll(query ?? {})
-          ..addAll(body ?? {}));
-
-    final response = await http
-        .post(uri, body: jsonEncode(body), headers: innerHeader)
-        .timeout(_connectionTimeOut, onTimeout: () => _timeOut);
-
-    logResponse(url, response);
-
-    return response;
-  }
-
-  Future<http.Response> puttApi({
-    required String url,
-    Map<String, dynamic>? body,
-    Map<String, dynamic>? query,
-  }) async {
-    if (!await network.isConnected) _noInternet;
-    url = additionalConst + url;
-    body?.removeWhere((key, value) => (value == null || value.toString().isEmpty));
-
-    _fixQuery(query);
-
-    final uri = Uri.https(baseUrl, url, query);
-
-    logRequest(url, body);
-
-    final response = await http
-        .put(uri, body: jsonEncode(body), headers: innerHeader)
-        .timeout(_connectionTimeOut, onTimeout: () => _timeOut);
-
-    logResponse(url, response);
-
-    return response;
-  }
-
-  Future<http.Response> deleteApi({
-    required String url,
-    String? path,
-    Map<String, dynamic>? body,
-    Map<String, dynamic>? query,
-  }) async {
-    if (!await network.isConnected) _noInternet;
-    url = additionalConst + url;
-
-    body?.removeWhere((key, value) => (value == null || value.toString().isEmpty));
-
-    _fixQuery(query);
-
-    if (path != null) url = '$url/$path';
-
-    final uri = Uri.https(baseUrl, url, query);
-
-    logRequest(url, body);
-
-    final response = await http
-        .delete(uri, body: jsonEncode(body), headers: innerHeader)
-        .timeout(_connectionTimeOut, onTimeout: () => _timeOut);
-
-    logResponse(url, response);
-
-    return response;
+      return response;
+    } catch (e) {
+      loggerObject.e(e);
+      return noInternet;
+    }
   }
 
   Future<http.Response> uploadMultiPart({
     required String url,
     String? path,
-    String? nameKey,
+    String? additional,
     String type = 'POST',
-    List<String>? files,
+    List<UploadFile?>? files,
     Map<String, dynamic>? fields,
-    Map<String, String>? header,
   }) async {
-    if (!await network.isConnected) _noInternet;
-    url = additionalConst + url;
-    Map<String, String> f = {};
-    fields?.forEach((key, value) => f[key] = value.toString());
-
-    final uri = Uri.https(baseUrl, url);
+    final uri = getUri(
+      additional: additional ?? additionalConst,
+      url: url,
+      query: fields,
+      path: path,
+      type: ApiType.post,
+    );
 
     var request = http.MultipartRequest(type, uri);
 
-    ///log
-    logRequest(url, fields, additional: files?.firstOrNull);
+    for (var uploadFile in (files ?? <UploadFile?>[])) {
+      if (uploadFile?.fileBytes == null) continue;
 
-    for (String path in files ?? []) {
-      if (path.isEmpty) continue;
-
-      final multipartFile = await http.MultipartFile.fromPath(nameKey ?? "File", path);
+      final multipartFile = http.MultipartFile.fromBytes(
+        uploadFile!.nameField,
+        uploadFile.fileBytes!,
+        filename: '${getRandomString(10)}.jpg',
+      );
 
       request.files.add(multipartFile);
     }
 
-    request.headers.addAll(innerHeader);
-
     request.headers['Content-Type'] = 'multipart/form-data';
-
-    request.fields.addAll(f);
+    request.headers.addAll(innerHeader);
+    request.fields.addAll(fixFields(fields));
 
     final stream = await request.send().timeout(
-          _connectionTimeOut,
+          const Duration(seconds: 40),
           onTimeout: () => http.StreamedResponse(Stream.value([]), 481),
         );
 
     final response = await http.Response.fromStream(stream);
 
-    ///log
-    logResponse(url, response);
+    logResponse(url: url, response: response, type: ApiType.post);
 
     return response;
   }
-
-  Future<DateTime> getServerTime() async {
-    var uri = Uri.https(baseUrl);
-
-    final response = await http.get(uri, headers: innerHeader).timeout(
-          _connectionTimeOut,
-          onTimeout: () => http.Response('connectionTimeOut', 482),
-        );
-
-    return _getDateTimeFromHeaders(response);
-  }
-
-  void logRequest(String url, Map<String, dynamic>? q, {String? additional}) {
-    var msg = url;
-    if (q != null) msg += '\n ${jsonEncode(q)}';
-    if (additional != null) msg += '\n $additional';
-
-    loggerObject.i(msg);
-  }
-
-  void logResponse(String url, http.Response response) {
-    var r = [];
-    var res = '';
-    if (response.body.length > 800) {
-      r = response.body.splitByLength1(800);
-      for (var e in r) {
-        res += '$e\n';
-      }
-    } else {
-      res = response.body;
-    }
-
-    loggerObject.v('${response.statusCode} \n $res');
-  }
 }
 
-DateTime _getDateTimeFromHeaders(http.Response response) {
-  final headers = response.headers;
+class UploadFile {
+  Uint8List? fileBytes;
+  String nameField;
+  String? initialImage;
+  String? assetImage;
 
-  if (headers.containsKey('date')) {
-    final dateString = headers['date']!;
-    loggerObject.wtf(dateString);
-    final dateTime = _parseGMTDate(dateString);
-    return dateTime;
-  } else {
-    loggerObject.wtf('now');
-    return DateTime.now();
+  UploadFile({
+    this.fileBytes,
+    this.initialImage,
+    this.nameField = 'File',
+    this.assetImage = '',
+  });
+
+  dynamic get getImage => fileBytes ?? initialImage ?? assetImage;
+
+  UploadFile copyWith({
+    Uint8List? fileBytes,
+    String? nameField,
+  }) {
+    return UploadFile(
+      fileBytes: fileBytes ?? this.fileBytes,
+      nameField: nameField ?? this.nameField,
+    );
   }
-}
 
-DateTime _parseGMTDate(String dateString) {
-  final formatter = DateFormat('EEE, dd MMM yyyy HH:mm:ss \'GMT\'');
-  return formatter.parseUTC(dateString);
-}
+  Map<String, dynamic> toMap() {
+    return {
+      'filelBytes': fileBytes,
+      'nameField': nameField,
+    };
+  }
 
-void _fixQuery(Map<String, dynamic>? query) {
-  query?.removeWhere((key, value) => (value == null || value.toString().isEmpty));
-  query?.forEach((key, value) => query[key] = value.toString());
+  factory UploadFile.fromMap(Map<String, dynamic> map) {
+    return UploadFile(
+      fileBytes: map['filelBytes'] as Uint8List,
+      nameField: map['nameField'] as String,
+    );
+  }
 }
