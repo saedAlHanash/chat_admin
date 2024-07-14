@@ -2,11 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:fitness_admin_chat/features/chat/userss_bloc/users_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import '../../core/api_manager/api_service.dart';
-
 import '../../core/error/error_manager.dart';
 import '../../core/util/shared_preferences.dart';
 import '../../main.dart';

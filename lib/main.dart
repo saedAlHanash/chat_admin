@@ -8,13 +8,11 @@ import 'package:fitness_admin_chat/services/chat_service/chat_service_core.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:logger/logger.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/app/app_widget.dart';
+import 'core/injection/injection_container.dart' as di;
 import 'core/injection/injection_container.dart';
 import 'core/util/shared_preferences.dart';
 import 'features/chat/messages_bloc/messages_cubit.dart';
@@ -22,8 +20,6 @@ import 'features/chat/open_room_cubit/open_room_cubit.dart';
 import 'features/chat/rooms_bloc/rooms_cubit.dart';
 import 'features/chat/userss_bloc/users_bloc.dart';
 import 'firebase_options.dart';
-import 'core/injection/injection_container.dart' as di;
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 //adb shell setprop debug.firebase.analytics.app com.slf.sadaf
 FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;

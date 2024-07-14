@@ -3,10 +3,8 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:drawable_text/drawable_text.dart';
 import 'package:fitness_admin_chat/core/strings/app_color_manager.dart';
-import 'package:fitness_admin_chat/core/strings/app_color_manager.dart';
-import 'package:fitness_admin_chat/main.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_multi_type/image_multi_type.dart';
@@ -16,8 +14,6 @@ import 'package:intl/intl.dart';
 import '../error/error_manager.dart';
 import '../strings/enum_manager.dart';
 import '../util/pair_class.dart';
-import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 extension UpdateTypeHelper on UpdateType {
   String get getName {

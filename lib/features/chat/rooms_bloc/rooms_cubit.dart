@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:fitness_admin_chat/core/extensions/extensions.dart';
-import 'package:fitness_admin_chat/services/chat_service/core/firebase_chat_core.dart';
-
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 

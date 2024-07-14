@@ -2,11 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 
 import '../injection/injection_container.dart';
 import '../util/abstract_cubit_state.dart';
-import '../util/shared_preferences.dart';
 
 class ErrorManager {
   static String getApiError(Response response) {

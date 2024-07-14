@@ -5,7 +5,6 @@ import 'package:collection/collection.dart';
 import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
-import '../../../core/api_manager/api_service.dart';
 import '../../../core/strings/enum_manager.dart';
 import '../../../core/util/abstraction.dart';
 

@@ -1,10 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-
 import '../../services/caching_service/caching_service.dart';
 import '../api_manager/api_service.dart';
-import '../api_manager/request_models/command.dart';
 import '../strings/enum_manager.dart';
 
 abstract class AbstractState<T> extends Equatable {

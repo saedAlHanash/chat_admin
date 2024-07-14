@@ -1,26 +1,13 @@
-import 'dart:convert';
-
 import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../strings/enum_manager.dart';
-import 'dart:convert';
-
-import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../features/chat/my_room_object.dart';
-import '../strings/enum_manager.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
 
 class AppSharedPreference {
   static const _token = '1';
   static const _phoneNumber = '3';
   static const _toScreen = '4';
   static const _policy = '5';
-  static const _user = '6';
-  static const _forgetEmail = '7';
   static const _fireToken = '8';
   static const _notificationCount = '9';
   static const _social = '10';

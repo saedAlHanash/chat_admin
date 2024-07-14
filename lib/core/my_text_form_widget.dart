@@ -229,7 +229,6 @@ class MyEditTextWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     bool obscureText = this.obscureText;
     Widget? suffixIcon;
-    late VoidCallback onChangeObscure;
 
     if (icon != null) suffixIcon = icon;
 

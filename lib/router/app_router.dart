@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fitness_admin_chat/core/strings/enum_manager.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 
-import '../core/injection/injection_container.dart' as di;
-import '../core/injection/injection_container.dart';
 import '../features/chat/chat.dart';
-import '../features/chat/chat_screen.dart';
-import '../features/chat/util.dart';
 import '../features/main_screen.dart';
 import '../features/splash/ui/pages/splash_screen.dart';
 

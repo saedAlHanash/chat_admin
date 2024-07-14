@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LauncherHelper {
@@ -17,7 +16,6 @@ class LauncherHelper {
 
   static Future<void> openPage(String url) async {
     final googleUrl = Uri.parse(url);
-    loggerObject.v(url);
     await launchUrl(googleUrl, mode: LaunchMode.externalApplication);
   }
 

@@ -20,7 +20,6 @@
 
 import 'dart:convert';
 
-
 import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';

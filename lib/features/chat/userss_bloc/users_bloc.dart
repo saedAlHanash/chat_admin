@@ -3,14 +3,10 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:fitness_admin_chat/core/extensions/extensions.dart';
-import 'package:fitness_admin_chat/services/chat_service/core/firebase_chat_core.dart';
-
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
-import '../../../core/api_manager/api_service.dart';
 import '../../../core/strings/enum_manager.dart';
 import '../../../core/util/abstraction.dart';
-import '../../../services/chat_service/core/util.dart';
 
 part 'users_state.dart';
 
