@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
-import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
+import '../../../core/api_manager/api_service.dart';
 import '../../../core/strings/enum_manager.dart';
 import '../../../core/util/abstraction.dart';
 
@@ -20,20 +20,14 @@ class MessagesCubit extends MCubit<MessagesInitial> {
   String get filter => '';
 
   Future<void> getChatRoomMessage(types.Room room) async {
-    emit(state.copyWith(request: room, statuses: CubitStatuses.loading));
+    emit(state.copyWith(request: room));
 
-    final data =
-        (await getListCached()).map((e) => types.Message.fromJson(e)).toList();
+    final data = (await getListCachedChat()).toList();
 
     final allMessages = data
-      ..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
+      ..sort((a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
 
-    emit(
-      state.copyWith(
-        result: allMessages,
-        statuses: data.isNotEmpty ? CubitStatuses.done : null,
-      ),
-    );
+    emit(state.copyWith(result: allMessages));
 
     await Future.delayed(const Duration(seconds: 2));
 
@@ -42,17 +36,24 @@ class MessagesCubit extends MCubit<MessagesInitial> {
 
   /// Returns a stream of messages from Firebase for a given room.
   Future<void> messages(types.Room room) async {
-    emit(state.copyWith(statuses: CubitStatuses.loading));
     var query = FirebaseFirestore.instance
         .collection('rooms/${room.id}/messages')
         .orderBy('createdAt', descending: true)
         .limit(100)
         .where(
-          'createdAt',
+          'updatedAt',
           isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(
               state.result.firstOrNull?.updatedAt ?? 0),
         );
 
+    loggerObject.i('requested get messages ');
+
+    loggerObject
+        .i(DateTime.fromMillisecondsSinceEpoch(state.result.firstOrNull?.updatedAt ?? 0));
+    loggerObject
+        .i(DateTime.fromMillisecondsSinceEpoch(state.result.lastOrNull?.updatedAt ?? 0));
+
+    await state.stream?.cancel();
     final stream = query.snapshots().listen((snapshot) async {
       final messages = snapshot.docs.map(
         (doc) {
@@ -70,23 +71,17 @@ class MessagesCubit extends MCubit<MessagesInitial> {
         },
       );
 
-      await sortDataWithIds(messages);
+      if (messages.isEmpty) return;
+
+      await sortDataChat(messages);
 
       if (!isClosed) {
-        final data = (await getListCached())
-            .map((e) => types.Message.fromJson(e))
-            .toList();
+        final data = (await getListCachedChat()).toList();
 
         final allMessages = data
           ..sort((a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
 
-        if (state.statuses.loading) {
-          emit(state.copyWith(statuses: CubitStatuses.done));
-        }
-        emit(state.copyWith(
-          result: allMessages,
-          statuses: CubitStatuses.done,
-        ));
+        emit(state.copyWith(result: allMessages));
       }
     });
 

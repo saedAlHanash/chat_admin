@@ -3,8 +3,9 @@ part of 'rooms_cubit.dart';
 class RoomsInitial extends AbstractState<List<types.Room>> {
   final StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? stream;
   final String search;
-final List<types.Room> myRooms;
-final List<types.Room> othersRooms;
+  final List<types.Room> myRooms;
+  final List<types.Room> othersRooms;
+
   const RoomsInitial({
     required super.result,
     super.statuses,
@@ -38,9 +39,9 @@ final List<types.Room> othersRooms;
   }
 
   bool get notRead {
-    final room  =  myRooms.firstWhereOrNull((e) => e.isNotRead) ;
+    final room = myRooms.firstWhereOrNull((e) => e.isNotRead);
     loggerObject.w(room?.id);
-    return room!=null;
+    return room != null;
   }
 
   RoomsInitial copyWith({

@@ -28,7 +28,7 @@ class UsersCubit extends MCubit<UsersInitial> {
   }
 
   /// Returns a stream of messages from Firebase for a given room.
-  void users() {    emit(state.copyWith(statuses: CubitStatuses.loading));
+  void users() {
     late final Query<Map<String, dynamic>> query;
 
     query = FirebaseFirestore.instance
@@ -55,9 +55,9 @@ class UsersCubit extends MCubit<UsersInitial> {
         },
       );
 
-      await sortDataWithIds(users);
+      await sortDataChat(users);
 
-      if(state.statuses.loading) {
+      if (state.statuses.loading) {
         emit(state.copyWith(statuses: CubitStatuses.done));
       }
       if (isClosed) return;
@@ -69,19 +69,16 @@ class UsersCubit extends MCubit<UsersInitial> {
   }
 
   Future<void> setData() async {
-    final data =
-        (await getListCached()).map((e) => types.User.fromJson(e)).toList();
-    final dataList = data
-      ..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
+    final data = (await getListCached()).map((e) => types.User.fromJson(e)).toList();
+    final dataList = data..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
 
     var usersCached = <types.User>[];
     if (state.search.isEmpty) {
       usersCached = dataList;
     } else {
       usersCached = dataList
-          .where((room) => (room.firstName ?? '')
-              .toLowerCase()
-              .contains(state.search.toLowerCase()))
+          .where((room) =>
+              (room.firstName ?? '').toLowerCase().contains(state.search.toLowerCase()))
           .toList();
     }
 

@@ -249,11 +249,11 @@ class _ChatPageState extends State<ChatPage> {
         actions: [
           if (widget.room.me != null)
             Row(
-              children: [       CircleImageWidget(
-                url: widget.room.otherUser.imageUrl,
-                size: 40.0.r,
-              ),
-
+              children: [
+                CircleImageWidget(
+                  url: widget.room.otherUser.imageUrl,
+                  size: 40.0.r,
+                ),
                 10.0.horizontalSpace,
                 DrawableText(
                   text: widget.room.otherUser.name,
@@ -266,34 +266,35 @@ class _ChatPageState extends State<ChatPage> {
             Row(
               children: [
                 SizedBox(
-                width: 60.0.w,
-                height: 40.0.h,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      right: 0,
-                      child: CircleImageWidget(
-                        url: widget.room.users.firstOrNull?.imageUrl,
-                        size: 35.0.r,
+                  width: 60.0.w,
+                  height: 40.0.h,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        right: 0,
+                        child: CircleImageWidget(
+                          url: widget.room.users.firstOrNull?.imageUrl,
+                          size: 35.0.r,
+                        ),
                       ),
-                    ),
-                    Positioned(
-                      left: 0,
-                      child: CircleImageWidget(
-                        url: widget.room.users.lastOrNull?.imageUrl,
-                        size: 35.0.r,
-                      ),
-                    )
-                  ],
+                      Positioned(
+                        left: 0,
+                        child: CircleImageWidget(
+                          url: widget.room.users.lastOrNull?.imageUrl,
+                          size: 35.0.r,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
                 10.0.horizontalSpace,
                 SizedBox(
                   width: 0.7.sw,
                   child: DrawableText(
                     matchParent: true,
                     textAlign: TextAlign.start,
-                    text: '${widget.room.users.firstOrNull?.name}\n${widget.room.users.lastOrNull?.name}',
+                    text:
+                        '${widget.room.users.firstOrNull?.name}\n${widget.room.users.lastOrNull?.name}',
                     color: Colors.white,
                   ),
                 ),
@@ -318,12 +319,12 @@ class _ChatPageState extends State<ChatPage> {
           theme: const DarkChatTheme(
               backgroundColor: Colors.white,
               primaryColor: AppColorManager.mainColor,
+              dateDividerTextStyle: TextStyle(color: Colors.black54),
               secondaryColor: AppColorManager.mainColorDark,
               inputBackgroundColor: AppColorManager.mainColor),
           customBottomWidget: widget.room.me != null ? null : const SizedBox(),
-          user: widget.room.me == null
-              ? widget.room.otherUser
-              : const types.User(id: '0'),
+          user:
+              widget.room.me == null ? widget.room.otherUser : const types.User(id: '0'),
         ),
       ),
     );

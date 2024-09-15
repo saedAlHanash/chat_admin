@@ -32,7 +32,6 @@ void main() async {
 
   await CachingService.initial();
 
-
   await Note.initialize();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -50,10 +49,15 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => sl<OpenRoomCubit>()),
-        BlocProvider(create: (_) => sl<RoomsCubit>()..getChatRooms()),
-        BlocProvider(create: (_) => sl<UsersCubit>()..getChatUsers()),
+        BlocProvider(
+          create: (_) => sl<RoomsCubit>()..getChatRooms(),
+          // lazy: true,
+        ),
+        BlocProvider(
+          create: (_) => sl<UsersCubit>()..getChatUsers(),
+          // lazy: true,
+        ),
         BlocProvider(create: (_) => sl<MessagesCubit>()),
-
       ],
       child: const MyApp(),
     ),

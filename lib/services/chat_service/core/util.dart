@@ -22,8 +22,11 @@ Future<Map<String, dynamic>> fetchUser(
   String usersCollectionName, {
   String? role,
 }) async {
+
   final doc = await instance.collection(usersCollectionName).doc(userId).get();
-  if(doc.data()==null)return {'id':'-1'};
+
+  if (doc.data() == null) return {'id': '-1'};
+
   final data = doc.data()!;
 
   data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
@@ -59,7 +62,6 @@ Future<types.Room> processRoomDocument(
   FirebaseFirestore instance,
   String usersCollectionName,
 ) async {
-
   final data = doc.data()!;
 
   data['id'] = doc.id;
@@ -90,8 +92,7 @@ Future<types.Room> processRoomDocument(
       );
 
       imageUrl = otherUser['imageUrl'] as String?;
-      name = '${otherUser['firstName'] ?? ''} ${otherUser['lastName'] ?? ''}'
-          .trim();
+      name = '${otherUser['firstName'] ?? ''} ${otherUser['lastName'] ?? ''}'.trim();
     } catch (e) {
       loggerObject.e(e);
     }
@@ -107,8 +108,7 @@ Future<types.Room> processRoomDocument(
     if (data['latestMessage'] != null && data['latestMessage'] is Map) {
       final message = data['latestMessage'] as Map<String, dynamic>;
 
-      message['author'] =
-          types.User(id: message['authorId'] as String).toJson();
+      message['author'] = types.User(id: message['authorId'] as String).toJson();
       message['createdAt'] = message['createdAt']?.millisecondsSinceEpoch;
       message['id'] = doc.id;
       message['updatedAt'] = message['updatedAt']?.millisecondsSinceEpoch;
@@ -116,8 +116,7 @@ Future<types.Room> processRoomDocument(
       data['lastMessages'] = [message];
     }
 
-    metaData['latestSeen'] =
-        data['latestSeen${'0'}']?.millisecondsSinceEpoch;
+    metaData['latestSeen'] = data['latestSeen${'0'}']?.millisecondsSinceEpoch;
 
     data['metadata'] = metaData;
   }

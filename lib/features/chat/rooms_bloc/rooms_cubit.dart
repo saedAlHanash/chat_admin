@@ -53,13 +53,14 @@ class RoomsCubit extends MCubit<RoomsInitial> {
         'users',
       );
 
-      await sortDataWithIds(listRooms);
+      await sortDataChat(listRooms);
 
-      loggerObject.f('message');
       if (state.statuses.loading) {
         emit(state.copyWith(statuses: CubitStatuses.done));
       }
+
       if (isClosed) return;
+
       await setData();
     });
 
@@ -67,19 +68,20 @@ class RoomsCubit extends MCubit<RoomsInitial> {
   }
 
   Future<void> setData() async {
-    final data =
-        (await getListCached()).map((e) => types.Room.fromJson(e)).toList();
+    final data = (await getListCached()).map((e) => types.Room.fromJson(e)).toList();
 
-    final dataList = data
-      ..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
+    final rooms = data..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
+
+    rooms.removeWhere((e) => e.otherUser.id == '-1');
 
     var roomsCached = <Room>[];
+
     if (state.search.isEmpty) {
-      roomsCached = dataList;
+      roomsCached = rooms;
     } else {
-      roomsCached = dataList
-          .where((room) =>
-              room.usersName.toLowerCase().contains(state.search.toLowerCase()))
+      roomsCached = rooms
+          .where(
+              (room) => room.usersName.toLowerCase().contains(state.search.toLowerCase()))
           .toList();
     }
 
