@@ -6,7 +6,7 @@ import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import '../../../core/strings/enum_manager.dart';
-import '../../../core/util/abstraction.dart';
+import 'package:m_cubit/m_cubit.dart';
 
 part 'users_state.dart';
 
@@ -55,7 +55,7 @@ class UsersCubit extends MCubit<UsersInitial> {
         },
       );
 
-      await sortDataChat(users);
+      await saveData(users);
 
       if (state.statuses.loading) {
         emit(state.copyWith(statuses: CubitStatuses.done));
@@ -69,7 +69,8 @@ class UsersCubit extends MCubit<UsersInitial> {
   }
 
   Future<void> setData() async {
-    final data = (await getListCached()).map((e) => types.User.fromJson(e)).toList();
+    final data = await getListCached(fromJson: types.User.fromJson);
+
     final dataList = data..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
 
     var usersCached = <types.User>[];

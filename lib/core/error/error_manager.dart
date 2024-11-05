@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:m_cubit/abstraction.dart';
 
 import '../injection/injection_container.dart';
 import '../util/abstract_cubit_state.dart';
@@ -46,8 +47,7 @@ class ErrorBody {
       };
 }
 
-showErrorFromApi(AbstractCubit state) {
-
+showErrorFromApi(AbstractState state) {
   if (ctx == null) return;
 }
 

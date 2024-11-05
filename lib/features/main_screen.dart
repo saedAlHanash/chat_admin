@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<OpenRoomCubit, OpenRoomInitial>(
-      listenWhen: (p, c) => c.statuses.done,
+      listenWhen: (p, c) => c.done,
       listener: (context, state) async {
         await context.read<MessagesCubit>().state.stream?.cancel();
         if (!context.mounted) return;
@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: MyEditTextWidget(
                 onChanged: searchFun,
                 hint: 'Search',
-                backgroundColor: AppColorManager.mainColorDark,
+                backgroundColor: AppColorManager.mainColor,
                 icon: const Padding(
                   padding: EdgeInsets.all(10.0),
                   child: ImageMultiType(
@@ -177,16 +177,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ],
                         ),
-                        subtitle:
-                            room.lastMessages?.firstOrNull?.latestMessage(room),
+                        subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
                         trailing: room.updatedAt == null
                             ? null
                             : DrawableText(
                                 textAlign: TextAlign.center,
                                 size: 12.0.sp,
                                 color: Colors.grey,
-                                text: DateTime.fromMillisecondsSinceEpoch(
-                                        room.updatedAt!)
+                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!)
                                     .formatDateTimeVertical,
                               ),
                       );
@@ -227,16 +225,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: AppColorManager.mainColor,
                           ),
                         ),
-                        subtitle:
-                            room.lastMessages?.firstOrNull?.latestMessage(room),
+                        subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
                         trailing: room.updatedAt == null
                             ? null
                             : DrawableText(
                                 textAlign: TextAlign.center,
                                 size: 12.0.sp,
                                 color: Colors.grey,
-                                text: DateTime.fromMillisecondsSinceEpoch(
-                                        room.updatedAt!)
+                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!)
                                     .formatDateTimeVertical,
                               ),
                       );
@@ -259,9 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       return ListTile(
                         onTap: () async {
-                          context
-                              .read<OpenRoomCubit>()
-                              .openRoomByUserId(user.id);
+                          context.read<OpenRoomCubit>().openRoomByUserId(user.id);
                         },
                         leading: CircleImageWidget(
                           url: user.imageUrl,

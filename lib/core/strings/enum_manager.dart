@@ -1,4 +1,4 @@
-enum CubitStatuses { init, loading, done, error }
+// enum CubitStatuses { init, loading, done, error }
 
 enum ToScreen { non, confirmCode, policy, main }
 
@@ -8,7 +8,7 @@ enum PricingMatrixType { day, date }
 
 enum FilterItem { activity, group, country, city }
 
-enum UpdateType { name, phone, address ,pass }
+enum UpdateType { name, phone, address, pass }
 
 enum NeedUpdateEnum { no, withLoading, noLoading }
 

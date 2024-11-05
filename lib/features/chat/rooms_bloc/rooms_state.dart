@@ -40,7 +40,7 @@ class RoomsInitial extends AbstractState<List<types.Room>> {
 
   bool get notRead {
     final room = myRooms.firstWhereOrNull((e) => e.isNotRead);
-    loggerObject.w(room?.id);
+    // loggerObject.w(room?.id);
     return room != null;
   }
 

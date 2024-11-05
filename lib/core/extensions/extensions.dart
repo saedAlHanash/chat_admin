@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_multi_type/image_multi_type.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:m_cubit/m_cubit.dart';
 
 import '../error/error_manager.dart';
 import '../strings/enum_manager.dart';
@@ -170,14 +171,15 @@ extension DateUtcHelper on DateTime {
     initializeDateFormatting();
     return DateFormat('EEEE', 'ar_SA').format(this);
   }
+
   String get formatDateTimeVertical => '$formatDate\n$formatTime';
+
   DateTime addFromNow({int? year, int? month, int? day}) {
-    return DateTime(this.year + (year ?? 0), this.month + (month ?? 0),
-        this.day + (day ?? 0));
+    return DateTime(
+        this.year + (year ?? 0), this.month + (month ?? 0), this.day + (day ?? 0));
   }
 
-  DateTime initialFromDateTime(
-      {required DateTime date, required TimeOfDay time}) {
+  DateTime initialFromDateTime({required DateTime date, required TimeOfDay time}) {
     return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
 
@@ -243,15 +245,12 @@ extension ScrollMax on ScrollController {
   bool get isMin => offset == 0;
 }
 
-
 extension RoomH on types.Room {
-  types.User? get me =>
-      users.firstWhereOrNull((e) => e.id == '0');
+  types.User? get me => users.firstWhereOrNull((e) => e.id == '0');
 
   String get usersName => users.map((e) => e.name).join(' ');
 
-  types.User get otherUser =>
-      users.firstWhere((e) => e.id != '0');
+  types.User get otherUser => users.firstWhere((e) => e.id != '0');
 
   int get latestSeen => metadata?['latestSeen'] ?? 0;
 
@@ -260,8 +259,7 @@ extension RoomH on types.Room {
 
     final latestMessage = lastMessages!.first;
 
-    return ((latestMessage.author.id == '0') ||
-        ((latestSeen - (updatedAt ?? 0)) > 0));
+    return ((latestMessage.author.id == '0') || ((latestSeen - (updatedAt ?? 0)) > 0));
   }
 
   bool get isNotRead => !isRead;
@@ -273,7 +271,7 @@ extension UserH on types.User {
 
 extension MessageH on types.Message {
   Widget latestMessage(types.Room room) {
-    bool isRead = room.isRead;
+    final isRead = room.isRead;
     String message = '';
     dynamic icon;
 
@@ -299,7 +297,7 @@ extension MessageH on types.Message {
       fontFamily: isRead ? null : FontManager.cairoBold.name,
       drawablePadding: 7.0.w,
       drawableStart: ImageMultiType(
-        color: isRead ? Colors.grey : AppColorManager.mainColor,
+        color: isRead ? Colors.grey : AppColorManager.threadColor,
         url: icon,
         height: 17.0.r,
         width: 17.0.r,

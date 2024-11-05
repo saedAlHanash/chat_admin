@@ -2,23 +2,23 @@ import 'package:fitness_admin_chat/core/strings/app_color_manager.dart';
 import 'package:flutter/material.dart';
 
 const primaryColor = AppColorManager.black;
-const secondaryColor = AppColorManager.mainColorDark;
+const secondaryColor = AppColorManager.secondColor;
 
-MaterialColor primarySwatch = const MaterialColor(0xFF74569D, {
+MaterialColor primarySwatch = const MaterialColor(0xFF6340D6, {
   0: Color(0xFFFFFFFF),
-  50: Color(0xFF74569D),
-  100: Color(0xFF74569D),
-  200: Color(0xFF74569D),
-  300: Color(0xFF74569D),
-  400: Color(0xFF74569D),
-  500: Color(0xFF74569D),
-  600: Color(0xFF74569D),
-  700: Color(0xFF74569D),
-  800: Color(0xFF74569D),
-  900: Color(0xFF74569D),
+  50: Color(0xFF6340D6),
+  100: Color(0xFF6340D6),
+  200: Color(0xFF6340D6),
+  300: Color(0xFF6340D6),
+  400: Color(0xFF6340D6),
+  500: Color(0xFF6340D6),
+  600: Color(0xFF6340D6),
+  700: Color(0xFF6340D6),
+  800: Color(0xFF6340D6),
+  900: Color(0xFF6340D6),
 });
 
-Color lightBackgroundColor = const Color(0xFF74569D);
+Color lightBackgroundColor = const Color(0xFF6340D6);
 Color darkGrey = const Color(0xFF9D9D9D);
 Color lightGray = const Color(0xFFF3F3F3);
 ThemeData lightTheme = ThemeData(
@@ -52,13 +52,11 @@ ThemeData darkTheme = ThemeData(
     appBarTheme: const AppBarTheme(
       elevation: 0.0,
       foregroundColor: Colors.white,
-      backgroundColor:
-      Color(0xFF2B2B2B), //lightBackgroundColor.withOpacity(0.75),
+      backgroundColor: Color(0xFF2B2B2B), //lightBackgroundColor.withOpacity(0.75),
     ),
     colorScheme: ColorScheme.fromSwatch(primarySwatch: primarySwatch)
         .copyWith(
-      secondary: Colors.black.withOpacity(0.5),
-      brightness: Brightness.dark,
-    )
+          secondary: Colors.black.withOpacity(0.5),
+          brightness: Brightness.dark,
+        )
         .copyWith(background: lightBackgroundColor.withOpacity(0.75)));
-

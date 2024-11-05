@@ -8,7 +8,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart';
 
 import '../../../core/api_manager/api_service.dart';
 import '../../../core/strings/enum_manager.dart';
-import '../../../core/util/abstraction.dart';
+import 'package:m_cubit/m_cubit.dart';
 import '../../../services/chat_service/core/util.dart';
 
 part 'rooms_state.dart';
@@ -30,10 +30,6 @@ class RoomsCubit extends MCubit<RoomsInitial> {
 
   /// Returns a stream of messages from Firebase for a given room.
   Future<void> rooms() async {
-    await state.stream?.cancel();
-
-    emit(state.copyWith(statuses: CubitStatuses.loading));
-    loggerObject.f('start');
     late final Query<Map<String, dynamic>> query;
 
     query = FirebaseFirestore.instance
@@ -46,6 +42,12 @@ class RoomsCubit extends MCubit<RoomsInitial> {
           ),
         );
 
+    loggerObject.i('requested get room ${state.result.lastOrNull?.updatedAt ?? 0}');
+
+    var latestUpdate = state.result.firstOrNull?.updatedAt ?? 0;
+
+    await state.stream?.cancel();
+
     final stream = query.snapshots().listen((snapshot) async {
       final listRooms = await processRoomsQuery(
         FirebaseFirestore.instance,
@@ -53,14 +55,21 @@ class RoomsCubit extends MCubit<RoomsInitial> {
         'users',
       );
 
-      await sortDataChat(listRooms);
+      if (listRooms.isEmpty) return;
 
-      if (state.statuses.loading) {
-        emit(state.copyWith(statuses: CubitStatuses.done));
-      }
+      final latestUpdateMessageFromSnap = listRooms
+          .reduce((c, n) => (c.updatedAt ?? 0) > (n.updatedAt ?? 0) ? c : n)
+          .updatedAt;
+
+      listRooms.removeWhere((e) => ((e.updatedAt ?? 0) <= latestUpdate));
+
+      latestUpdate = latestUpdateMessageFromSnap ?? 0;
+
+      if (listRooms.isEmpty) return;
+
+      await saveData(listRooms, clearId: false);
 
       if (isClosed) return;
-
       await setData();
     });
 
@@ -68,22 +77,24 @@ class RoomsCubit extends MCubit<RoomsInitial> {
   }
 
   Future<void> setData() async {
-    final data = (await getListCached()).map((e) => types.Room.fromJson(e)).toList();
+    final roomsCached = await getListCached(
+      fromJson: types.Room.fromJson,
+    );
 
-    final rooms = data..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
+    roomsCached.removeWhere((e) => e.otherUser.id == '-1');
 
-    rooms.removeWhere((e) => e.otherUser.id == '-1');
-
-    var roomsCached = <Room>[];
-
-    if (state.search.isEmpty) {
-      roomsCached = rooms;
-    } else {
-      roomsCached = rooms
-          .where(
-              (room) => room.usersName.toLowerCase().contains(state.search.toLowerCase()))
-          .toList();
+    if (state.search.isNotEmpty) {
+      roomsCached.removeWhere(
+        (room) => !(room.usersName.toLowerCase().contains(state.search.toLowerCase())),
+      );
     }
+
+    roomsCached.sort((a, b) {
+      if (a.isRead != b.isRead) {
+        return (b.isNotRead) ? 1 : -1;
+      }
+      return (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0);
+    });
 
     final myRooms = roomsCached
         .where((e) => e.users.firstWhereOrNull((e) => e.id == '0') != null)

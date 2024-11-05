@@ -12,6 +12,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_multi_type/circle_image_widget.dart';
+import 'package:image_multi_type/image_multi_type.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
@@ -247,86 +248,88 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       appBar: AppBarWidget(
         actions: [
-          if (widget.room.me != null)
-            Row(
-              children: [
-                CircleImageWidget(
-                  url: widget.room.otherUser.imageUrl,
-                  size: 40.0.r,
-                ),
-                10.0.horizontalSpace,
-                DrawableText(
-                  text: widget.room.otherUser.name,
-                  color: Colors.white,
-                ),
-                10.0.horizontalSpace,
-              ],
-            )
-          else
-            Row(
-              children: [
-                SizedBox(
-                  width: 60.0.w,
-                  height: 40.0.h,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        right: 0,
-                        child: CircleImageWidget(
-                          url: widget.room.users.firstOrNull?.imageUrl,
-                          size: 35.0.r,
-                        ),
-                      ),
-                      Positioned(
-                        left: 0,
-                        child: CircleImageWidget(
-                          url: widget.room.users.lastOrNull?.imageUrl,
-                          size: 35.0.r,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                10.0.horizontalSpace,
-                SizedBox(
-                  width: 0.7.sw,
-                  child: DrawableText(
-                    matchParent: true,
-                    textAlign: TextAlign.start,
-                    text:
-                        '${widget.room.users.firstOrNull?.name}\n${widget.room.users.lastOrNull?.name}',
-                    color: Colors.white,
-                  ),
-                ),
-                10.0.horizontalSpace,
-              ],
-            ),
+          Row(
+            children: [
+              DrawableText(
+                text: widget.room.otherUser.name,
+                color: Colors.white,
+              ),
+              10.0.horizontalSpace,
+              CircleImageWidget(
+                url: widget.room.otherUser.imageUrl,
+                size: 40.0.r,
+              ),
+              10.0.horizontalSpace,
+            ],
+          ),
         ],
       ),
       body: BlocBuilder<MessagesCubit, MessagesInitial>(
-        builder: (context, state) => Chat(
-          textMessageOptions: TextMessageOptions(
-            onLinkPressed: (p0) {
-              LauncherHelper.openPage(p0);
+        builder: (context, state) {
+          return Chat(
+            textMessageOptions: TextMessageOptions(
+              onLinkPressed: (p0) {
+                LauncherHelper.openPage(p0);
+              },
+            ),
+            isAttachmentUploading: _isAttachmentUploading,
+            messages: state.result,
+            onAttachmentPressed: _handleAtachmentPressed,
+            onMessageTap: _handleMessageTap,
+            onMessageLongPress: (context, p0) {
+              showShortListMenu(ctx: context, id: p0.id);
             },
-          ),
-          isAttachmentUploading: _isAttachmentUploading,
-          messages: state.result,
-          onAttachmentPressed: _handleAtachmentPressed,
-          onMessageTap: _handleMessageTap,
-          onPreviewDataFetched: _handlePreviewDataFetched,
-          onSendPressed: _handleSendPressed,
-          theme: const DarkChatTheme(
-              backgroundColor: Colors.white,
-              primaryColor: AppColorManager.mainColor,
-              dateDividerTextStyle: TextStyle(color: Colors.black54),
-              secondaryColor: AppColorManager.mainColorDark,
-              inputBackgroundColor: AppColorManager.mainColor),
-          customBottomWidget: widget.room.me != null ? null : const SizedBox(),
-          user:
-              widget.room.me == null ? widget.room.otherUser : const types.User(id: '0'),
-        ),
+            onPreviewDataFetched: _handlePreviewDataFetched,
+            onSendPressed: _handleSendPressed,
+            theme: const DarkChatTheme(
+                backgroundColor: Colors.white,
+                primaryColor: AppColorManager.mainColor,
+                dateDividerTextStyle: TextStyle(color: Colors.black54),
+                secondaryColor: AppColorManager.secondColor,
+                inputBackgroundColor: AppColorManager.mainColor),
+            customBottomWidget: widget.room.me != null ? null : const SizedBox(),
+            user: widget.room.me == null
+                ? widget.room.otherUser
+                : const types.User(id: '0'),
+          );
+        },
       ),
     );
   }
+}
+
+void showShortListMenu({
+  required String id,
+  required BuildContext ctx,
+}) {
+  final RenderBox box = ctx.findRenderObject() as RenderBox;
+  final localPosition = box.localToGlobal(Offset.zero);
+
+  showMenu(
+    context: ctx,
+    position: RelativeRect.fromLTRB(
+      localPosition.dx,
+      (localPosition.dy + 50.0.h),
+      localPosition.dx,
+      localPosition.dy,
+    ),
+    items: [
+      PopupMenuItem(
+        value: 1,
+        onTap: () {
+          ctx.read<MessagesCubit>().deleteMessage(id);
+        },
+        child: ListTile(
+          leading: const ImageMultiType(
+            url: Icons.delete,
+            color: AppColorManager.red,
+          ),
+          trailing: DrawableText(
+            text: 'Delete',
+            color: Colors.red,
+          ),
+        ),
+      ),
+    ],
+  );
 }

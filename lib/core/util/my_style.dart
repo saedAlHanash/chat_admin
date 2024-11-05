@@ -21,7 +21,7 @@ class MyStyle {
 //endregion
 
   static const underLineStyle =
-  TextStyle(fontStyle: FontStyle.italic, decoration: TextDecoration.underline);
+      TextStyle(fontStyle: FontStyle.italic, decoration: TextDecoration.underline);
 
   static var drawerShape = ShapeDecoration(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
@@ -29,27 +29,27 @@ class MyStyle {
 
   static var normalShadow = [
     BoxShadow(
-        color: AppColorManager.gray.withOpacity(0.6),
+        color: AppColorManager.grey.withOpacity(0.6),
         blurRadius: 15,
         offset: const Offset(0, 5))
   ];
 
   static var lightShadow = [
     BoxShadow(
-        color: AppColorManager.gray.withOpacity(0.5),
+        color: AppColorManager.grey.withOpacity(0.5),
         blurRadius: 5,
         offset: const Offset(0, 2))
   ];
 
   static var allShadow = [
     BoxShadow(
-      color: AppColorManager.gray.withOpacity(0.5),
+      color: AppColorManager.grey.withOpacity(0.5),
       blurRadius: 10,
     )
   ];
   static var allShadowDark = [
     BoxShadow(
-      color: AppColorManager.gray.withOpacity(0.6),
+      color: AppColorManager.grey.withOpacity(0.6),
       blurRadius: 10.spMin,
     )
   ];
@@ -63,7 +63,7 @@ class MyStyle {
   static final hintStyle = TextStyle(
     fontFamily: FontManager.cairoSemiBold.name,
     fontSize: 18.0.spMin,
-    color: AppColorManager.gray.withOpacity(0.6),
+    color: AppColorManager.grey.withOpacity(0.6),
   );
   static final textFormTextStyle = TextStyle(
     fontFamily: FontManager.cairoBold.name,

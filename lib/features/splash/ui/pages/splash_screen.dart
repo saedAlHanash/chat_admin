@@ -40,7 +40,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
           end: Alignment.bottomLeft,
           colors: [
             AppColorManager.mainColor,
-            AppColorManager.mainColorDark,
+            AppColorManager.secondColor,
           ],
         )),
         child: GestureDetector(

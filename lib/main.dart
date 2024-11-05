@@ -9,9 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:logger/logger.dart';
+import 'package:m_cubit/caching_service/caching_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/app/app_widget.dart';
+import 'core/error/error_manager.dart';
 import 'core/injection/injection_container.dart' as di;
 import 'core/injection/injection_container.dart';
 import 'core/util/shared_preferences.dart';
@@ -30,8 +32,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await CachingService.initial();
-
   await Note.initialize();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -42,8 +42,14 @@ void main() async {
 
   await di.init();
 
+  await CachingService.initial(
+    onError: (state) => showErrorFromApi(state),
+    version: 1,
+    timeInterval: 120,
+  );
+
   await ChatServiceCore.initFirebaseChat();
-  loggerObject.w(await getFireToken());
+  // loggerObject.w(await getFireToken());
   HttpOverrides.global = MyHttpOverrides();
   runApp(
     MultiBlocProvider(
