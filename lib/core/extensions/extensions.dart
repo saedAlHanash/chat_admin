@@ -294,7 +294,7 @@ extension MessageH on types.Message {
       maxLines: 1,
       size: 14.0.sp,
       color: isRead ? Colors.grey : AppColorManager.mainColor,
-      fontFamily: isRead ? null : FontManager.cairoBold.name,
+      //fontFamily: isRead ? null : FontManager.cairoBold.name,
       drawablePadding: 7.0.w,
       drawableStart: ImageMultiType(
         color: isRead ? Colors.grey : AppColorManager.threadColor,

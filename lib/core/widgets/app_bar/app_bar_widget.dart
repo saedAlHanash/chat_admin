@@ -35,7 +35,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             text: titleText ?? '',
             size: 24.0.spMin,
             color: Colors.white,
-            fontFamily: FontManager.cairoBold.name,
+            //fontFamily: FontManager.cairoBold.name,
           ),
       leading: Navigator.canPop(context)
           ? const BackBtnWidget()

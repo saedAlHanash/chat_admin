@@ -28,7 +28,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-
     setImageMultiTypeErrorImage(
       const Opacity(
         opacity: 0.3,
@@ -71,9 +70,7 @@ class _MyAppState extends State<MyApp> {
       // splitScreenMode: true,
       builder: (context, child) {
         DrawableText.initial(
-          headerSizeText: 28.0.sp,
           initialHeightText: 1.5.sp,
-          titleSizeText: 20.0.sp,
           initialSize: 16.0.sp,
           selectable: false,
           initialColor: AppColorManager.black,

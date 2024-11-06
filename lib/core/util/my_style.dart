@@ -61,12 +61,12 @@ class MyStyle {
       borderRadius: BorderRadius.circular(10.0.r));
 
   static final hintStyle = TextStyle(
-    fontFamily: FontManager.cairoSemiBold.name,
+    //fontFamily: FontManager.cairoSemiBold.name,
     fontSize: 18.0.spMin,
     color: AppColorManager.grey.withOpacity(0.6),
   );
   static final textFormTextStyle = TextStyle(
-    fontFamily: FontManager.cairoBold.name,
+    //fontFamily: FontManager.cairoBold.name,
     fontSize: 18.0.spMin,
     color: Colors.black87,
   );

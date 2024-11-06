@@ -78,7 +78,8 @@ class _MyTextFormWidgetState extends State<MyTextFormWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final padding = widget.innerPadding ?? const EdgeInsets.symmetric(horizontal: 10.0).w;
+    final padding =
+        widget.innerPadding ?? const EdgeInsets.symmetric(horizontal: 10.0).w;
 
     var obscureText = widget.obscureText;
     Widget? suffixIcon;
@@ -144,7 +145,7 @@ class _MyTextFormWidgetState extends State<MyTextFormWidget> {
       hintTextDirection: widget.textDirection,
       hintStyle: TextStyle(
         locale: Locale(AppSharedPreference.getLocal),
-        fontFamily: FontManager.cairoSemiBold.name,
+        //fontFamily: FontManager.cairoSemiBold.name,
         color: widget.textColor ?? AppColorManager.grey,
       ),
       hintMaxLines: 1,
@@ -154,7 +155,7 @@ class _MyTextFormWidgetState extends State<MyTextFormWidget> {
     );
 
     final textStyle = TextStyle(
-      fontFamily: FontManager.cairoSemiBold.name,
+      //fontFamily: FontManager.cairoSemiBold.name,
       fontSize: 16.0.sp,
       color: widget.textColor ?? AppColorManager.black,
     );
@@ -241,7 +242,7 @@ class MyEditTextWidget extends StatelessWidget {
     final inputDecoration = InputDecoration(
       hintText: hint,
       hintStyle: TextStyle(
-        fontFamily: FontManager.cairoSemiBold.name,
+        //fontFamily: FontManager.cairoSemiBold.name,
         fontSize: 18.0.sp,
         color: color?.withOpacity(0.6) ?? AppColorManager.grey.withOpacity(0.6),
       ),
@@ -257,7 +258,8 @@ class MyEditTextWidget extends StatelessWidget {
       fillColor: Colors.white60,
       enabled: enable ?? true,
       prefixIcon: suffixIcon ?? 0.0.verticalSpace,
-      prefixIconConstraints: BoxConstraints(maxWidth: 80.0.sp, minHeight: 50.0.sp),
+      prefixIconConstraints:
+          BoxConstraints(maxWidth: 80.0.sp, minHeight: 50.0.sp),
     );
 
     return TextFormField(
@@ -267,7 +269,7 @@ class MyEditTextWidget extends StatelessWidget {
       textAlign: textAlign ?? TextAlign.start,
       onChanged: onChanged,
       style: TextStyle(
-        fontFamily: FontManager.cairoBold.name,
+        //fontFamily: FontManager.cairoBold.name,
         fontSize: 18.0.sp,
         color: color ?? Colors.black87,
       ),
@@ -357,10 +359,12 @@ class MyTextFormNoLabelWidget extends StatelessWidget {
 
 class RectCustomClipper extends CustomClipper<Rect> {
   @override
-  Rect getClip(Size size) => Rect.fromLTWH(3.w, 0, size.width - 6.w, size.height);
+  Rect getClip(Size size) =>
+      Rect.fromLTWH(3.w, 0, size.width - 6.w, size.height);
 
   @override
-  bool shouldReclip(covariant CustomClipper<Rect> oldClipper) => oldClipper != this;
+  bool shouldReclip(covariant CustomClipper<Rect> oldClipper) =>
+      oldClipper != this;
 }
 
 class AlwaysDisabledFocusNode extends FocusNode {
@@ -420,7 +424,8 @@ class MyTextFormOutLineWidget extends StatefulWidget {
   final TextDirection? textDirection;
 
   @override
-  State<MyTextFormOutLineWidget> createState() => _MyTextFormOutLineWidgetState();
+  State<MyTextFormOutLineWidget> createState() =>
+      _MyTextFormOutLineWidgetState();
 }
 
 class _MyTextFormOutLineWidgetState extends State<MyTextFormOutLineWidget> {
@@ -440,7 +445,8 @@ class _MyTextFormOutLineWidgetState extends State<MyTextFormOutLineWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final padding = widget.innerPadding ?? const EdgeInsets.symmetric(horizontal: 20.0).w;
+    final padding =
+        widget.innerPadding ?? const EdgeInsets.symmetric(horizontal: 20.0).w;
 
     bool obscureText = widget.obscureText;
     Widget? suffixIcon;
@@ -490,7 +496,7 @@ class _MyTextFormOutLineWidgetState extends State<MyTextFormOutLineWidget> {
       border: border,
       errorStyle: TextStyle(
         fontSize: 14.0.sp,
-        fontFamily: FontManager.cairoSemiBold.name,
+        //fontFamily: FontManager.cairoSemiBold.name,
       ),
       focusedBorder: border,
       enabledBorder: border,
@@ -500,7 +506,7 @@ class _MyTextFormOutLineWidgetState extends State<MyTextFormOutLineWidget> {
       counter: const SizedBox(),
       hintText: widget.hint,
       hintStyle: TextStyle(
-        fontFamily: FontManager.cairoSemiBold.name,
+        //fontFamily: FontManager.cairoSemiBold.name,
         fontSize: 12.0.sp,
         color: const Color(0xffA0A0A0),
       ),
@@ -512,7 +518,7 @@ class _MyTextFormOutLineWidgetState extends State<MyTextFormOutLineWidget> {
     );
 
     final textStyle = TextStyle(
-      fontFamily: FontManager.cairoSemiBold.name,
+      //fontFamily: FontManager.cairoSemiBold.name,
       fontSize: 16.0.sp,
       color: AppColorManager.whit,
     );
@@ -593,7 +599,8 @@ class MyTextFormWhiteWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final padding = innerPadding ?? const EdgeInsets.symmetric(horizontal: 10.0);
+    final padding =
+        innerPadding ?? const EdgeInsets.symmetric(horizontal: 10.0);
 
     bool obscureText = this.obscureText;
     Widget? suffixIcon;
@@ -640,7 +647,7 @@ class MyTextFormWhiteWidget extends StatelessWidget {
     );
 
     final textStyle = TextStyle(
-      fontFamily: FontManager.cairoBold.name,
+      //fontFamily: FontManager.cairoBold.name,
       fontSize: 18.0,
       color: color ?? Colors.black,
     );
