@@ -4,8 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-
-import '../../../core/strings/enum_manager.dart';
 import 'package:m_cubit/m_cubit.dart';
 
 part 'users_state.dart';
@@ -33,7 +31,6 @@ class UsersCubit extends MCubit<UsersInitial> {
   Future<void> users() async {
     late final Query<Map<String, dynamic>> query;
 
-    var x  = state.result.lastOrNull?.updatedAt;
     query = FirebaseFirestore.instance
         .collection('users')
         .orderBy('updatedAt', descending: true)
@@ -47,7 +44,12 @@ class UsersCubit extends MCubit<UsersInitial> {
     final stream = query.snapshots().listen((snapshot) async {
       final users = snapshot.docs.map((doc) => doc.user);
 
-      if(users.isEmpty)return;
+      for (var e in users) {
+        if (e.firstName?.toLowerCase() == 'guest') {
+          await deleteUser(e.id);
+        }
+      }
+      if (users.isEmpty) return;
       await saveData(users);
 
       if (state.statuses.loading) {
@@ -68,7 +70,12 @@ class UsersCubit extends MCubit<UsersInitial> {
   }
 
   Future<void> setData() async {
-    final data = await getListCached(fromJson: types.User.fromJson);
+    final data = await getListCached(
+      fromJson: types.User.fromJson,
+      deleteFunction: (json) {
+        return json['firstName']?.toString().toLowerCase() == 'guest';
+      },
+    );
 
     final dataList = data..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
 
@@ -89,6 +96,10 @@ class UsersCubit extends MCubit<UsersInitial> {
   void search({required String q}) {
     emit(state.copyWith(search: q));
     setData();
+  }
+
+  Future<void> deleteUser(String id) async {
+    await FirebaseFirestore.instance.collection('users').doc(id).delete();
   }
 
   @override
