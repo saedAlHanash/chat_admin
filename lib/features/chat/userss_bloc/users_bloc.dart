@@ -24,42 +24,36 @@ class UsersCubit extends MCubit<UsersInitial> {
 
     await setData();
 
-    users();
+    if (state.result.isEmpty) await Future.delayed(Duration(seconds: 4));
+
+    await users();
   }
 
   /// Returns a stream of messages from Firebase for a given room.
-  void users() {
+  Future<void> users() async {
     late final Query<Map<String, dynamic>> query;
 
+    var x  = state.result.lastOrNull?.updatedAt;
     query = FirebaseFirestore.instance
         .collection('users')
         .orderBy('updatedAt', descending: true)
         .where(
           'updatedAt',
           isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(
-            state.result.lastOrNull?.updatedAt ?? 0,
+            state.result.firstOrNull?.updatedAt ?? 0,
           ),
         );
 
     final stream = query.snapshots().listen((snapshot) async {
-      final users = snapshot.docs.map(
-        (doc) {
-          final data = doc.data();
+      final users = snapshot.docs.map((doc) => doc.user);
 
-          data['id'] = doc.id;
-          data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
-          data['lastSeen'] = data['lastSeen']?.millisecondsSinceEpoch;
-          data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
-
-          return types.User.fromJson(data);
-        },
-      );
-
+      if(users.isEmpty)return;
       await saveData(users);
 
       if (state.statuses.loading) {
         emit(state.copyWith(statuses: CubitStatuses.done));
       }
+
       if (isClosed) return;
 
       await setData();
@@ -68,12 +62,18 @@ class UsersCubit extends MCubit<UsersInitial> {
     emit(state.copyWith(stream: stream));
   }
 
+  types.User? findUser(String id) {
+    final user = state.result.firstWhereOrNull((e) => e.id == id);
+    return user;
+  }
+
   Future<void> setData() async {
     final data = await getListCached(fromJson: types.User.fromJson);
 
     final dataList = data..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
 
     var usersCached = <types.User>[];
+
     if (state.search.isEmpty) {
       usersCached = dataList;
     } else {

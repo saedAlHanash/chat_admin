@@ -31,54 +31,7 @@ class FirebaseChatCore {
     config = firebaseChatCoreConfig;
   }
 
-  /// Creates a chat group room with [users]. Creator is automatically
-  /// added to the group. [name] is required and will be used as
-  /// a group name. Add an optional [imageUrl] that will be a group avatar
-  /// and [metadata] for any additional custom data.
-  Future<types.Room> createGroupRoom({
-    types.Role creatorRole = types.Role.admin,
-    String? imageUrl,
-    Map<String, dynamic>? metadata,
-    required String name,
-    required List<types.User> users,
-  }) async {
-    final currentUser = await fetchUser(
-      getFirebaseFirestore(),
-      '0',
-      config.usersCollectionName,
-      role: creatorRole.toShortString(),
-    );
 
-    final roomUsers = [types.User.fromJson(currentUser)] + users;
-
-    final room = await getFirebaseFirestore()
-        .collection(config.roomsCollectionName)
-        .add({
-      'createdAt': FieldValue.serverTimestamp(),
-      'imageUrl': imageUrl,
-      'metadata': metadata,
-      'name': name,
-      'type': types.RoomType.group.toShortString(),
-      'updatedAt': FieldValue.serverTimestamp(),
-      'userIds': roomUsers.map((u) => u.id).toList(),
-      'userRoles': roomUsers.fold<Map<String, String?>>(
-        {},
-        (previousValue, user) => {
-          ...previousValue,
-          user.id: user.role?.toShortString(),
-        },
-      ),
-    });
-
-    return types.Room(
-      id: room.id,
-      imageUrl: imageUrl,
-      metadata: metadata,
-      name: name,
-      type: types.RoomType.group,
-      users: roomUsers,
-    );
-  }
 
   /// Creates a direct chat for 2 people. Add [metadata] for any additional
   /// custom data.
@@ -101,7 +54,6 @@ class FirebaseChatCore {
     // Check if room already exist.
     if (roomQuery.docs.isNotEmpty) {
       final room = (await processRoomsQuery(
-        getFirebaseFirestore(),
         roomQuery,
         config.usersCollectionName,
       ))
@@ -122,7 +74,6 @@ class FirebaseChatCore {
     // Check if room already exist.
     if (oldRoomQuery.docs.isNotEmpty) {
       final room = (await processRoomsQuery(
-        getFirebaseFirestore(),
         oldRoomQuery,
         config.usersCollectionName,
       ))
@@ -300,7 +251,6 @@ class FirebaseChatCore {
 
     return collection.snapshots().asyncMap(
           (query) => processRoomsQuery(
-            getFirebaseFirestore(),
             query,
             config.usersCollectionName,
           ),
@@ -392,42 +342,7 @@ class FirebaseChatCore {
         .update(messageMap);
   }
 
-  /// Updates a room in the Firestore. Accepts any room.
-  /// Room will probably be taken from the [rooms] stream.
-  void updateRoom(types.Room room) async {
-    final roomMap = room.toJson();
-    roomMap.removeWhere((key, value) =>
-        key == 'createdAt' ||
-        key == 'id' ||
-        key == 'lastMessages' ||
-        key == 'users');
 
-    if (room.type == types.RoomType.direct) {
-      roomMap['imageUrl'] = null;
-      roomMap['name'] = null;
-    }
-
-    roomMap['lastMessages'] = room.lastMessages?.map((m) {
-      final messageMap = m.toJson();
-
-      messageMap.removeWhere((key, value) =>
-          key == 'author' ||
-          key == 'createdAt' ||
-          key == 'id' ||
-          key == 'updatedAt');
-
-      messageMap['authorId'] = m.author.id;
-
-      return messageMap;
-    }).toList();
-    roomMap['updatedAt'] = FieldValue.serverTimestamp();
-    roomMap['userIds'] = room.users.map((u) => u.id).toList();
-
-    await getFirebaseFirestore()
-        .collection(config.roomsCollectionName)
-        .doc(room.id)
-        .update(roomMap);
-  }
 
   /// Returns a stream of all users from Firebase.
   Stream<List<types.User>> users() {

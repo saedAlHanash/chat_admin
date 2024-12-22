@@ -12,6 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_multi_type/circle_image_widget.dart';
 import 'package:image_multi_type/image_multi_type.dart';
 
+import '../generated/assets.dart';
 import '../services/chat_service/chat_service_core.dart';
 import 'chat/messages_bloc/messages_cubit.dart';
 import 'chat/open_room_cubit/open_room_cubit.dart';
@@ -135,14 +136,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               Positioned(
                                 top: 0,
                                 child: CircleImageWidget(
-                                  url: room.users.firstOrNull?.imageUrl,
+                                  url: (room.users.firstOrNull?.imageUrl.isBlank ?? true)
+                                      ? Assets.imagesAvatar
+                                      : room.users.firstOrNull?.imageUrl,
                                   size: 35.0.r,
                                 ),
                               ),
                               Positioned(
                                 bottom: 0,
                                 child: CircleImageWidget(
-                                  url: room.users.lastOrNull?.imageUrl,
+                                  url: (room.users.lastOrNull?.imageUrl.isBlank ?? true)
+                                      ? Assets.imagesAvatar
+                                      : room.users.lastOrNull?.imageUrl,
                                   size: 35.0.r,
                                 ),
                               )
@@ -210,7 +215,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           context.read<OpenRoomCubit>().openRoomByRoom(room);
                         },
                         leading: CircleImageWidget(
-                          url: room.otherUser.imageUrl,
+                          url: (room.otherUser.imageUrl.isBlank)
+                              ? Assets.imagesAvatar
+                              : room.otherUser.imageUrl,
                           size: 40.0.r,
                         ),
                         title: DrawableText(
@@ -258,7 +265,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           context.read<OpenRoomCubit>().openRoomByUserId(user.id);
                         },
                         leading: CircleImageWidget(
-                          url: user.imageUrl,
+                          url: (user.imageUrl.isBlank)
+                              ? Assets.imagesAvatar
+                              : user.imageUrl,
                           size: 40.0.r,
                         ),
                         title: DrawableText(

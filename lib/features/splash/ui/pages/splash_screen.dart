@@ -1,9 +1,11 @@
 import 'package:fitness_admin_chat/core/strings/app_color_manager.dart';
 import 'package:fitness_admin_chat/generated/assets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../router/app_router.dart';
+import '../../../chat/userss_bloc/users_bloc.dart';
 
 bool canRecording = false;
 
@@ -17,9 +19,8 @@ class SplashScreenPage extends StatefulWidget {
 class _SplashScreenPageState extends State<SplashScreenPage> {
   @override
   void initState() {
-    Future.delayed(
-      const Duration(seconds: 2),
-      () {
+    context.read<UsersCubit>().getChatUsers().then(
+      (value) {
         Navigator.pushReplacementNamed(context, RouteName.home);
       },
     );

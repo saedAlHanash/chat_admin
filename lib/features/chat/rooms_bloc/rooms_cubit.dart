@@ -25,51 +25,52 @@ class RoomsCubit extends MCubit<RoomsInitial> {
   Future<void> getChatRooms() async {
     await setData();
 
-    rooms();
+    await Future.delayed(const Duration(milliseconds: 600));
+
+    await rooms();
   }
 
   /// Returns a stream of messages from Firebase for a given room.
   Future<void> rooms() async {
-    late final Query<Map<String, dynamic>> query;
-
-    query = FirebaseFirestore.instance
+    // جلب المحادثات من firestore على الشكل التالي
+    // آخر 100 رسالة
+    // بحيث تكون جميع الرسائل أكبر من تاريخ آخر رسالة مخزنة
+   final  query = FirebaseFirestore.instance
         .collection('rooms')
         .orderBy('updatedAt', descending: true)
+        .limit(100)
         .where(
           'updatedAt',
           isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(
-            state.result.lastOrNull?.updatedAt ?? 0,
+            state.result.firstOrNull?.updatedAt ?? 0,
           ),
         );
 
-    loggerObject.i('requested get room ${state.result.lastOrNull?.updatedAt ?? 0}');
-
+    // توقيت آخر محادثة موجودة ضمن الرسائل
     var latestUpdate = state.result.firstOrNull?.updatedAt ?? 0;
-
+    // إيقاف آخر stream موجود مسبقا
     await state.stream?.cancel();
 
     final stream = query.snapshots().listen((snapshot) async {
-      final listRooms = await processRoomsQuery(
-        FirebaseFirestore.instance,
-        snapshot,
-        'users',
-      );
-
+      //تجميع جميع المحادثات القادمة من ال stream
+      final listRooms = await processRoomsQuery(snapshot, 'users');
+      //في حال فارغة لا تكمل
       if (listRooms.isEmpty) return;
-
+      // جلب آخر وقت تحديث لآخر رسالة
       final latestUpdateMessageFromSnap = listRooms
           .reduce((c, n) => (c.updatedAt ?? 0) > (n.updatedAt ?? 0) ? c : n)
           .updatedAt;
-
+      // حذف الرسائل المكررة والمعالجة مسبقا
       listRooms.removeWhere((e) => ((e.updatedAt ?? 0) <= latestUpdate));
-
+      //تحديث توقيت آخر معالجة للرسائل
       latestUpdate = latestUpdateMessageFromSnap ?? 0;
-
+      //في حال فارغة لا تكمل
       if (listRooms.isEmpty) return;
-
+      //حفظ الرسائل الجديدة في طبقة التخزين
       await saveData(listRooms, clearId: false);
-
+      //اذا توقف ال bloc لا تكمل
       if (isClosed) return;
+      // إرسال المعلومات للوجهة
       await setData();
     });
 
@@ -79,6 +80,9 @@ class RoomsCubit extends MCubit<RoomsInitial> {
   Future<void> setData() async {
     final roomsCached = await getListCached(
       fromJson: types.Room.fromJson,
+      deleteFunction: (json) {
+        return false;
+      },
     );
 
     roomsCached.removeWhere((e) => e.otherUser.id == '-1');
@@ -90,9 +94,8 @@ class RoomsCubit extends MCubit<RoomsInitial> {
     }
 
     roomsCached.sort((a, b) {
-      if (a.isRead != b.isRead) {
-        return (b.isNotRead) ? 1 : -1;
-      }
+      if (a.isRead != b.isRead) return (b.isNotRead) ? 1 : -1;
+
       return (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0);
     });
 
@@ -104,11 +107,13 @@ class RoomsCubit extends MCubit<RoomsInitial> {
         .where((e) => e.users.firstWhereOrNull((e) => e.id == '0') == null)
         .toList();
 
-    emit(state.copyWith(
-      result: roomsCached,
-      myRooms: myRooms,
-      othersRooms: othersRooms,
-    ));
+    emit(
+      state.copyWith(
+        result: roomsCached,
+        myRooms: myRooms,
+        othersRooms: othersRooms,
+      ),
+    );
   }
 
   void search({required String q}) {

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:drawable_text/drawable_text.dart';
 import 'package:fitness_admin_chat/core/strings/app_color_manager.dart';
@@ -267,6 +268,34 @@ extension RoomH on types.Room {
 
 extension UserH on types.User {
   String get name => '$firstName';
+}
+
+extension QueryDocumentSnapshotH on QueryDocumentSnapshot {
+  Map<String, dynamic> message(types.Room room) {
+    final data = this.data() as Map<String, dynamic>;
+
+    final author = room.users.firstWhere(
+      (u) => u.id == data['authorId'],
+      orElse: () => types.User(id: data['authorId'] as String),
+    );
+
+    data['author'] = author.toJson();
+    data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
+    data['id'] = id;
+    data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
+    return data;
+  }
+
+  types.User get user {
+    final data = this.data() as Map<String, dynamic>;
+
+    data['id'] = id;
+    data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
+    data['lastSeen'] = data['lastSeen']?.millisecondsSinceEpoch;
+    data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
+
+    return types.User.fromJson(data);
+  }
 }
 
 extension MessageH on types.Message {

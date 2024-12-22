@@ -1,9 +1,9 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
-import 'package:fitness_admin_chat/services/caching_service/caching_service.dart';
 import 'package:fitness_admin_chat/services/chat_service/chat_service_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,12 +34,19 @@ void main() async {
 
   await Note.initialize();
 
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+    ignoreUndefinedProperties: true,
+  );
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await SharedPreferences.getInstance().then((value) {
     AppSharedPreference.init(value);
   });
 
+  await requestPermission();
   await di.init();
 
   await CachingService.initial(
@@ -49,18 +56,18 @@ void main() async {
   );
 
   await ChatServiceCore.initFirebaseChat();
-  // loggerObject.w(await getFireToken());
+
   HttpOverrides.global = MyHttpOverrides();
   runApp(
     MultiBlocProvider(
       providers: [
+        BlocProvider(
+          create: (_) => sl<UsersCubit>(),
+          lazy: true,
+        ),
         BlocProvider(create: (_) => sl<OpenRoomCubit>()),
         BlocProvider(
           create: (_) => sl<RoomsCubit>()..getChatRooms(),
-          // lazy: true,
-        ),
-        BlocProvider(
-          create: (_) => sl<UsersCubit>()..getChatUsers(),
           // lazy: true,
         ),
         BlocProvider(create: (_) => sl<MessagesCubit>()),
@@ -160,5 +167,22 @@ class Note {
 
     await flutterLocalNotificationsPlugin?.show(
         (DateTime.now().millisecondsSinceEpoch ~/ 1000), title, body, not);
+  }
+}
+
+Future<void> requestPermission() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  try {
+    await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+  } catch (e) {
+    loggerObject.e(e);
   }
 }
