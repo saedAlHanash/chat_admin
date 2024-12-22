@@ -80,9 +80,6 @@ class RoomsCubit extends MCubit<RoomsInitial> {
   Future<void> setData() async {
     final roomsCached = await getListCached(
       fromJson: types.Room.fromJson,
-      deleteFunction: (json) {
-        return false;
-      },
     );
 
     roomsCached.removeWhere((e) => e.otherUser.id == '-1');
