@@ -28,7 +28,7 @@
 //       final d = dateFormat.parse(dateString);
 //       return d;
 //     } catch (e) {
-//       loggerObject.e(e);
+
 //       return DateTime.now().toUtc();
 //     }
 //   }

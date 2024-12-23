@@ -5,8 +5,6 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
-import '../injection/injection_container.dart';
-import '../network/network_info.dart';
 import '../strings/enum_manager.dart';
 import 'api_url.dart';
 import 'helpers_api/helper_api_service.dart';
@@ -23,8 +21,6 @@ var loggerObject = Logger(
     colors: true,
     // Colorful log messages
     printEmojis: false,
-    // Print an emoji for each log message
-    printTime: false,
   ),
 );
 
@@ -40,8 +36,6 @@ class APIService {
 
   factory APIService() => _singleton;
 
-
-
   Future<http.Response> callApi({
     required String url,
     required ApiType type,
@@ -52,8 +46,6 @@ class APIService {
     String? additional,
     String? hostName,
   }) async {
-
-
     final uri = getUri(
         additional: additional ?? additionalConst,
         url: url,
@@ -101,7 +93,7 @@ class APIService {
 
       return response;
     } catch (e) {
-      loggerObject.e(e);
+      loggerObject.e('callApi: $e');
       return noInternet;
     }
   }

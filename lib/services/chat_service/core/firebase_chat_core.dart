@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import 'firebase_chat_core_config.dart';
@@ -30,8 +31,6 @@ class FirebaseChatCore {
   void setConfig(FirebaseChatCoreConfig firebaseChatCoreConfig) {
     config = firebaseChatCoreConfig;
   }
-
-
 
   /// Creates a direct chat for 2 people. Add [metadata] for any additional
   /// custom data.
@@ -88,7 +87,9 @@ class FirebaseChatCore {
         '0',
         config.usersCollectionName,
       );
-    } catch (e) {}
+    } catch (e) {
+      loggerObject.e('createRoom $e');
+    }
 
     final users = [
       if (currentUser != null) types.User.fromJson(currentUser),
@@ -341,8 +342,6 @@ class FirebaseChatCore {
         .doc(message.id)
         .update(messageMap);
   }
-
-
 
   /// Returns a stream of all users from Firebase.
   Stream<List<types.User>> users() {

@@ -235,7 +235,8 @@ class MyEditTextWidget extends StatelessWidget {
 
     final border = OutlineInputBorder(
         borderSide: BorderSide(
-          color: backgroundColor ?? AppColorManager.offWhit.withOpacity(0.27),
+          color: backgroundColor ??
+              AppColorManager.offWhit.withValues(alpha: 0.27),
         ),
         borderRadius: BorderRadius.circular(radios ?? 10.0.r));
 
@@ -244,7 +245,8 @@ class MyEditTextWidget extends StatelessWidget {
       hintStyle: TextStyle(
         //fontFamily: FontManager.cairoSemiBold.name,
         fontSize: 18.0.sp,
-        color: color?.withOpacity(0.6) ?? AppColorManager.grey.withOpacity(0.6),
+        color: color?.withValues(alpha: 0.6) ??
+            AppColorManager.grey.withValues(alpha: 0.6),
       ),
       contentPadding: EdgeInsets.zero,
       counter: const SizedBox(),

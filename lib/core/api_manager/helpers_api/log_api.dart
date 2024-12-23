@@ -39,8 +39,7 @@ void saedsaed() {
       colors: true,
       // Colorful log messages
       printEmojis: false,
-      // Print an emoji for each log message
-      printTime: false,
+
       levelColors: {
         Level.trace: const AnsiColor.fg(40),
         Level.debug: const AnsiColor.fg(1),

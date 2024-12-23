@@ -1,4 +1,3 @@
-import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../strings/enum_manager.dart';
@@ -41,18 +40,13 @@ class AppSharedPreference {
     return _prefs.getString(_token) ?? '';
   }
 
-
-
-
-
   static cashPhoneOrEmail(String? phone) async {
     if (phone == null) return;
 
-    loggerObject.v(phone);
     await _prefs.setString(_phoneNumber, phone);
   }
 
-  static String get  getPhoneOrEmail {
+  static String get getPhoneOrEmail {
     return _prefs.getString(_phoneNumber) ?? '';
   }
 
@@ -86,7 +80,6 @@ class AppSharedPreference {
   static void logout() {
     _prefs.clear();
   }
-
 
   static bool get isLogin => getToken().isNotEmpty;
 
@@ -131,7 +124,8 @@ class AppSharedPreference {
     _prefs.setStringList(_cart, jsonCart);
   }
 
-  static List<String> getJsonListCart() => _prefs.getStringList(_cart) ?? <String>[];
+  static List<String> getJsonListCart() =>
+      _prefs.getStringList(_cart) ?? <String>[];
 
   static int get getMyId => _prefs.getInt(_myId) ?? 0;
 

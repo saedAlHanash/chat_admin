@@ -4,11 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_chat_types/flutter_chat_types.dart';
-
-import '../../../core/api_manager/api_service.dart';
-import '../../../core/strings/enum_manager.dart';
 import 'package:m_cubit/m_cubit.dart';
+
 import '../../../services/chat_service/core/util.dart';
 
 part 'rooms_state.dart';
@@ -45,8 +42,6 @@ class RoomsCubit extends MCubit<RoomsInitial> {
             state.result.firstOrNull?.updatedAt ?? 0,
           ),
         );
-
-    loggerObject.w(state.result.firstOrNull?.updatedAt);
 
     // توقيت آخر محادثة موجودة ضمن الرسائل
     var latestUpdate = state.result.firstOrNull?.updatedAt ?? 0;

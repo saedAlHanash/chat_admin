@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -20,31 +21,30 @@ extension RoomTypeToShortString on types.RoomType {
 
 /// Fetches user from Firebase and returns a promise.
 Future<Map<String, dynamic>> fetchUser(
-    FirebaseFirestore instance,
-    String userId,
-    String usersCollectionName, {
-      String? role,
-    }) async {
-
+  FirebaseFirestore instance,
+  String userId,
+  String usersCollectionName, {
+  String? role,
+}) async {
   final userFromCache = ctx?.read<UsersCubit>().findUser(userId);
 
   if (userFromCache != null) {
     return userFromCache.toJson();
-  }else{
+  } else {
     return {'id': '-1'};
   }
-
-  final doc = await instance.collection(usersCollectionName).doc(userId).get();
-  if (doc.data() == null)return {'id': '-1'};
-  final data = doc.data()!;
-
-  data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
-  data['id'] = doc.id;
-  data['lastSeen'] = data['lastSeen']?.millisecondsSinceEpoch;
-  data['role'] = role;
-  data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
-
-  return data;
+  //
+  // final doc = await instance.collection(usersCollectionName).doc(userId).get();
+  // if (doc.data() == null) return {'id': '-1'};
+  // final data = doc.data()!;
+  //
+  // data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
+  // data['id'] = doc.id;
+  // data['lastSeen'] = data['lastSeen']?.millisecondsSinceEpoch;
+  // data['role'] = role;
+  // data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
+  //
+  // return data;
 }
 
 /// Returns a list of [types.Room] created from Firebase query.
@@ -95,14 +95,15 @@ Future<types.Room> processRoomDocument(
 
   if (type == types.RoomType.direct.toShortString()) {
     try {
-      final otherUser = users.firstWhere(
+      final otherUser = users.firstWhereOrNull(
         (u) => u['id'] != '0',
       );
 
-      imageUrl = otherUser['imageUrl'] as String?;
-      name = '${otherUser['firstName'] ?? ''} ${otherUser['lastName'] ?? ''}'.trim();
+      imageUrl = otherUser?['imageUrl'] as String?;
+      name = '${otherUser?['firstName'] ?? ''} ${otherUser?['lastName'] ?? ''}'
+          .trim();
     } catch (e) {
-      loggerObject.e(e);
+      loggerObject.e('processRoomDocument: $e');
     }
   }
 
@@ -116,7 +117,8 @@ Future<types.Room> processRoomDocument(
     if (data['latestMessage'] != null && data['latestMessage'] is Map) {
       final message = data['latestMessage'] as Map<String, dynamic>;
 
-      message['author'] = types.User(id: message['authorId'] as String).toJson();
+      message['author'] =
+          types.User(id: message['authorId'] as String).toJson();
       message['createdAt'] = message['createdAt']?.millisecondsSinceEpoch;
       message['id'] = doc.id;
       message['updatedAt'] = message['updatedAt']?.millisecondsSinceEpoch;

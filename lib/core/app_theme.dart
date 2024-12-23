@@ -26,7 +26,7 @@ ThemeData lightTheme = ThemeData(
     primaryColor: primarySwatch,
     scaffoldBackgroundColor: Colors.white,
     cardColor: primarySwatch,
-    shadowColor: Colors.grey.withOpacity(0.3),
+    shadowColor: Colors.grey.withValues(alpha: 0.3),
     useMaterial3: true,
     appBarTheme: AppBarTheme(
         elevation: 0.0,
@@ -40,7 +40,7 @@ ThemeData lightTheme = ThemeData(
         backgroundColor: lightBackgroundColor),
     colorScheme: ColorScheme.fromSwatch(primarySwatch: primarySwatch)
         .copyWith(secondary: const Color(0xFF54BECA))
-        .copyWith(background: lightBackgroundColor.withOpacity(0.75)));
+        .copyWith(surface: lightBackgroundColor.withValues(alpha: 0.75)));
 
 ThemeData darkTheme = ThemeData(
     //fontFamily: 'Roboto',
@@ -48,16 +48,16 @@ ThemeData darkTheme = ThemeData(
     scaffoldBackgroundColor: const Color(0xFF2B2B2B),
     unselectedWidgetColor: primarySwatch,
     cardColor: primarySwatch,
-    shadowColor: Colors.white.withOpacity(0.1),
+    shadowColor: Colors.white.withValues(alpha: 0.1),
     appBarTheme: const AppBarTheme(
       elevation: 0.0,
       foregroundColor: Colors.white,
       backgroundColor:
-          Color(0xFF2B2B2B), //lightBackgroundColor.withOpacity(0.75),
+          Color(0xFF2B2B2B), //lightBackgroundColor.withValues(alpha:0.75),
     ),
     colorScheme: ColorScheme.fromSwatch(primarySwatch: primarySwatch)
         .copyWith(
-          secondary: Colors.black.withOpacity(0.5),
+          secondary: Colors.black.withValues(alpha: 0.5),
           brightness: Brightness.dark,
         )
-        .copyWith(background: lightBackgroundColor.withOpacity(0.75)));
+        .copyWith(surface: lightBackgroundColor.withValues(alpha: 0.75)));

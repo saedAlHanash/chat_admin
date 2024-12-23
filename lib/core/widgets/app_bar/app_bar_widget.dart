@@ -37,17 +37,14 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             color: Colors.white,
             //fontFamily: FontManager.cairoBold.name,
           ),
-      leading: Navigator.canPop(context)
-          ? const BackBtnWidget()
-          : null,
+      leading: Navigator.canPop(context) ? const BackBtnWidget() : null,
       actions: actions,
       elevation: elevation ?? 0.0,
-      shadowColor: AppColorManager.black.withOpacity(0.28),
+      shadowColor: AppColorManager.black.withValues(alpha: 0.28),
       iconTheme: const IconThemeData(color: AppColorManager.mainColor),
     );
   }
 
   @override
-
   Size get preferredSize => Size(1.0.sw, (zeroHeight ?? false) ? 0 : 70.0.h);
 }

@@ -5,7 +5,6 @@ import 'package:http/http.dart';
 import 'package:m_cubit/abstraction.dart';
 
 import '../injection/injection_container.dart';
-import '../util/abstract_cubit_state.dart';
 
 class ErrorManager {
   static String getApiError(Response response) {
@@ -37,8 +36,9 @@ class ErrorBody {
 
   factory ErrorBody.fromJson(Map<String, dynamic> json) {
     return ErrorBody(
-      errors:
-          json["errors"] == null ? [] : List<String>.from(json["errors"]!.map((x) => x)),
+      errors: json["errors"] == null
+          ? []
+          : List<String>.from(json["errors"]!.map((x) => x)),
     );
   }
 

@@ -9,7 +9,7 @@
 //     try {
 //       _appData = await PackageInfo.fromPlatform();
 //     } catch (e) {
-//       loggerObject.e(e);
+
 //     }
 //   }
 //

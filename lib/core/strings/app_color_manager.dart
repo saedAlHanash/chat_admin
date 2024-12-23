@@ -46,15 +46,17 @@ Color getColorFromHex(String hexColor) {
   String formattedHexColor =
       hexColor.replaceAll("#", ""); // Remove the '#' character if present
   if (formattedHexColor.length == 6) {
-    formattedHexColor = "FF$formattedHexColor"; // Add the alpha value if it's missing
+    formattedHexColor =
+        "FF$formattedHexColor"; // Add the alpha value if it's missing
   }
-  int colorValue = int.parse(formattedHexColor, radix: 16); // Parse the hex color string
+  int colorValue =
+      int.parse(formattedHexColor, radix: 16); // Parse the hex color string
   return Color(colorValue);
 }
 
 bool isColorDark(Color color) {
   final luminance =
-      (0.2126 * color.red + 0.7152 * color.green + 0.0722 * color.blue) / 255;
+      (0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b) / 255;
   return luminance < 0.5;
 }
 

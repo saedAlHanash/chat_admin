@@ -1,9 +1,7 @@
-import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
-
-import '../../../../core/strings/enum_manager.dart';
 import 'package:m_cubit/m_cubit.dart';
+
 import '../../../services/chat_service/chat_service_core.dart';
 import '../../../services/chat_service/core/firebase_chat_core.dart';
 
@@ -21,7 +19,8 @@ class OpenRoomCubit extends Cubit<OpenRoomInitial> {
 
   Future<void> openRoomByRoom(Room room) async {
     emit(state.copyWith(statuses: CubitStatuses.init));
-    Future(() => emit(state.copyWith(statuses: CubitStatuses.done, result: room)));
+    Future(
+        () => emit(state.copyWith(statuses: CubitStatuses.done, result: room)));
   }
 
   Future<void> openRoomByUserId(String userId) async {

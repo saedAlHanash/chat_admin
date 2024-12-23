@@ -51,7 +51,7 @@ void main() async {
 
   await CachingService.initial(
     onError: (state) => showErrorFromApi(state),
-    version: 1,
+    version: 2,
     timeInterval: 120,
   );
 
@@ -181,6 +181,6 @@ Future<void> requestPermission() async {
       sound: true,
     );
   } catch (e) {
-    loggerObject.e(e);
+    loggerObject.e('requestPermission: $e');
   }
 }

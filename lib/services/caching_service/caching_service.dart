@@ -171,7 +171,7 @@
 //         listKeys.removeAt(i);
 //         await box.deleteAt(i);
 //         i -= 1;
-//         loggerObject.e(e);
+
 //       }
 //     }
 //
@@ -211,7 +211,7 @@
 //         }
 //       } catch (e) {
 //         await _removeFromListBox(listKeys, i, box);
-//         loggerObject.e(e);
+
 //       }
 //     }
 //
@@ -260,7 +260,7 @@
 //         listKeys.removeAt(i);
 //         await box.deleteAt(i);
 //         i -= 1;
-//         loggerObject.e(e);
+
 //       }
 //     }
 //
@@ -306,7 +306,7 @@
 //         listKeys.removeAt(i);
 //         await box.deleteAt(i);
 //         i -= 1;
-//         loggerObject.e(e);
+
 //       }
 //     }
 //
