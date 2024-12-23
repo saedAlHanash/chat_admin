@@ -61,10 +61,7 @@ void main() async {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (_) => sl<UsersCubit>(),
-          lazy: true,
-        ),
+        BlocProvider(create: (_) => sl<UsersCubit>()..getChatUsers()),
         BlocProvider(create: (_) => sl<OpenRoomCubit>()),
         BlocProvider(
           create: (_) => sl<RoomsCubit>()..getChatRooms(),
@@ -134,7 +131,8 @@ class MyHttpOverrides extends HttpOverrides {
 class Note {
   static Future initialize() async {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    var androidInitialize = const AndroidInitializationSettings('mipmap/ic_launcher');
+    var androidInitialize =
+        const AndroidInitializationSettings('mipmap/ic_launcher');
     var iOSInitialize = const DarwinInitializationSettings();
     var initializationsSettings =
         InitializationSettings(android: androidInitialize, iOS: iOSInitialize);

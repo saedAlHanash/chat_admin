@@ -1,3 +1,4 @@
+import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 import 'package:fitness_admin_chat/core/strings/app_color_manager.dart';
 import 'package:fitness_admin_chat/generated/assets.dart';
 import 'package:flutter/material.dart';
@@ -9,51 +10,40 @@ import '../../../chat/userss_bloc/users_bloc.dart';
 
 bool canRecording = false;
 
-class SplashScreenPage extends StatefulWidget {
-  const SplashScreenPage({Key? key}) : super(key: key);
-
-  @override
-  State<SplashScreenPage> createState() => _SplashScreenPageState();
-}
-
-class _SplashScreenPageState extends State<SplashScreenPage> {
-  @override
-  void initState() {
-    context.read<UsersCubit>().getChatUsers().then(
-      (value) {
-        Navigator.pushReplacementNamed(context, RouteName.home);
-      },
-    );
-    super.initState();
-  }
+class SplashScreenPage extends StatelessWidget {
+  const SplashScreenPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    ////log(controller.title);
-
-    return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        decoration: const BoxDecoration(
-            gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [
-            AppColorManager.mainColor,
-            AppColorManager.secondColor,
-          ],
-        )),
-        child: GestureDetector(
-          onDoubleTap: () {
-            canRecording = true;
-          },
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.all(1.0.sw / 7),
-              child: Image.asset(
-                Assets.imagesWhiteLogo,
-                fit: BoxFit.cover,
+    return BlocListener<UsersCubit, UsersInitial>(
+      listenWhen: (p, c) => c.statuses.done,
+      listener: (context, state) {
+        Navigator.pushReplacementNamed(context, RouteName.home);
+      },
+      child: Scaffold(
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              AppColorManager.mainColor,
+              AppColorManager.secondColor,
+            ],
+          )),
+          child: GestureDetector(
+            onDoubleTap: () {
+              canRecording = true;
+            },
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(1.0.sw / 7),
+                child: Image.asset(
+                  Assets.imagesWhiteLogo,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),

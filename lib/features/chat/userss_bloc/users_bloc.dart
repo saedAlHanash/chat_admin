@@ -18,7 +18,7 @@ class UsersCubit extends MCubit<UsersInitial> {
   String get filter => '0';
 
   Future<void> getChatUsers() async {
-    emit(state.copyWith(statuses: CubitStatuses.done));
+    emit(state.copyWith(statuses: CubitStatuses.loading));
 
     await setData();
 
@@ -61,7 +61,12 @@ class UsersCubit extends MCubit<UsersInitial> {
       await setData();
     });
 
-    emit(state.copyWith(stream: stream));
+    emit(
+      state.copyWith(
+        stream: stream,
+        statuses: state.result.isNotEmpty ? CubitStatuses.done : null,
+      ),
+    );
   }
 
   types.User? findUser(String id) {
@@ -77,7 +82,8 @@ class UsersCubit extends MCubit<UsersInitial> {
       },
     );
 
-    final dataList = data..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
+    final dataList = data
+      ..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
 
     var usersCached = <types.User>[];
 
@@ -85,8 +91,9 @@ class UsersCubit extends MCubit<UsersInitial> {
       usersCached = dataList;
     } else {
       usersCached = dataList
-          .where((room) =>
-              (room.firstName ?? '').toLowerCase().contains(state.search.toLowerCase()))
+          .where((room) => (room.firstName ?? '')
+              .toLowerCase()
+              .contains(state.search.toLowerCase()))
           .toList();
     }
 

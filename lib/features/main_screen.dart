@@ -136,7 +136,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               Positioned(
                                 top: 0,
                                 child: CircleImageWidget(
-                                  url: (room.users.firstOrNull?.imageUrl.isBlank ?? true)
+                                  url: (room.users.firstOrNull?.imageUrl
+                                              .isBlank ??
+                                          true)
                                       ? Assets.imagesAvatar
                                       : room.users.firstOrNull?.imageUrl,
                                   size: 35.0.r,
@@ -145,7 +147,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               Positioned(
                                 bottom: 0,
                                 child: CircleImageWidget(
-                                  url: (room.users.lastOrNull?.imageUrl.isBlank ?? true)
+                                  url: (room.users.lastOrNull?.imageUrl
+                                              .isBlank ??
+                                          true)
                                       ? Assets.imagesAvatar
                                       : room.users.lastOrNull?.imageUrl,
                                   size: 35.0.r,
@@ -182,14 +186,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ],
                         ),
-                        subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
+                        subtitle:
+                            room.lastMessages?.firstOrNull?.latestMessage(room),
                         trailing: room.updatedAt == null
                             ? null
                             : DrawableText(
                                 textAlign: TextAlign.center,
                                 size: 12.0.sp,
                                 color: Colors.grey,
-                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!)
+                                text: DateTime.fromMillisecondsSinceEpoch(
+                                        room.updatedAt!)
                                     .formatDateTimeVertical,
                               ),
                       );
@@ -232,14 +238,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: AppColorManager.mainColor,
                           ),
                         ),
-                        subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
+                        subtitle:
+                            room.lastMessages?.firstOrNull?.latestMessage(room),
                         trailing: room.updatedAt == null
                             ? null
                             : DrawableText(
                                 textAlign: TextAlign.center,
                                 size: 12.0.sp,
                                 color: Colors.grey,
-                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!)
+                                text: DateTime.fromMillisecondsSinceEpoch(
+                                        room.updatedAt!)
                                     .formatDateTimeVertical,
                               ),
                       );
@@ -259,10 +267,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     itemBuilder: (_, i) {
                       final user = state.result[i];
-
+                      if (user.id == '0') return 0.0.verticalSpace;
                       return ListTile(
                         onTap: () async {
-                          context.read<OpenRoomCubit>().openRoomByUserId(user.id);
+                          context
+                              .read<OpenRoomCubit>()
+                              .openRoomByUserId(user.id);
                         },
                         leading: CircleImageWidget(
                           url: (user.imageUrl.isBlank)
