@@ -35,7 +35,7 @@ class RoomsCubit extends MCubit<RoomsInitial> {
     // جلب المحادثات من firestore على الشكل التالي
     // آخر 100 رسالة
     // بحيث تكون جميع الرسائل أكبر من تاريخ آخر رسالة مخزنة
-    final query = FirebaseFirestore.instance
+   final  query = FirebaseFirestore.instance
         .collection('rooms')
         .orderBy('updatedAt', descending: true)
         .limit(100)
@@ -60,7 +60,8 @@ class RoomsCubit extends MCubit<RoomsInitial> {
       final latestUpdateMessageFromSnap = listRooms
           .reduce((c, n) => (c.updatedAt ?? 0) > (n.updatedAt ?? 0) ? c : n)
           .updatedAt;
-
+      // حذف الرسائل المكررة والمعالجة مسبقا
+      listRooms.removeWhere((e) => ((e.updatedAt ?? 0) <= latestUpdate));
       //تحديث توقيت آخر معالجة للرسائل
       latestUpdate = latestUpdateMessageFromSnap ?? 0;
       //في حال فارغة لا تكمل
@@ -85,9 +86,7 @@ class RoomsCubit extends MCubit<RoomsInitial> {
 
     if (state.search.isNotEmpty) {
       roomsCached.removeWhere(
-        (room) => !(room.usersName
-            .toLowerCase()
-            .contains(state.search.toLowerCase())),
+        (room) => !(room.usersName.toLowerCase().contains(state.search.toLowerCase())),
       );
     }
 
