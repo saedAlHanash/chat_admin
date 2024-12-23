@@ -40,7 +40,7 @@ class APIService {
 
   factory APIService() => _singleton;
 
-  final network = sl<NetworkInfo>();
+
 
   Future<http.Response> callApi({
     required String url,
@@ -52,7 +52,7 @@ class APIService {
     String? additional,
     String? hostName,
   }) async {
-    if (!await network.isConnected) noInternet;
+
 
     final uri = getUri(
         additional: additional ?? additionalConst,
