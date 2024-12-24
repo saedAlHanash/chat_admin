@@ -17,7 +17,7 @@ class RoomsInitial extends AbstractState<List<types.Room>> {
     this.search = '',
   });
 
-  bool get mRequest => request as bool;
+  bool? get mRequest => request as bool?;
 
   @override
   List<Object?> get props => [

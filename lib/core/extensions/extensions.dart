@@ -252,8 +252,10 @@ extension RoomH on types.Room {
 
   String get usersName => users.map((e) => e.name).join(' ');
 
-  types.User get otherUser =>
-      users.firstWhereOrNull((e) => e.id != '0') ?? types.User(id: '-1');
+  types.User get otherUser {
+    final u = users.firstWhereOrNull((e) => e.id != '0');
+    return  u ?? types.User(id: '-1');
+  }
 
   int get latestSeen => metadata?['latestSeen'] ?? 0;
 

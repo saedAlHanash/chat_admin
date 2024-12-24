@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:drawable_text/drawable_text.dart';
+import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 import 'package:fitness_admin_chat/core/my_text_form_widget.dart';
 import 'package:fitness_admin_chat/core/strings/app_color_manager.dart';
@@ -12,6 +14,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_multi_type/circle_image_widget.dart';
 import 'package:image_multi_type/image_multi_type.dart';
 
+import '../core/util/my_style.dart';
 import '../generated/assets.dart';
 import '../services/chat_service/chat_service_core.dart';
 import 'chat/messages_bloc/messages_cubit.dart';
@@ -117,6 +120,9 @@ class HomeScreenState extends State<HomeScreen> {
             children: [
               BlocBuilder<RoomsCubit, RoomsInitial>(
                 builder: (context, state) {
+                  if (state.statuses.loading) {
+                    return MyStyle.loadingWidget();
+                  }
                   return ListView.separated(
                     shrinkWrap: true,
                     separatorBuilder: (context, i) {
@@ -136,9 +142,7 @@ class HomeScreenState extends State<HomeScreen> {
                               Positioned(
                                 top: 0,
                                 child: CircleImageWidget(
-                                  url: (room.users.firstOrNull?.imageUrl
-                                              .isBlank ??
-                                          true)
+                                  url: (room.users.firstOrNull?.imageUrl.isBlank ?? true)
                                       ? Assets.imagesAvatar
                                       : room.users.firstOrNull?.imageUrl,
                                   size: 35.0.r,
@@ -147,9 +151,7 @@ class HomeScreenState extends State<HomeScreen> {
                               Positioned(
                                 bottom: 0,
                                 child: CircleImageWidget(
-                                  url: (room.users.lastOrNull?.imageUrl
-                                              .isBlank ??
-                                          true)
+                                  url: (room.users.lastOrNull?.imageUrl.isBlank ?? true)
                                       ? Assets.imagesAvatar
                                       : room.users.lastOrNull?.imageUrl,
                                   size: 35.0.r,
@@ -186,16 +188,14 @@ class HomeScreenState extends State<HomeScreen> {
                             ),
                           ],
                         ),
-                        subtitle:
-                            room.lastMessages?.firstOrNull?.latestMessage(room),
+                        subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
                         trailing: room.updatedAt == null
                             ? null
                             : DrawableText(
                                 textAlign: TextAlign.center,
                                 size: 12.0.sp,
                                 color: Colors.grey,
-                                text: DateTime.fromMillisecondsSinceEpoch(
-                                        room.updatedAt!)
+                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!)
                                     .formatDateTimeVertical,
                               ),
                       );
@@ -205,6 +205,9 @@ class HomeScreenState extends State<HomeScreen> {
               ),
               BlocBuilder<RoomsCubit, RoomsInitial>(
                 builder: (context, state) {
+                  if (state.statuses.loading) {
+                    return MyStyle.loadingWidget();
+                  }
                   return ListView.separated(
                     shrinkWrap: true,
                     itemCount: state.myRooms.length,
@@ -231,23 +234,15 @@ class HomeScreenState extends State<HomeScreen> {
                           maxLines: 1,
                           matchParent: true,
                           drawablePadding: 5.0.w,
-                          drawableStart: ImageMultiType(
-                            url: Icons.person,
-                            height: 17.0.r,
-                            width: 17.0.r,
-                            color: AppColorManager.mainColor,
-                          ),
                         ),
-                        subtitle:
-                            room.lastMessages?.firstOrNull?.latestMessage(room),
+                        subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
                         trailing: room.updatedAt == null
                             ? null
                             : DrawableText(
                                 textAlign: TextAlign.center,
                                 size: 12.0.sp,
                                 color: Colors.grey,
-                                text: DateTime.fromMillisecondsSinceEpoch(
-                                        room.updatedAt!)
+                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!)
                                     .formatDateTimeVertical,
                               ),
                       );
@@ -270,9 +265,7 @@ class HomeScreenState extends State<HomeScreen> {
                       if (user.id == '0') return 0.0.verticalSpace;
                       return ListTile(
                         onTap: () async {
-                          context
-                              .read<OpenRoomCubit>()
-                              .openRoomByUserId(user.id);
+                          context.read<OpenRoomCubit>().openRoomByUserId(user.id);
                         },
                         leading: CircleImageWidget(
                           url: (user.imageUrl.isBlank)
@@ -285,15 +278,12 @@ class HomeScreenState extends State<HomeScreen> {
                           maxLines: 1,
                           matchParent: true,
                           drawablePadding: 5.0.w,
-                          drawableStart: ImageMultiType(
-                            url: Icons.person,
-                            height: 17.0.r,
-                            width: 17.0.r,
-                            color: AppColorManager.mainColor,
-                          ),
                         ),
-                        trailing: const ImageMultiType(
+                        trailing: ImageMultiType(
                           url: Icons.arrow_forward_ios,
+                          height: 15.0,
+                          width: 15.0,
+                          color: Colors.grey[400]!,
                         ),
                       );
                     },

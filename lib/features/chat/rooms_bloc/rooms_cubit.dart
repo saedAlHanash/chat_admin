@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
+import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
+import 'package:fitness_admin_chat/core/error/error_manager.dart';
 import 'package:fitness_admin_chat/core/extensions/extensions.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:m_cubit/m_cubit.dart';
 
@@ -19,12 +22,19 @@ class RoomsCubit extends MCubit<RoomsInitial> {
   @override
   String get filter => '0';
 
+  int isShow = 0;
+
   Future<void> getChatRooms() async {
+    emit(state.copyWith(statuses: CubitStatuses.loading));
+
     await setData();
 
-    await Future.delayed(const Duration(milliseconds: 600));
-
-    await rooms();
+    try {
+      await rooms();
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+      showErrorFromApi(state);
+    }
   }
 
   /// Returns a stream of messages from Firebase for a given room.
@@ -35,7 +45,7 @@ class RoomsCubit extends MCubit<RoomsInitial> {
     final query = FirebaseFirestore.instance
         .collection('rooms')
         .orderBy('updatedAt', descending: true)
-        .limit(100)
+        // .limit(100)
         .where(
           'updatedAt',
           isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(
@@ -53,26 +63,41 @@ class RoomsCubit extends MCubit<RoomsInitial> {
       final listRooms = await processRoomsQuery(snapshot, 'users');
       //في حال فارغة لا تكمل
       if (listRooms.isEmpty) return;
-      // جلب آخر وقت تحديث لآخر رسالة
-      final latestUpdateMessageFromSnap = listRooms
-          .reduce((c, n) => (c.updatedAt ?? 0) > (n.updatedAt ?? 0) ? c : n)
-          .updatedAt;
-      // حذف الرسائل المكررة والمعالجة مسبقا
-      listRooms.removeWhere((e) => ((e.updatedAt ?? 0) <= latestUpdate));
 
-      //تحديث توقيت آخر معالجة للرسائل
-      latestUpdate = latestUpdateMessageFromSnap ?? 0;
-      //في حال فارغة لا تكمل
-      if (listRooms.isEmpty) return;
+      // // جلب آخر وقت تحديث لآخر رسالة
+      // final latestUpdateMessageFromSnap = listRooms
+      //     .reduce((c, n) => (c.updatedAt ?? 0) > (n.updatedAt ?? 0) ? c : n)
+      //     .updatedAt;
+      //
+      // // حذف الرسائل المكررة والمعالجة مسبقا
+      // listRooms.removeWhere((e) => ((e.updatedAt ?? 0) <= latestUpdate));
+      //
+      // //تحديث توقيت آخر معالجة للرسائل
+      // latestUpdate = latestUpdateMessageFromSnap ?? 0;
+      // //في حال فارغة لا تكمل
+      // if (listRooms.isEmpty) return;
       //حفظ الرسائل الجديدة في طبقة التخزين
+
       await saveData(listRooms, clearId: false);
+
+      if (isShow < 5) {
+        isShow++;
+        showSuccessSnackBar(message: '${listRooms.length}', context: ctx!);
+      }
+      if (state.statuses.loading) {
+        emit(state.copyWith(statuses: CubitStatuses.done));
+      }
+
       //اذا توقف ال bloc لا تكمل
       if (isClosed) return;
       // إرسال المعلومات للوجهة
       await setData();
     });
 
-    emit(state.copyWith(stream: stream));
+    emit(state.copyWith(
+      stream: stream,
+      statuses: state.result.isNotEmpty ? CubitStatuses.done : null,
+    ));
   }
 
   Future<void> setData() async {
@@ -80,13 +105,11 @@ class RoomsCubit extends MCubit<RoomsInitial> {
       fromJson: types.Room.fromJson,
     );
 
-    roomsCached.removeWhere((e) => e.otherUser.id == '-1');
+    // roomsCached.removeWhere((e) => e.otherUser.id == '-1');
 
     if (state.search.isNotEmpty) {
       roomsCached.removeWhere(
-        (room) => !(room.usersName
-            .toLowerCase()
-            .contains(state.search.toLowerCase())),
+        (room) => !(room.usersName.toLowerCase().contains(state.search.toLowerCase())),
       );
     }
 
@@ -118,10 +141,27 @@ class RoomsCubit extends MCubit<RoomsInitial> {
     setData();
   }
 
+  Future<void> deleteRoom(String id) async {
+    await FirebaseFirestore.instance.collection('rooms').doc(id).delete();
+    loggerObject.e(id);
+  }
+
   @override
   Future<Function> close() async {
     super.close();
     state.stream?.cancel();
     return () {};
   }
+}
+
+void showSuccessSnackBar({required String message, required BuildContext context}) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        message,
+        style: const TextStyle(color: Colors.white),
+      ),
+      backgroundColor: Colors.green,
+    ),
+  );
 }

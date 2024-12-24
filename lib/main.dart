@@ -51,7 +51,7 @@ void main() async {
 
   await CachingService.initial(
     onError: (state) => showErrorFromApi(state),
-    version: 2,
+    version: 3,
     timeInterval: 120,
   );
 

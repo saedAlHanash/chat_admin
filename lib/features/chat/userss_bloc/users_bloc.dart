@@ -18,9 +18,10 @@ class UsersCubit extends MCubit<UsersInitial> {
   String get filter => '0';
 
   Future<void> getChatUsers() async {
-    emit(state.copyWith(statuses: CubitStatuses.loading));
 
+    emit(state.copyWith(statuses: CubitStatuses.loading));
     await setData();
+
 
     if (state.result.isEmpty) await Future.delayed(Duration(seconds: 4));
 
