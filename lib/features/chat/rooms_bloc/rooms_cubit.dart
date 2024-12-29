@@ -22,7 +22,7 @@ class RoomsCubit extends MCubit<RoomsInitial> {
   @override
   String get filter => '0';
 
-  int isShow = 0;
+
 
   Future<void> getChatRooms() async {
     emit(state.copyWith(statuses: CubitStatuses.loading));
@@ -80,10 +80,7 @@ class RoomsCubit extends MCubit<RoomsInitial> {
 
       await saveData(listRooms, clearId: false);
 
-      if (isShow < 5) {
-        isShow++;
-        showSuccessSnackBar(message: '${listRooms.length}', context: ctx!);
-      }
+
       if (state.statuses.loading) {
         emit(state.copyWith(statuses: CubitStatuses.done));
       }
@@ -154,14 +151,3 @@ class RoomsCubit extends MCubit<RoomsInitial> {
   }
 }
 
-void showSuccessSnackBar({required String message, required BuildContext context}) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-        message,
-        style: const TextStyle(color: Colors.white),
-      ),
-      backgroundColor: Colors.green,
-    ),
-  );
-}

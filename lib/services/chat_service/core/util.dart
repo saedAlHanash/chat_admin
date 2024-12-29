@@ -31,20 +31,19 @@ Future<Map<String, dynamic>> fetchUser(
   if (userFromCache != null) {
     return userFromCache.toJson();
   } else {
-    return {'id': '-1'};
+    final doc = await instance.collection(usersCollectionName).doc(userId).get();
+    if (doc.data() == null) return {'id': '-1'};
+    final data = doc.data()!;
+
+    data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
+    data['id'] = doc.id;
+    data['lastSeen'] = data['lastSeen']?.millisecondsSinceEpoch;
+    data['role'] = role;
+    data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
+
+    await ctx?.read<UsersCubit>().addUser(types.User.fromJson(data));
+    return data;
   }
-  //
-  // final doc = await instance.collection(usersCollectionName).doc(userId).get();
-  // if (doc.data() == null) return {'id': '-1'};
-  // final data = doc.data()!;
-  //
-  // data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
-  // data['id'] = doc.id;
-  // data['lastSeen'] = data['lastSeen']?.millisecondsSinceEpoch;
-  // data['role'] = role;
-  // data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
-  //
-  // return data;
 }
 
 /// Returns a list of [types.Room] created from Firebase query.
@@ -100,8 +99,7 @@ Future<types.Room> processRoomDocument(
       );
 
       imageUrl = otherUser?['imageUrl'] as String?;
-      name = '${otherUser?['firstName'] ?? ''} ${otherUser?['lastName'] ?? ''}'
-          .trim();
+      name = '${otherUser?['firstName'] ?? ''} ${otherUser?['lastName'] ?? ''}'.trim();
     } catch (e) {
       loggerObject.e('processRoomDocument: $e');
     }
@@ -117,8 +115,7 @@ Future<types.Room> processRoomDocument(
     if (data['latestMessage'] != null && data['latestMessage'] is Map) {
       final message = data['latestMessage'] as Map<String, dynamic>;
 
-      message['author'] =
-          types.User(id: message['authorId'] as String).toJson();
+      message['author'] = types.User(id: message['authorId'] as String).toJson();
       message['createdAt'] = message['createdAt']?.millisecondsSinceEpoch;
       message['id'] = doc.id;
       message['updatedAt'] = message['updatedAt']?.millisecondsSinceEpoch;

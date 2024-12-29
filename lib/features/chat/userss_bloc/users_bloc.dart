@@ -51,7 +51,7 @@ class UsersCubit extends MCubit<UsersInitial> {
         }
       }
       if (users.isEmpty) return;
-      await saveData(users);
+      await saveData(users,clearId: false);
 
       if (state.statuses.loading) {
         emit(state.copyWith(statuses: CubitStatuses.done));
@@ -99,6 +99,10 @@ class UsersCubit extends MCubit<UsersInitial> {
     }
 
     emit(state.copyWith(result: usersCached));
+  }
+
+  Future<void> addUser(types.User e) async {
+    await saveData([e], clearId: false);
   }
 
   void search({required String q}) {
