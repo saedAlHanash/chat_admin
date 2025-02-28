@@ -22,8 +22,6 @@ class RoomsCubit extends MCubit<RoomsInitial> {
   @override
   String get filter => '0';
 
-
-
   Future<void> getChatRooms() async {
     emit(state.copyWith(statuses: CubitStatuses.loading));
 
@@ -50,6 +48,12 @@ class RoomsCubit extends MCubit<RoomsInitial> {
           'updatedAt',
           isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(
             state.result.firstOrNull?.updatedAt ?? 0,
+          ),
+        )
+        .where(
+          'latestSeen${'0'}',
+          isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(
+            state.result.firstOrNull?.latestSeen ?? 0,
           ),
         );
 
@@ -79,7 +83,6 @@ class RoomsCubit extends MCubit<RoomsInitial> {
       //حفظ الرسائل الجديدة في طبقة التخزين
 
       await saveData(listRooms, clearId: false);
-
 
       if (state.statuses.loading) {
         emit(state.copyWith(statuses: CubitStatuses.done));
@@ -150,4 +153,3 @@ class RoomsCubit extends MCubit<RoomsInitial> {
     return () {};
   }
 }
-

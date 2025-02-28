@@ -176,12 +176,11 @@ extension DateUtcHelper on DateTime {
   String get formatDateTimeVertical => '$formatDate\n$formatTime';
 
   DateTime addFromNow({int? year, int? month, int? day}) {
-    return DateTime(this.year + (year ?? 0), this.month + (month ?? 0),
-        this.day + (day ?? 0));
+    return DateTime(
+        this.year + (year ?? 0), this.month + (month ?? 0), this.day + (day ?? 0));
   }
 
-  DateTime initialFromDateTime(
-      {required DateTime date, required TimeOfDay time}) {
+  DateTime initialFromDateTime({required DateTime date, required TimeOfDay time}) {
     return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
 
@@ -254,18 +253,15 @@ extension RoomH on types.Room {
 
   types.User get otherUser {
     final u = users.firstWhereOrNull((e) => e.id != '0');
-    return  u ?? types.User(id: '-1');
+    return u ?? types.User(id: '-1');
   }
 
   int get latestSeen => metadata?['latestSeen'] ?? 0;
 
   bool get isRead {
     if ((lastMessages ?? []).isEmpty) return true;
-
     final latestMessage = lastMessages!.first;
-
-    return ((latestMessage.author.id == '0') ||
-        ((latestSeen - (updatedAt ?? 0)) > 0));
+    return ((latestMessage.author.id == '0') || ((latestSeen - (updatedAt ?? 0)) >= 0));
   }
 
   bool get isNotRead => !isRead;
@@ -314,6 +310,9 @@ extension MessageH on types.Message {
     } else if (this is types.FileMessage) {
       message = 'ملف';
       icon = Icons.file_copy;
+    } else if (this is types.PartialAudio || this is types.AudioMessage) {
+      message = 'Voice Message';
+      icon = Icons.mic;
     } else if (this is types.ImageMessage) {
       message = 'صورة';
       icon = Icons.image;

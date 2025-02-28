@@ -1,7 +1,17 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drawable_text/drawable_text.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
+import 'package:fitness_admin_chat/core/strings/enum_manager.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_multi_type/image_multi_type.dart';
+
+import '../../../core/strings/app_color_manager.dart';
 
 import 'firebase_chat_core_config.dart';
 import 'util.dart';
@@ -16,8 +26,7 @@ class FirebaseChatCore {
   );
 
   /// Singleton instance.
-  static final FirebaseChatCore instance =
-      FirebaseChatCore._privateConstructor();
+  static final FirebaseChatCore instance = FirebaseChatCore._privateConstructor();
 
   /// Gets proper [FirebaseFirestore] instance.
   FirebaseFirestore getFirebaseFirestore() => config.firebaseAppName != null
@@ -91,15 +100,10 @@ class FirebaseChatCore {
       loggerObject.e('createRoom $e');
     }
 
-    final users = [
-      if (currentUser != null) types.User.fromJson(currentUser),
-      otherUser
-    ];
+    final users = [if (currentUser != null) types.User.fromJson(currentUser), otherUser];
 
     // Create new room with sorted user ids array.
-    final room = await getFirebaseFirestore()
-        .collection(config.roomsCollectionName)
-        .add({
+    final room = await getFirebaseFirestore().collection(config.roomsCollectionName).add({
       'createdAt': FieldValue.serverTimestamp(),
       'imageUrl': null,
       'metadata': metadata,
@@ -121,10 +125,7 @@ class FirebaseChatCore {
   /// Creates [types.User] in Firebase to store name and avatar used on
   /// rooms list.
   Future<void> createUserInFirestore(types.User user) async {
-    await getFirebaseFirestore()
-        .collection(config.usersCollectionName)
-        .doc(user.id)
-        .set({
+    await getFirebaseFirestore().collection(config.usersCollectionName).doc(user.id).set({
       'createdAt': FieldValue.serverTimestamp(),
       'firstName': user.firstName,
       'imageUrl': user.imageUrl,
@@ -201,7 +202,7 @@ class FirebaseChatCore {
 
               final author = room.users.firstWhere(
                 (u) => u.id == data['authorId'],
-                orElse: () => types.User(id: data['authorId'] as String),
+                orElse: () =>  types.User(id: data['authorId'] as String),
               );
 
               data['author'] = author.toJson();
@@ -261,7 +262,7 @@ class FirebaseChatCore {
   /// Sends a message to the Firestore. Accepts any partial message and a
   /// room ID. If arbitraty data is provided in the [partialMessage]
   /// does nothing.
-  void sendMessage(dynamic partialMessage, String roomId) async {
+  Future<void> sendMessage(dynamic partialMessage, String roomId) async {
     types.Message? message;
 
     if (partialMessage is types.PartialCustom) {
@@ -275,6 +276,12 @@ class FirebaseChatCore {
         author: const types.User(id: '0'),
         id: '',
         partialFile: partialMessage,
+      );
+    } else if (partialMessage is types.PartialAudio) {
+      message = types.AudioMessage.fromPartial(
+        partialAudio: partialMessage,
+        author: const types.User(id: '0'),
+        id: '',
       );
     } else if (partialMessage is types.PartialImage) {
       message = types.ImageMessage.fromPartial(
@@ -321,6 +328,7 @@ class FirebaseChatCore {
         .update(
       {
         'latestSeen${'0'}': FieldValue.serverTimestamp(),
+        // 'updatedAt': FieldValue.serverTimestamp(),
       },
     );
   }
@@ -343,12 +351,41 @@ class FirebaseChatCore {
         .update(messageMap);
   }
 
+  /// Updates a room in the Firestore. Accepts any room.
+
+  void updateRoom(types.Room room) async {
+    final roomMap = room.toJson();
+    roomMap.removeWhere((key, value) =>
+        key == 'createdAt' || key == 'id' || key == 'lastMessages' || key == 'users');
+
+    if (room.type == types.RoomType.direct) {
+      roomMap['imageUrl'] = null;
+      roomMap['name'] = null;
+    }
+
+    roomMap['lastMessages'] = room.lastMessages?.map((m) {
+      final messageMap = m.toJson();
+
+      messageMap.removeWhere((key, value) =>
+          key == 'author' || key == 'createdAt' || key == 'id' || key == 'updatedAt');
+
+      messageMap['authorId'] = m.author.id;
+
+      return messageMap;
+    }).toList();
+    roomMap['updatedAt'] = FieldValue.serverTimestamp();
+    roomMap['userIds'] = room.users.map((u) => u.id).toList();
+
+    await getFirebaseFirestore()
+        .collection(config.roomsCollectionName)
+        .doc(room.id)
+        .update(roomMap);
+  }
+
   /// Returns a stream of all users from Firebase.
   Stream<List<types.User>> users() {
-    return getFirebaseFirestore()
-        .collection(config.usersCollectionName)
-        .snapshots()
-        .map(
+    if ('0'.isEmpty) throw Exception('myId null');
+    return getFirebaseFirestore().collection(config.usersCollectionName).snapshots().map(
           (snapshot) => snapshot.docs.fold<List<types.User>>(
             [],
             (previousValue, doc) {
@@ -365,5 +402,19 @@ class FirebaseChatCore {
             },
           ),
         );
+  }
+
+  Future<void> _uploadToFirebase({required String filePath}) async {
+    final file = File(filePath);
+    final storage = FirebaseStorage.instance;
+    Reference ref =
+        storage.ref().child('audios/${DateTime.now().millisecondsSinceEpoch}.aac');
+
+    try {
+      await ref.putFile(file);
+      String downloadUrl = await ref.getDownloadURL();
+    } catch (e) {
+      loggerObject.e('Upload to firebase audio $e');
+    }
   }
 }

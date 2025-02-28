@@ -4,6 +4,7 @@ import 'package:drawable_text/drawable_text.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fitness_admin_chat/core/extensions/extensions.dart';
+import 'package:fitness_admin_chat/features/chat/sound_record.dart';
 import 'package:fitness_admin_chat/features/chat/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +21,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../core/helper/launcher_helper.dart';
 import '../../core/strings/app_color_manager.dart';
+import '../../core/util/snack_bar_message.dart';
 import '../../core/widgets/app_bar/app_bar_widget.dart';
 import '../../services/chat_service/core/firebase_chat_core.dart';
 import 'messages_bloc/messages_cubit.dart';
@@ -55,49 +57,6 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   bool _isAttachmentUploading = false;
-
-  void _handleAtachmentPressed() {
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (BuildContext context) => SafeArea(
-        child: SizedBox(
-          height: 144,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _handleImageSelection();
-                },
-                child: const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Photo'),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _handleFileSelection();
-                },
-                child: const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('File'),
-                ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Cancel'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   void _handleFileSelection() async {
     final result = await FilePicker.platform.pickFiles(
@@ -243,6 +202,122 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
+  void _handleAtachmentPressed() {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) => SafeArea(
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DrawableText(
+                text: 'Chose attachment type to send',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              20.0.verticalSpace,
+              ListTile(
+                selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
+                selected: true,
+                leading: ImageMultiType(
+                  url: Icons.image,
+                  color: AppColorManager.mainColor,
+                ),
+                title: DrawableText(
+                  text: 'Select image',
+                  color: AppColorManager.mainColor,
+                  size: 18.0.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _handleImageSelection();
+                },
+              ),
+              10.0.verticalSpace,
+              ListTile(
+                selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
+                selected: true,
+                leading: ImageMultiType(
+                  url: Icons.file_present_sharp,
+                  color: AppColorManager.mainColor,
+                ),
+                title: DrawableText(
+                  text: 'Select file',
+                  color: AppColorManager.mainColor,
+                  size: 18.0.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+                onTap: () {
+                  Navigator.pop(context); // إغلاق الـ BottomSheet
+                  _handleFileSelection();
+                },
+              ),
+              10.0.verticalSpace,
+              ListTile(
+                selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
+                selected: true,
+                leading: ImageMultiType(
+                  url: Icons.mic,
+                  color: AppColorManager.mainColor,
+                ),
+                title: DrawableText(
+                  text: 'Voice Message',
+                  color: AppColorManager.mainColor,
+                  size: 18.0.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  NoteMessage.showMyDialog(
+                    context,
+                    child: Container(
+                      padding: EdgeInsets.all(20.0).r,
+                      child: AudioRecorderWidget(
+                        onSendAudio: (p0) {
+                          if (p0 == null) return;
+                          _handleSendAudioMessage(p0);
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _handleSendAudioMessage(File audio) async {
+    _setAttachmentUploading(true);
+    try {
+      final name = '${DateTime.now().millisecondsSinceEpoch}.aac';
+      final reference = FirebaseStorage.instance
+          .ref()
+          .child('audios/${DateTime.now().millisecondsSinceEpoch}.aac');
+      await reference.putFile(audio);
+      final uri = await reference.getDownloadURL();
+
+      final message = types.PartialAudio(
+        size: audio.lengthSync(),
+        uri: uri,
+        duration: Duration(seconds: 0),
+        name: name,
+      );
+
+      await FirebaseChatCore.instance.sendMessage(message, widget.room.id);
+      _setAttachmentUploading(false);
+    } finally {
+      _setAttachmentUploading(false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -287,6 +362,9 @@ class _ChatPageState extends State<ChatPage> {
                 dateDividerTextStyle: TextStyle(color: Colors.black54),
                 secondaryColor: AppColorManager.secondColor,
                 inputBackgroundColor: AppColorManager.mainColor),
+            audioMessageBuilder: (p0, {required messageWidth}) {
+              return AudioMessageBuilder(audioUrl: p0.uri);
+            },
             customBottomWidget: widget.room.me != null ? null : const SizedBox(),
             user: widget.room.me == null
                 ? widget.room.otherUser
