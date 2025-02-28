@@ -31,8 +31,16 @@ Future<Map<String, dynamic>> fetchUser(
   if (userFromCache != null) {
     return userFromCache.toJson();
   } else {
+
     final doc = await instance.collection(usersCollectionName).doc(userId).get();
-    if (doc.data() == null) return {'id': '-1'};
+
+    if (doc.data() == null) {
+      return {
+        'id': '-1',
+        'firstName': userId,
+      };
+    }
+
     final data = doc.data()!;
 
     data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;

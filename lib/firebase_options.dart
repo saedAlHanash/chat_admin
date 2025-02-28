@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -67,4 +64,15 @@ class DefaultFirebaseOptions {
     iosClientId: '644714333877-127paomqothq0epvrjrqdqfc9jfqsh97.apps.googleusercontent.com',
     iosBundleId: 'com.chi.fitnessStorm.chatAdmin',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDAuR_lww1x-IjXaDS3e8LPemq0QsiHEPA',
+    appId: '1:644714333877:web:f417a9128a1c8200b820fc',
+    messagingSenderId: '644714333877',
+    projectId: 'fitness-strom-1',
+    authDomain: 'fitness-strom-1.firebaseapp.com',
+    storageBucket: 'fitness-strom-1.appspot.com',
+    measurementId: 'G-Z2VFFMHVB2',
+  );
+
 }

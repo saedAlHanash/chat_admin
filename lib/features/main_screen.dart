@@ -218,7 +218,6 @@ class HomeScreenState extends State<HomeScreen> {
                     },
                     itemBuilder: (_, i) {
                       final room = state.myRooms[i];
-
                       return ListTile(
                         onTap: () async {
                           context.read<OpenRoomCubit>().openRoomByRoom(room);

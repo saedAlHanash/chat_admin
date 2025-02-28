@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:m_cubit/m_cubit.dart';
+import 'package:path_provider/path_provider.dart';
 
 part 'users_state.dart';
 
@@ -18,15 +22,32 @@ class UsersCubit extends MCubit<UsersInitial> {
   String get filter => '0';
 
   Future<void> getChatUsers() async {
-
     emit(state.copyWith(statuses: CubitStatuses.loading));
     await setData();
-
 
     if (state.result.isEmpty) await Future.delayed(Duration(seconds: 4));
 
     await users();
   }
+
+  Future<void> saveJsonToFile(
+      List<Map<String, dynamic>> jsonData, String fileName) async {
+    // تحويل القائمة إلى JSON String
+    String jsonString = jsonEncode(jsonData);
+
+    // الحصول على المسار المؤقت لحفظ الملف
+    final directory = await getTemporaryDirectory();
+    final file = await File('${directory.path}/$fileName.json').writeAsString(jsonString);
+
+    // تحديد مرجع التخزين في Firebase Storage
+    final storageRef = FirebaseStorage.instance.ref().child('json_files/$fileName.json');
+
+    // رفع الملف
+    await storageRef.putFile(file);
+    // كتابة البيانات إلى الملف
+
+  }
+
 
   /// Returns a stream of messages from Firebase for a given room.
   Future<void> users() async {
@@ -51,7 +72,7 @@ class UsersCubit extends MCubit<UsersInitial> {
         }
       }
       if (users.isEmpty) return;
-      await saveData(users,clearId: false);
+      await saveData(users, clearId: false);
 
       if (state.statuses.loading) {
         emit(state.copyWith(statuses: CubitStatuses.done));
@@ -83,8 +104,10 @@ class UsersCubit extends MCubit<UsersInitial> {
       },
     );
 
-    final dataList = data
-      ..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
+
+
+
+    final dataList = data..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
 
     var usersCached = <types.User>[];
 
@@ -92,9 +115,8 @@ class UsersCubit extends MCubit<UsersInitial> {
       usersCached = dataList;
     } else {
       usersCached = dataList
-          .where((room) => (room.firstName ?? '')
-              .toLowerCase()
-              .contains(state.search.toLowerCase()))
+          .where((room) =>
+              (room.firstName ?? '').toLowerCase().contains(state.search.toLowerCase()))
           .toList();
     }
 

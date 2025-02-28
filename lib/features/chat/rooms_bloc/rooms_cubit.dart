@@ -1,13 +1,17 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 import 'package:fitness_admin_chat/core/error/error_manager.dart';
 import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:m_cubit/m_cubit.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../services/chat_service/core/util.dart';
 
@@ -21,6 +25,23 @@ class RoomsCubit extends MCubit<RoomsInitial> {
 
   @override
   String get filter => '0';
+
+  Future<void> saveJsonToFile(
+      List<Map<String, dynamic>> jsonData, String fileName) async {
+    // تحويل القائمة إلى JSON String
+    String jsonString = jsonEncode(jsonData);
+
+    // الحصول على المسار المؤقت لحفظ الملف
+    final directory = await getTemporaryDirectory();
+    final file = await File('${directory.path}/$fileName.json').writeAsString(jsonString);
+
+    // تحديد مرجع التخزين في Firebase Storage
+    final storageRef = FirebaseStorage.instance.ref().child('json_files/$fileName.json');
+
+    // رفع الملف
+    await storageRef.putFile(file);
+    // كتابة البيانات إلى الملف
+  }
 
   Future<void> getChatRooms() async {
     emit(state.copyWith(statuses: CubitStatuses.loading));
@@ -48,12 +69,6 @@ class RoomsCubit extends MCubit<RoomsInitial> {
           'updatedAt',
           isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(
             state.result.firstOrNull?.updatedAt ?? 0,
-          ),
-        )
-        .where(
-          'latestSeen${'0'}',
-          isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(
-            state.result.firstOrNull?.latestSeen ?? 0,
           ),
         );
 
@@ -105,7 +120,8 @@ class RoomsCubit extends MCubit<RoomsInitial> {
       fromJson: types.Room.fromJson,
     );
 
-    // roomsCached.removeWhere((e) => e.otherUser.id == '-1');
+    roomsCached
+        .removeWhere((e) => e.users.firstWhereOrNull((ee) => ee.id == '-1') != null);
 
     if (state.search.isNotEmpty) {
       roomsCached.removeWhere(
@@ -145,6 +161,19 @@ class RoomsCubit extends MCubit<RoomsInitial> {
     await FirebaseFirestore.instance.collection('rooms').doc(id).delete();
     loggerObject.e(id);
   }
+
+  // void checkRoomsAndDelete() async {
+  //   var c = [];
+  //   for (var e in state.result) {
+  //     if (e.users.firstWhereOrNull((e) => e.id == '-1') != null) {
+  //       c.add(e.id);
+  //     }
+  //   }
+  //   loggerObject.w(c.length);
+  //   // for (var e in c) {
+  //   //   await deleteRoom(e);
+  //   // }
+  // }
 
   @override
   Future<Function> close() async {

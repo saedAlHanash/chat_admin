@@ -253,7 +253,9 @@ extension RoomH on types.Room {
 
   types.User get otherUser {
     final u = users.firstWhereOrNull((e) => e.id != '0');
-    return u ?? types.User(id: '-1');
+    return u ??
+        types.User(
+            id: '-1', firstName: '${users.firstOrNull?.id} -${users.lastOrNull?.id}');
   }
 
   int get latestSeen => metadata?['latestSeen'] ?? 0;
