@@ -13,18 +13,17 @@ import 'package:image_multi_type/image_multi_type.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../core/util/snack_bar_message.dart';
 import '../../core/widgets/my_button.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AudioRecorderWidget extends StatefulWidget {
-  const AudioRecorderWidget({
-    super.key,
-    required this.onSendAudio,
-  });
+  const AudioRecorderWidget({super.key, required this.onSendAudio});
 
   final Function(File?) onSendAudio;
 
   @override
-  State<AudioRecorderWidget> createState() => _AudioRecorderWidgetState();
+  State createState() => _AudioRecorderWidgetState();
 }
 
 class _AudioRecorderWidgetState extends State<AudioRecorderWidget> {
@@ -50,20 +49,29 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget> {
   }
 
   void _startRecording() async {
-    Directory tempDir = await getTemporaryDirectory();
-    _filePath = '${tempDir.path}/recorded_audio.aac';
+    try {
+      var status = await Permission.microphone.request();
+      if (status != PermissionStatus.granted) {
+        throw RecordingPermissionException('Microphone permission not granted');
+      }
+      Directory tempDir = await getTemporaryDirectory();
+      _filePath = '${tempDir.path}/recorded_audio.aac';
 
-    await _recorder!.startRecorder(toFile: _filePath);
-    setState(() {
-      _isRecording = true;
-      _seconds = 0;
-    });
+      await _recorder!.startRecorder(toFile: _filePath);
 
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        _seconds++;
+        _isRecording = true;
+        _seconds = 0;
       });
-    });
+
+      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        setState(() {
+          _seconds++;
+        });
+      });
+    } catch (e) {
+      NoteMessage.showErrorDialog(context, text: e.toString());
+    }
   }
 
   void _stopRecording() async {
@@ -111,9 +119,6 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget> {
     _recorder!.closeRecorder();
     _player!.closePlayer();
     _timer?.cancel();
-    try {
-      File(_filePath!).delete();
-    } catch (e) {}
     super.dispose();
   }
 
@@ -126,6 +131,7 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget> {
           text: _formatTime(_seconds),
           color: Colors.black,
           size: 40.0,
+          fontWeight: FontWeight.bold,
         ),
         20.0.verticalSpace,
         if (!(_filePath != null && !_isRecording))
@@ -135,9 +141,8 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget> {
               url: _isRecording ? Icons.stop : Icons.mic,
               color: Colors.white,
             ),
-            text: _isRecording ? 'Stop recording' : 'Start Recording',
-            color:
-                _isRecording ? AppColorManager.mainColorLight : AppColorManager.mainColor,
+            text: _isRecording ? 'Stop Recording' : 'Start Recording',
+            color: _isRecording ? AppColorManager.mainColorLight : AppColorManager.mainColor,
           ),
         20.0.verticalSpace,
         if (_filePath != null && !_isRecording) ...[
@@ -154,7 +159,7 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget> {
                     url: Icons.delete,
                     color: Colors.white,
                   ),
-                  text: 'Delete',
+                  text: 'delete',
                   color: Colors.red,
                 ),
               ),
@@ -165,12 +170,15 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget> {
               Expanded(
                 child: MyButton(
                   iconAlignment: IconAlignment.end,
-                  onTap: () => widget.onSendAudio(File(_filePath!)),
+                  onTap: () {
+                    widget.onSendAudio(File(_filePath!));
+                    Navigator.pop(context);
+                  },
                   icon: ImageMultiType(
                     url: Icons.send,
                     color: Colors.white,
                   ),
-                  text: 'Send',
+                  text: 'send',
                   color: AppColorManager.secondColor,
                 ),
               ),
@@ -278,14 +286,9 @@ class _AudioMessageBuilderState extends State<AudioMessageBuilder> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          IconButton(
-            icon: ImageMultiType(
-              height: 30.0.r,
-              width: 30.0.r,
-              url: isPlaying ? Icons.pause : Icons.play_arrow,
-              color: Colors.white,
-            ),
-            onPressed: _playPause,
+          DrawableText(
+            text: _formatDuration(_duration - _position),
+            color: Colors.white,
           ),
           Expanded(
             child: Slider(
@@ -301,9 +304,16 @@ class _AudioMessageBuilderState extends State<AudioMessageBuilder> {
               },
             ),
           ),
-          DrawableText(
-            text: _formatDuration(_duration - _position),
-            color: Colors.white,
+          IconButton(
+            icon: Transform.flip(
+              child: ImageMultiType(
+                height: 30.0.r,
+                width: 30.0.r,
+                url: isPlaying ? Icons.pause : Icons.play_arrow,
+                color: Colors.white,
+              ),
+            ),
+            onPressed: _playPause,
           ),
         ],
       ),

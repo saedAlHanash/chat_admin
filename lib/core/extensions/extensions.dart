@@ -156,88 +156,84 @@ extension DateUtcHelper on DateTime {
 
   DateTime get getUtc => DateTime.utc(year, month, day);
 
-  String get formatDate => DateFormat('yyyy/MM/dd').format(this);
-
-  String get formatTime {
-    var t = DateFormat('h:mm a').format(this);
-
-    return t;
+  /// Check if the date is today
+  bool get isToday {
+    final now = DateTime.now();
+    return now.year == year && now.month == month && now.day == day;
   }
 
-  String get formatDateTime => '$formatDate -  $formatTime';
-
-  String get formatFullDate => '$formatDayName  $formatDate  $formatTime';
-
-  String get formatDayName {
-    initializeDateFormatting();
-    return DateFormat('EEEE', 'ar_SA').format(this);
+  /// Check if the date is tomorrow
+  bool get isTomorrow {
+    final tomorrow = DateTime.now().add(Duration(days: 1));
+    return tomorrow.year == year && tomorrow.month == month && tomorrow.day == day;
   }
+
+  /// Check if the date is yesterday
+  bool get isYesterday {
+    final yesterday = DateTime.now().subtract(Duration(days: 1));
+    return yesterday.year == year && yesterday.month == month && yesterday.day == day;
+  }
+
+  String get formatDate => DateFormat('yyyy/MM/dd', 'en').format(this);
+  String get formatDateMD => DateFormat('MM/dd', 'en').format(this);
+  String get formatDateDY => DateFormat('yyyy/MM', 'en').format(this);
+
+  String get formatDateD => DateFormat('dd', 'en').format(this);
+
+  String get formatDateToRequest => DateFormat('yyyy-MM-dd', 'en').format(this);
+
+  String get formatDateWithCurrent {
+    if (isToday) return 'today';
+
+    if (isTomorrow) return 'tomorrow';
+
+    if (isYesterday) return 'yesterday';
+
+    return DateFormat('yyyy/MM/dd', 'en').format(this);
+  }
+
+  String get formatDateAther => DateFormat('yyyy-MM-dd HH:mm', 'en').format(this);
+
+  String get formatTime => DateFormat('hh:mm a', 'en').format(this);
+  String get formatTime24 => DateFormat('hh:mm', 'en').format(this);
+
+  String get dayName => DateFormat('EEEE').format(this);
+
+  String get monthName => DateFormat('MMMM').format(this);
+
+  String get formatDateTime => '$formatDate - $formatTime';
+  String get formatDateTime24 => '$formatDate - $formatTime24';
 
   String get formatDateTimeVertical => '$formatDate\n$formatTime';
 
-  DateTime addFromNow({int? year, int? month, int? day}) {
+  DateTime addFromNow({int? year, int? month, int? day, int? hour, int? minute, int? second}) {
     return DateTime(
-        this.year + (year ?? 0), this.month + (month ?? 0), this.day + (day ?? 0));
+      this.year + (year ?? 0),
+      this.month + (month ?? 0),
+      this.day + (day ?? 0),
+      this.hour + (hour ?? 0),
+      this.minute + (minute ?? 0),
+      this.second + (second ?? 0),
+    );
   }
 
   DateTime initialFromDateTime({required DateTime date, required TimeOfDay time}) {
     return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
 
-  String get formatDateAther => DateFormat('yyyy/MM/dd HH:MM').format(this);
-
-  String formatDuration({DateTime? serverDate}) {
-    final difference = this.difference(serverDate ?? DateTime.now()).abs();
-
-    final months = difference.inDays ~/ 30;
-    final days = difference.inDays % 30;
-    final hours = difference.inHours % 24;
-    final minutes = difference.inMinutes % 60;
-    final seconds = difference.inSeconds % 60;
-
-    final formattedDuration = StringBuffer();
-    formattedDuration.write('since: ');
-    var c = 0;
-    if (months > 0) {
-      c++;
-      formattedDuration.write(' / $months Month');
+  int get getWeekNumber {
+    final DateTime firstJan = DateTime(year, 1, 1);
+    // final int daysInYear = DateTime(year + 1, 1, 1).difference(firstJan).inDays;
+    final int weekNumber = (difference(firstJan).inDays ~/ 7) + 1;
+    // If the date is after the first Monday of the year, then it is in the current week.
+    if (weekday >= 1) {
+      return weekNumber;
     }
-    if (days > 0 && c < 2) {
-      c++;
-      formattedDuration.write(' / $days Day');
-    }
-    if (hours > 0 && c < 2) {
-      c++;
-      formattedDuration.write(' / $hours Hour');
-    }
-    if (minutes > 0 && c < 2) {
-      c++;
-      formattedDuration.write(' / $minutes m');
-    }
-    if (seconds > 0 && c < 2) {
-      c++;
-      formattedDuration.write(' / $seconds s');
-    }
-
-    formattedDuration.write('        $formatDateTime');
-    return formattedDuration.toString().trim().replaceFirst('/', '');
+    // Otherwise, it is in the previous week.
+    return weekNumber - 1;
   }
 
-  List<DateTime> getDateTimesBetween({
-    required DateTime end,
-    required Duration period,
-  }) {
-    var dateTimes = <DateTime>[];
-    var current = add(period);
-    while (current.isBefore(end)) {
-      if (dateTimes.length > 24) {
-        break;
-      }
-      dateTimes.add(current);
-      current = current.add(period);
-    }
-    return dateTimes;
-  }
+  DateTime get fixTimeZone => add(DateTime.now().timeZoneOffset);
 }
 
 extension ScrollMax on ScrollController {
@@ -254,8 +250,7 @@ extension RoomH on types.Room {
   types.User get otherUser {
     final u = users.firstWhereOrNull((e) => e.id != '0');
     return u ??
-        types.User(
-            id: '-1', firstName: '${users.firstOrNull?.id} -${users.lastOrNull?.id}');
+        types.User(id: '-1', firstName: '${users.firstOrNull?.id} -${users.lastOrNull?.id}');
   }
 
   int get latestSeen => metadata?['latestSeen'] ?? 0;

@@ -180,104 +180,96 @@ class _ChatPageState extends State<ChatPage> {
   void _handleAtachmentPressed() {
     showModalBottomSheet<void>(
       context: context,
-      builder:
-          (BuildContext context) =>
-          SafeArea(
-            child: Container(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DrawableText(
-                    text: 'Chose attachment type to send',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  20.0.verticalSpace,
-                  ListTile(
-                    selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
-                    selected: true,
-                    leading: ImageMultiType(url: Icons.image, color: AppColorManager.mainColor),
-                    title: DrawableText(
-                      text: 'Select image',
-                      color: AppColorManager.mainColor,
-                      size: 18.0.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      _handleImageSelection();
-                    },
-                  ),
-                  10.0.verticalSpace,
-                  ListTile(
-                    selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
-                    selected: true,
-                    leading: ImageMultiType(
-                      url: Icons.file_present_sharp,
-                      color: AppColorManager.mainColor,
-                    ),
-                    title: DrawableText(
-                      text: 'Select file',
-                      color: AppColorManager.mainColor,
-                      size: 18.0.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    onTap: () {
-                      Navigator.pop(context); // إغلاق الـ BottomSheet
-                      _handleFileSelection();
-                    },
-                  ),
-                  10.0.verticalSpace,
-                  ListTile(
-                    selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
-                    selected: true,
-                    leading: ImageMultiType(url: Icons.mic, color: AppColorManager.mainColor),
-                    title: DrawableText(
-                      text: 'Voice Message',
-                      color: AppColorManager.mainColor,
-                      size: 18.0.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      NoteMessage.showMyDialog(
-                        context,
-                        child: Container(
-                          padding: EdgeInsets
-                              .all(20.0)
-                              .r,
-                          child: AudioRecorderWidget(
-                            onSendAudio: (p0) {
-                              if (p0 == null) return;
-                              _handleSendAudioMessage(p0);
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
+      builder: (BuildContext context) => SafeArea(
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DrawableText(
+                text: 'Chose attachment type to send',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-            ),
+              20.0.verticalSpace,
+              ListTile(
+                selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
+                selected: true,
+                leading: ImageMultiType(url: Icons.image, color: AppColorManager.mainColor),
+                title: DrawableText(
+                  text: 'Select image',
+                  color: AppColorManager.mainColor,
+                  size: 18.0.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _handleImageSelection();
+                },
+              ),
+              10.0.verticalSpace,
+              ListTile(
+                selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
+                selected: true,
+                leading: ImageMultiType(
+                  url: Icons.file_present_sharp,
+                  color: AppColorManager.mainColor,
+                ),
+                title: DrawableText(
+                  text: 'Select file',
+                  color: AppColorManager.mainColor,
+                  size: 18.0.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+                onTap: () {
+                  Navigator.pop(context); // إغلاق الـ BottomSheet
+                  _handleFileSelection();
+                },
+              ),
+              10.0.verticalSpace,
+              ListTile(
+                selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
+                selected: true,
+                leading: ImageMultiType(url: Icons.mic, color: AppColorManager.mainColor),
+                title: DrawableText(
+                  text: 'Voice Message',
+                  color: AppColorManager.mainColor,
+                  size: 18.0.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  NoteMessage.showMyDialog(
+                    context,
+                    child: Container(
+                      padding: EdgeInsets.all(20.0).r,
+                      child: AudioRecorderWidget(
+                        onSendAudio: (p0) {
+                          if (p0 == null) return;
+                          _handleSendAudioMessage(p0);
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
+        ),
+      ),
     );
   }
 
   void _handleSendAudioMessage(File audio) async {
     _setAttachmentUploading(true);
     try {
-      final name = '${DateTime
-          .now()
-          .millisecondsSinceEpoch}.aac';
+      final name = '${DateTime.now().millisecondsSinceEpoch}.aac';
       final reference = FirebaseStorage.instance.ref().child(
-        'audios/${DateTime
-            .now()
-            .millisecondsSinceEpoch}.aac',
-      );
+            'audios/${DateTime.now().millisecondsSinceEpoch}.aac',
+          );
       await reference.putFile(audio);
       final uri = await reference.getDownloadURL();
 
@@ -336,10 +328,8 @@ class _ChatPageState extends State<ChatPage> {
                   matchParent: true,
                   text: text,
                   color: Colors.white,
-                  padding: EdgeInsets
-                      .symmetric(vertical: 10.0)
-                      .r,
-                  fontFamily: FontManager.bold.name,
+                  padding: EdgeInsets.symmetric(vertical: 10.0).r,
+                  fontWeight: FontWeight.bold,
                 ),
                 leading: ImageMultiType(
                   url: Icons.notifications,
@@ -355,10 +345,8 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                       padding: const EdgeInsets.all(7.0).r,
                       child: DrawableText(
-                        text: '${S
-                            .of(context)
-                            .from}: ${start?.fixTimeZone.formatDateTime}',
-                        fontFamily: FontManager.bold.name,
+                        text: 'From: ${start?.fixTimeZone.formatDateTime}',
+                        fontWeight: FontWeight.bold,
                         textAlign: TextAlign.center,
                         size: 14.0.sp,
                         color: AppColorManager.whit,
@@ -372,10 +360,8 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                       padding: const EdgeInsets.all(7.0).r,
                       child: DrawableText(
-                        text: '${S
-                            .of(context)
-                            .to}: ${end?.fixTimeZone.formatDateTime}',
-                        fontFamily: FontManager.bold.name,
+                        text: 'To: ${end?.fixTimeZone.formatDateTime}',
+                        fontWeight: FontWeight.bold,
                         textAlign: TextAlign.center,
                         size: 14.0.sp,
                         color: AppColorManager.whit,
@@ -383,13 +369,6 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ],
                 ),
-              );
-              return DrawableText(
-                text: text,
-                padding: EdgeInsets
-                    .all(15.0)
-                    .r,
-                color: AppColorManager.whit,
               );
             },
             onPreviewDataFetched: _handlePreviewDataFetched,
