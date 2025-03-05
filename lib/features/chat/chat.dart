@@ -28,10 +28,7 @@ import 'messages_bloc/messages_cubit.dart';
 import 'my_room_object.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({
-    super.key,
-    required this.room,
-  });
+  const ChatPage({super.key, required this.room});
 
   final types.Room room;
 
@@ -59,9 +56,7 @@ class _ChatPageState extends State<ChatPage> {
   bool _isAttachmentUploading = false;
 
   void _handleFileSelection() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.any,
-    );
+    final result = await FilePicker.platform.pickFiles(type: FileType.any);
 
     if (result != null && result.files.single.path != null) {
       _setAttachmentUploading(true);
@@ -117,10 +112,7 @@ class _ChatPageState extends State<ChatPage> {
           width: image.width.toDouble(),
         );
 
-        FirebaseChatCore.instance.sendMessage(
-          message,
-          widget.room.id,
-        );
+        FirebaseChatCore.instance.sendMessage(message, widget.room.id);
         _setAttachmentUploading(false);
       } finally {
         _setAttachmentUploading(false);
@@ -135,10 +127,7 @@ class _ChatPageState extends State<ChatPage> {
       if (message.uri.startsWith('http')) {
         try {
           final updatedMessage = message.copyWith(isLoading: true);
-          FirebaseChatCore.instance.updateMessage(
-            updatedMessage,
-            widget.room.id,
-          );
+          FirebaseChatCore.instance.updateMessage(updatedMessage, widget.room.id);
 
           final client = http.Client();
           final request = await client.get(Uri.parse(message.uri));
@@ -152,10 +141,7 @@ class _ChatPageState extends State<ChatPage> {
           }
         } finally {
           final updatedMessage = message.copyWith(isLoading: false);
-          FirebaseChatCore.instance.updateMessage(
-            updatedMessage,
-            widget.room.id,
-          );
+          FirebaseChatCore.instance.updateMessage(updatedMessage, widget.room.id);
         }
       }
 
@@ -163,10 +149,7 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  void _handlePreviewDataFetched(
-    types.TextMessage message,
-    types.PreviewData previewData,
-  ) {
+  void _handlePreviewDataFetched(types.TextMessage message, types.PreviewData previewData) {
     final updatedMessage = message.copyWith(previewData: previewData);
 
     FirebaseChatCore.instance.updateMessage(updatedMessage, widget.room.id);
@@ -176,24 +159,16 @@ class _ChatPageState extends State<ChatPage> {
     if (myRoomObject.needToSendNotification) {
       sendNotificationMessage(
         myRoomObject,
-        ChatNotification(
-          body: message.text,
-          title: 'رسالة جديدة',
-        ),
-      ).then(
-        (value) {
-          if (value) {
-            ///for send notification to first message
-            myRoomObject.needToSendNotification = false;
-          }
-        },
-      );
+        ChatNotification(body: message.text, title: 'رسالة جديدة'),
+      ).then((value) {
+        if (value) {
+          ///for send notification to first message
+          myRoomObject.needToSendNotification = false;
+        }
+      });
     }
 
-    FirebaseChatCore.instance.sendMessage(
-      message,
-      widget.room.id,
-    );
+    FirebaseChatCore.instance.sendMessage(message, widget.room.id);
   }
 
   void _setAttachmentUploading(bool uploading) {
@@ -205,102 +180,104 @@ class _ChatPageState extends State<ChatPage> {
   void _handleAtachmentPressed() {
     showModalBottomSheet<void>(
       context: context,
-      builder: (BuildContext context) => SafeArea(
-        child: Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              DrawableText(
-                text: 'Chose attachment type to send',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              20.0.verticalSpace,
-              ListTile(
-                selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
-                selected: true,
-                leading: ImageMultiType(
-                  url: Icons.image,
-                  color: AppColorManager.mainColor,
-                ),
-                title: DrawableText(
-                  text: 'Select image',
-                  color: AppColorManager.mainColor,
-                  size: 18.0.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _handleImageSelection();
-                },
-              ),
-              10.0.verticalSpace,
-              ListTile(
-                selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
-                selected: true,
-                leading: ImageMultiType(
-                  url: Icons.file_present_sharp,
-                  color: AppColorManager.mainColor,
-                ),
-                title: DrawableText(
-                  text: 'Select file',
-                  color: AppColorManager.mainColor,
-                  size: 18.0.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-                onTap: () {
-                  Navigator.pop(context); // إغلاق الـ BottomSheet
-                  _handleFileSelection();
-                },
-              ),
-              10.0.verticalSpace,
-              ListTile(
-                selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
-                selected: true,
-                leading: ImageMultiType(
-                  url: Icons.mic,
-                  color: AppColorManager.mainColor,
-                ),
-                title: DrawableText(
-                  text: 'Voice Message',
-                  color: AppColorManager.mainColor,
-                  size: 18.0.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  NoteMessage.showMyDialog(
-                    context,
-                    child: Container(
-                      padding: EdgeInsets.all(20.0).r,
-                      child: AudioRecorderWidget(
-                        onSendAudio: (p0) {
-                          if (p0 == null) return;
-                          _handleSendAudioMessage(p0);
-                          Navigator.pop(context);
-                        },
-                      ),
+      builder:
+          (BuildContext context) =>
+          SafeArea(
+            child: Container(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DrawableText(
+                    text: 'Chose attachment type to send',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  20.0.verticalSpace,
+                  ListTile(
+                    selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
+                    selected: true,
+                    leading: ImageMultiType(url: Icons.image, color: AppColorManager.mainColor),
+                    title: DrawableText(
+                      text: 'Select image',
+                      color: AppColorManager.mainColor,
+                      size: 18.0.sp,
+                      fontWeight: FontWeight.bold,
                     ),
-                  );
-                },
+                    onTap: () {
+                      Navigator.pop(context);
+                      _handleImageSelection();
+                    },
+                  ),
+                  10.0.verticalSpace,
+                  ListTile(
+                    selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
+                    selected: true,
+                    leading: ImageMultiType(
+                      url: Icons.file_present_sharp,
+                      color: AppColorManager.mainColor,
+                    ),
+                    title: DrawableText(
+                      text: 'Select file',
+                      color: AppColorManager.mainColor,
+                      size: 18.0.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    onTap: () {
+                      Navigator.pop(context); // إغلاق الـ BottomSheet
+                      _handleFileSelection();
+                    },
+                  ),
+                  10.0.verticalSpace,
+                  ListTile(
+                    selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
+                    selected: true,
+                    leading: ImageMultiType(url: Icons.mic, color: AppColorManager.mainColor),
+                    title: DrawableText(
+                      text: 'Voice Message',
+                      color: AppColorManager.mainColor,
+                      size: 18.0.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      NoteMessage.showMyDialog(
+                        context,
+                        child: Container(
+                          padding: EdgeInsets
+                              .all(20.0)
+                              .r,
+                          child: AudioRecorderWidget(
+                            onSendAudio: (p0) {
+                              if (p0 == null) return;
+                              _handleSendAudioMessage(p0);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 
   void _handleSendAudioMessage(File audio) async {
     _setAttachmentUploading(true);
     try {
-      final name = '${DateTime.now().millisecondsSinceEpoch}.aac';
-      final reference = FirebaseStorage.instance
-          .ref()
-          .child('audios/${DateTime.now().millisecondsSinceEpoch}.aac');
+      final name = '${DateTime
+          .now()
+          .millisecondsSinceEpoch}.aac';
+      final reference = FirebaseStorage.instance.ref().child(
+        'audios/${DateTime
+            .now()
+            .millisecondsSinceEpoch}.aac',
+      );
       await reference.putFile(audio);
       final uri = await reference.getDownloadURL();
 
@@ -325,15 +302,9 @@ class _ChatPageState extends State<ChatPage> {
         actions: [
           Row(
             children: [
-              DrawableText(
-                text: widget.room.otherUser.name,
-                color: Colors.white,
-              ),
+              DrawableText(text: widget.room.otherUser.name, color: Colors.white),
               10.0.horizontalSpace,
-              CircleImageWidget(
-                url: widget.room.otherUser.imageUrl,
-                size: 40.0.r,
-              ),
+              CircleImageWidget(url: widget.room.otherUser.imageUrl, size: 40.0.r),
               10.0.horizontalSpace,
             ],
           ),
@@ -354,21 +325,87 @@ class _ChatPageState extends State<ChatPage> {
             onMessageLongPress: (context, p0) {
               showShortListMenu(ctx: context, id: p0.id);
             },
+            customMessageBuilder: (p0, {required messageWidth}) {
+              final text = p0.metadata?['text']?.toString() ?? '';
+              final start = DateTime.tryParse(p0.metadata?['start']?.toString() ?? '');
+              final end = DateTime.tryParse(p0.metadata?['end']?.toString() ?? '');
+
+              return ListTile(
+                horizontalTitleGap: 10.0.w,
+                title: DrawableText(
+                  matchParent: true,
+                  text: text,
+                  color: Colors.white,
+                  padding: EdgeInsets
+                      .symmetric(vertical: 10.0)
+                      .r,
+                  fontFamily: FontManager.bold.name,
+                ),
+                leading: ImageMultiType(
+                  url: Icons.notifications,
+                  width: 25.0.r,
+                  color: AppColorManager.whit,
+                ),
+                subtitle: Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColorManager.whit.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(12.0.r),
+                      ),
+                      padding: const EdgeInsets.all(7.0).r,
+                      child: DrawableText(
+                        text: '${S
+                            .of(context)
+                            .from}: ${start?.fixTimeZone.formatDateTime}',
+                        fontFamily: FontManager.bold.name,
+                        textAlign: TextAlign.center,
+                        size: 14.0.sp,
+                        color: AppColorManager.whit,
+                      ),
+                    ),
+                    10.0.verticalSpace,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColorManager.whit.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(12.0.r),
+                      ),
+                      padding: const EdgeInsets.all(7.0).r,
+                      child: DrawableText(
+                        text: '${S
+                            .of(context)
+                            .to}: ${end?.fixTimeZone.formatDateTime}',
+                        fontFamily: FontManager.bold.name,
+                        textAlign: TextAlign.center,
+                        size: 14.0.sp,
+                        color: AppColorManager.whit,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+              return DrawableText(
+                text: text,
+                padding: EdgeInsets
+                    .all(15.0)
+                    .r,
+                color: AppColorManager.whit,
+              );
+            },
             onPreviewDataFetched: _handlePreviewDataFetched,
             onSendPressed: _handleSendPressed,
             theme: const DarkChatTheme(
-                backgroundColor: Colors.white,
-                primaryColor: AppColorManager.mainColor,
-                dateDividerTextStyle: TextStyle(color: Colors.black54),
-                secondaryColor: AppColorManager.secondColor,
-                inputBackgroundColor: AppColorManager.mainColor),
+              backgroundColor: Colors.white,
+              primaryColor: AppColorManager.mainColor,
+              dateDividerTextStyle: TextStyle(color: Colors.black54),
+              secondaryColor: AppColorManager.secondColor,
+              inputBackgroundColor: AppColorManager.mainColor,
+            ),
             audioMessageBuilder: (p0, {required messageWidth}) {
               return AudioMessageBuilder(audioUrl: p0.uri);
             },
             customBottomWidget: widget.room.me != null ? null : const SizedBox(),
-            user: widget.room.me == null
-                ? widget.room.otherUser
-                : const types.User(id: '0'),
+            user: widget.room.me == null ? widget.room.otherUser : const types.User(id: '0'),
           );
         },
       ),
@@ -376,10 +413,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 }
 
-void showShortListMenu({
-  required String id,
-  required BuildContext ctx,
-}) {
+void showShortListMenu({required String id, required BuildContext ctx}) {
   final RenderBox box = ctx.findRenderObject() as RenderBox;
   final localPosition = box.localToGlobal(Offset.zero);
 
@@ -398,14 +432,8 @@ void showShortListMenu({
           ctx.read<MessagesCubit>().deleteMessage(id);
         },
         child: ListTile(
-          leading: const ImageMultiType(
-            url: Icons.delete,
-            color: AppColorManager.red,
-          ),
-          trailing: DrawableText(
-            text: 'Delete',
-            color: Colors.red,
-          ),
+          leading: const ImageMultiType(url: Icons.delete, color: AppColorManager.red),
+          trailing: DrawableText(text: 'Delete', color: Colors.red),
         ),
       ),
     ],

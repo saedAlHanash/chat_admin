@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none'
 
-version: 1.0.7+7
+version: 1.0.8+8
 
 environment:
   sdk: '>=3.0.5 <4.0.0'
@@ -47,8 +47,8 @@ dependencies:
   path:
   flutter_local_notifications: ^18.0.1
   awesome_dialog: ^3.2.1
-  flutter_bloc: ^9.0.0
-  flutter_sound: ^9.23.1
+  flutter_bloc: ^9.1.0
+  flutter_sound: ^9.24.5
   just_audio: ^0.9.46
 
 dev_dependencies:
