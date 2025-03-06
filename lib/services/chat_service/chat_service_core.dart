@@ -40,7 +40,8 @@ class ChatServiceCore {
   }
 
   static Future<types.User?> getUser(String userId) async {
-    final user = (ctx!.read<UsersCubit>().state.result).firstWhereOrNull((e) => e.id == userId);
+    final user = await (ctx!.read<UsersCubit>()).fetchUser(userId);
+    if (user.id == '-1') return null;
     return user;
   }
 

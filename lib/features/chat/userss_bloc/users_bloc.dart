@@ -10,6 +10,8 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:m_cubit/m_cubit.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../../services/chat_service/core/util.dart';
+
 part 'users_state.dart';
 
 class UsersCubit extends MCubit<UsersInitial> {
@@ -30,8 +32,7 @@ class UsersCubit extends MCubit<UsersInitial> {
     await users();
   }
 
-  Future<void> saveJsonToFile(
-      List<Map<String, dynamic>> jsonData, String fileName) async {
+  Future<void> saveJsonToFile(List<Map<String, dynamic>> jsonData, String fileName) async {
     // تحويل القائمة إلى JSON String
     String jsonString = jsonEncode(jsonData);
 
@@ -45,23 +46,19 @@ class UsersCubit extends MCubit<UsersInitial> {
     // رفع الملف
     await storageRef.putFile(file);
     // كتابة البيانات إلى الملف
-
   }
-
 
   /// Returns a stream of messages from Firebase for a given room.
   Future<void> users() async {
     late final Query<Map<String, dynamic>> query;
 
-    query = FirebaseFirestore.instance
-        .collection('users')
-        .orderBy('updatedAt', descending: true)
-        .where(
-          'updatedAt',
-          isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(
-            state.result.firstOrNull?.updatedAt ?? 0,
-          ),
-        );
+    query =
+        FirebaseFirestore.instance.collection('users').orderBy('updatedAt', descending: true).where(
+              'updatedAt',
+              isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(
+                state.result.firstOrNull?.updatedAt ?? 0,
+              ),
+            );
 
     final stream = query.snapshots().listen((snapshot) async {
       final users = snapshot.docs.map((doc) => doc.user);
@@ -96,6 +93,11 @@ class UsersCubit extends MCubit<UsersInitial> {
     return user;
   }
 
+  Future<types.User> fetchUser(String id) async {
+    final user = await fetchUserModel(FirebaseFirestore.instance, id, 'users');
+    return user;
+  }
+
   Future<void> setData() async {
     final data = await getListCached(
       fromJson: types.User.fromJson,
@@ -103,9 +105,6 @@ class UsersCubit extends MCubit<UsersInitial> {
         return json['firstName']?.toString().toLowerCase() == 'guest';
       },
     );
-
-
-
 
     final dataList = data..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
 
@@ -115,8 +114,8 @@ class UsersCubit extends MCubit<UsersInitial> {
       usersCached = dataList;
     } else {
       usersCached = dataList
-          .where((room) =>
-              (room.firstName ?? '').toLowerCase().contains(state.search.toLowerCase()))
+          .where(
+              (room) => (room.firstName ?? '').toLowerCase().contains(state.search.toLowerCase()))
           .toList();
     }
 
