@@ -25,7 +25,7 @@ class ChatServiceCore {
           id: '0',
           firstName: 'Fitness Support',
           imageUrl:
-              'https://www.seqrite.com/skin/frontend/default/seqrite_v1/images/support-img.png',
+              'https://firebasestorage.googleapis.com/v0/b/fitness-strom-1.appspot.com/o/fitness_files%2Fic_launcher-playstore.png?alt=media&token=424968a5-35fb-4060-a39d-5fbd1cb41d99',
           lastName: '',
           role: types.Role.admin,
           metadata: {'fcm': await getFireToken()},
@@ -40,8 +40,7 @@ class ChatServiceCore {
   }
 
   static Future<types.User?> getUser(String userId) async {
-    final user = (ctx!.read<UsersCubit>().state.result)
-        .firstWhereOrNull((e) => e.id == userId);
+    final user = (ctx!.read<UsersCubit>().state.result).firstWhereOrNull((e) => e.id == userId);
     return user;
   }
 
