@@ -52,6 +52,7 @@ class APIService {
         query: query,
         path: path,
         body: body,
+        hostName: hostName,
         type: type);
 
     try {

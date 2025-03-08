@@ -17,12 +17,11 @@ final timeOut = http.Response('connectionTimeOut ', 482);
 const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
 final _rnd = Random();
 
-String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
-    length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+String getRandomString(int length) => String.fromCharCodes(
+    Iterable.generate(length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 
 void fixQuery(Map<String, dynamic>? query) {
-  query?.removeWhere(
-      (key, value) => (value == null || value.toString().isEmpty));
+  query?.removeWhere((key, value) => (value == null || value.toString().isEmpty));
 
   query?.forEach((key, value) => query[key] = value.toString());
 }
@@ -36,8 +35,7 @@ Map<String, String> fixFields(Map<String, dynamic>? fields) {
 }
 
 void fixBody(Map<String, dynamic>? body) {
-  body?.removeWhere(
-      (key, value) => (value == null || value.toString().isEmpty));
+  body?.removeWhere((key, value) => (value == null || value.toString().isEmpty));
 }
 
 void fixPath(String url, String? path) {
@@ -46,13 +44,13 @@ void fixPath(String url, String? path) {
 
 Uri getUri({
   required String url,
-    required ApiType type,
+  required ApiType type,
   Map<String, dynamic>? query,
   Map<String, dynamic>? body,
   String? path,
+  String? hostName,
   required String additional,
 }) {
-
   url = additional + url;
 
   fixQuery(query);
@@ -61,7 +59,7 @@ Uri getUri({
 
   if (path != null) url = '$url/$path';
 
-  final uri = Uri.https(baseUrl, url, query);
+  final uri = Uri.https(hostName ?? baseUrl, url, query);
 
   logRequest(
       type: type,

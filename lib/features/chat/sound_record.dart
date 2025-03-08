@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:drawable_text/drawable_text.dart';
+import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 import 'package:fitness_admin_chat/core/strings/app_color_manager.dart';
 import 'package:fitness_admin_chat/core/strings/enum_manager.dart';
 
@@ -211,17 +212,19 @@ class _AudioMessageBuilderState extends State<AudioMessageBuilder> {
 
   @override
   void initState() {
-    super.initState();
     _initAudio();
     _audioPlayer.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
         _resetAudio();
       }
     });
+    loggerObject.w(widget.audioUrl);
+    super.initState();
   }
 
   Future<void> _initAudio() async {
-    String path = await _getCachedAudioPath(widget.audioUrl);
+    String path = await _getCachedAudioPath(
+        'https://firebasestorage.googleapis.com/v0/b/fitness-strom-1.appspot.com/o/audios%2F1740260437870.aac?alt=media&token=e2520be1-7ef2-4a73-be9e-bf6f3817b797');
     await _audioPlayer.setFilePath(path);
 
     _audioPlayer.durationStream.listen((d) {
@@ -239,6 +242,18 @@ class _AudioMessageBuilderState extends State<AudioMessageBuilder> {
   }
 
   void _playPause() async {
+    APIService()
+        .callApi(
+      url: widget.audioUrl,
+      type: ApiType.get,
+      hostName: '',
+      additional: '',
+    )
+        .then(
+      (value) {
+        loggerObject.f(value.statusCode);
+      },
+    );
     if (_audioPlayer.playing) {
       setState(() {
         isPlaying = false;

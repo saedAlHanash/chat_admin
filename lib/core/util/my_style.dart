@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_multi_type/image_multi_type.dart';
 
 import '../strings/app_color_manager.dart';
 
@@ -13,16 +15,14 @@ class MyStyle {
   //endregion
 
 //region margin/padding
-  static final cardPadding =
-      EdgeInsets.symmetric(horizontal: 18.w, vertical: 15.h);
+  static final cardPadding = EdgeInsets.symmetric(horizontal: 18.w, vertical: 15.h);
 
-  static final pagePadding =
-      const EdgeInsets.symmetric(horizontal: 20, vertical: 8).r;
+  static final pagePadding = const EdgeInsets.symmetric(horizontal: 20, vertical: 8).r;
 
 //endregion
 
-  static const underLineStyle = TextStyle(
-      fontStyle: FontStyle.italic, decoration: TextDecoration.underline);
+  static const underLineStyle =
+      TextStyle(fontStyle: FontStyle.italic, decoration: TextDecoration.underline);
 
   static var drawerShape = ShapeDecoration(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
@@ -130,8 +130,8 @@ class BackBtnWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: () => Navigator.pop(context),
-      icon: Icon(
-        Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios,
+      icon: ImageMultiType(
+        url: Icons.arrow_back_ios,
         color: AppColorManager.whit,
       ),
     );
