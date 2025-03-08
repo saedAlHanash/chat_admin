@@ -22,6 +22,8 @@ import 'features/chat/open_room_cubit/open_room_cubit.dart';
 import 'features/chat/rooms_bloc/rooms_cubit.dart';
 import 'features/chat/userss_bloc/users_bloc.dart';
 import 'firebase_options.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 //adb shell setprop debug.firebase.analytics.app com.slf.sadaf
 FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
@@ -33,7 +35,7 @@ void main() async {
   );
 
   await Note.initialize();
-
+  await initializeDateFormatting('en', null);
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true,
     cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
@@ -51,7 +53,7 @@ void main() async {
 
   await CachingService.initial(
     onError: (state) => showErrorFromApi(state),
-    version: 5,
+    version: 6,
     timeInterval: 120,
   );
 

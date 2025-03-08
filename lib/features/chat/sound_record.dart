@@ -218,13 +218,12 @@ class _AudioMessageBuilderState extends State<AudioMessageBuilder> {
         _resetAudio();
       }
     });
-    loggerObject.w(widget.audioUrl);
+
     super.initState();
   }
 
   Future<void> _initAudio() async {
-    String path = await _getCachedAudioPath(
-        'https://firebasestorage.googleapis.com/v0/b/fitness-strom-1.appspot.com/o/audios%2F1740260437870.aac?alt=media&token=e2520be1-7ef2-4a73-be9e-bf6f3817b797');
+    String path = await _getCachedAudioPath(widget.audioUrl);
     await _audioPlayer.setFilePath(path);
 
     _audioPlayer.durationStream.listen((d) {
