@@ -151,8 +151,7 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  void _handlePreviewDataFetched(
-      types.TextMessage message, types.PreviewData previewData) {
+  void _handlePreviewDataFetched(types.TextMessage message, types.PreviewData previewData) {
     final updatedMessage = message.copyWith(previewData: previewData);
 
     FirebaseChatCore.instance.updateMessage(updatedMessage, widget.room.id);
@@ -198,8 +197,7 @@ class _ChatPageState extends State<ChatPage> {
                 selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
                 selected: true,
-                leading:
-                    ImageMultiType(url: Icons.image, color: AppColorManager.mainColor),
+                leading: ImageMultiType(url: Icons.image, color: AppColorManager.mainColor),
                 title: DrawableText(
                   text: 'Select image',
                   color: AppColorManager.mainColor,
@@ -297,7 +295,7 @@ class _ChatPageState extends State<ChatPage> {
       appBar: AppBarWidget(
         actions: [
           SizedBox(
-            width: 1.0.sw,
+            width: .9.sw,
             child: ListTile(
               leading: CircleImageWidget(
                   url: widget.room.otherUser.imageUrl.isBlank
@@ -391,9 +389,7 @@ class _ChatPageState extends State<ChatPage> {
               return AudioMessageBuilder(audioUrl: p0.uri);
             },
             customBottomWidget: widget.room.me != null ? null : const SizedBox(),
-            user: widget.room.me == null
-                ? widget.room.otherUser
-                : const types.User(id: '0'),
+            user: widget.room.me == null ? widget.room.otherUser : const types.User(id: '0'),
           );
         },
       ),
