@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:drawable_text/drawable_text.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 import 'package:fitness_admin_chat/features/chat/sound_record.dart';
 import 'package:fitness_admin_chat/features/chat/util.dart';
@@ -23,6 +24,7 @@ import '../../core/helper/launcher_helper.dart';
 import '../../core/strings/app_color_manager.dart';
 import '../../core/util/snack_bar_message.dart';
 import '../../core/widgets/app_bar/app_bar_widget.dart';
+import '../../generated/assets.dart';
 import '../../services/chat_service/core/firebase_chat_core.dart';
 import 'messages_bloc/messages_cubit.dart';
 import 'my_room_object.dart';
@@ -149,7 +151,8 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  void _handlePreviewDataFetched(types.TextMessage message, types.PreviewData previewData) {
+  void _handlePreviewDataFetched(
+      types.TextMessage message, types.PreviewData previewData) {
     final updatedMessage = message.copyWith(previewData: previewData);
 
     FirebaseChatCore.instance.updateMessage(updatedMessage, widget.room.id);
@@ -195,7 +198,8 @@ class _ChatPageState extends State<ChatPage> {
                 selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
                 selected: true,
-                leading: ImageMultiType(url: Icons.image, color: AppColorManager.mainColor),
+                leading:
+                    ImageMultiType(url: Icons.image, color: AppColorManager.mainColor),
                 title: DrawableText(
                   text: 'Select image',
                   color: AppColorManager.mainColor,
@@ -292,13 +296,16 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       appBar: AppBarWidget(
         actions: [
-          Row(
-            children: [
-              DrawableText(text: widget.room.otherUser.name, color: Colors.white),
-              10.0.horizontalSpace,
-              CircleImageWidget(url: widget.room.otherUser.imageUrl, size: 40.0.r),
-              10.0.horizontalSpace,
-            ],
+          SizedBox(
+            width: 1.0.sw,
+            child: ListTile(
+              leading: CircleImageWidget(
+                  url: widget.room.otherUser.imageUrl.isBlank
+                      ? Assets.imagesAvatar
+                      : widget.room.otherUser.imageUrl,
+                  size: 40.0.r),
+              title: DrawableText(text: widget.room.otherUser.name, color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -384,7 +391,9 @@ class _ChatPageState extends State<ChatPage> {
               return AudioMessageBuilder(audioUrl: p0.uri);
             },
             customBottomWidget: widget.room.me != null ? null : const SizedBox(),
-            user: widget.room.me == null ? widget.room.otherUser : const types.User(id: '0'),
+            user: widget.room.me == null
+                ? widget.room.otherUser
+                : const types.User(id: '0'),
           );
         },
       ),

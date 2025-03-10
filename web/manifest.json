@@ -1,6 +1,6 @@
 {
-    "name": "procter_web",
-    "short_name": "procter_web",
+    "name": "fitness_admin_chat",
+    "short_name": "fitness_admin_chat",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

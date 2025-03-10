@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:drawable_text/drawable_text.dart';
+import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 import 'package:fitness_admin_chat/core/strings/app_color_manager.dart';
 import 'package:fitness_admin_chat/core/strings/enum_manager.dart';
 
@@ -211,13 +212,14 @@ class _AudioMessageBuilderState extends State<AudioMessageBuilder> {
 
   @override
   void initState() {
-    super.initState();
     _initAudio();
     _audioPlayer.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
         _resetAudio();
       }
     });
+
+    super.initState();
   }
 
   Future<void> _initAudio() async {
@@ -239,6 +241,18 @@ class _AudioMessageBuilderState extends State<AudioMessageBuilder> {
   }
 
   void _playPause() async {
+    APIService()
+        .callApi(
+      url: widget.audioUrl,
+      type: ApiType.get,
+      hostName: '',
+      additional: '',
+    )
+        .then(
+      (value) {
+        loggerObject.f(value.statusCode);
+      },
+    );
     if (_audioPlayer.playing) {
       setState(() {
         isPlaying = false;

@@ -130,7 +130,7 @@ class RoomsCubit extends MCubit<RoomsInitial> {
     }
 
     roomsCached.sort((a, b) {
-      if (a.isRead != b.isRead) return (b.isNotRead) ? 1 : -1;
+      // if (a.isRead != b.isRead) return (b.isNotRead) ? 1 : -1;
 
       return (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0);
     });
