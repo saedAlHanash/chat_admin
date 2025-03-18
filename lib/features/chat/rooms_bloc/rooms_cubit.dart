@@ -26,8 +26,7 @@ class RoomsCubit extends MCubit<RoomsInitial> {
   @override
   String get filter => '0';
 
-  Future<void> saveJsonToFile(
-      List<Map<String, dynamic>> jsonData, String fileName) async {
+  Future<void> saveJsonToFile(List<Map<String, dynamic>> jsonData, String fileName) async {
     // تحويل القائمة إلى JSON String
     String jsonString = jsonEncode(jsonData);
 
@@ -120,8 +119,7 @@ class RoomsCubit extends MCubit<RoomsInitial> {
       fromJson: types.Room.fromJson,
     );
 
-    roomsCached
-        .removeWhere((e) => e.users.firstWhereOrNull((ee) => ee.id == '-1') != null);
+    roomsCached.removeWhere((e) => e.users.firstWhereOrNull((ee) => ee.id == '-1') != null);
 
     if (state.search.isNotEmpty) {
       roomsCached.removeWhere(
@@ -135,13 +133,11 @@ class RoomsCubit extends MCubit<RoomsInitial> {
       return (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0);
     });
 
-    final myRooms = roomsCached
-        .where((e) => e.users.firstWhereOrNull((e) => e.id == '0') != null)
-        .toList();
+    final myRooms =
+        roomsCached.where((e) => e.users.firstWhereOrNull((e) => e.id == '0') != null).toList();
 
-    final othersRooms = roomsCached
-        .where((e) => e.users.firstWhereOrNull((e) => e.id == '0') == null)
-        .toList();
+    final othersRooms =
+        roomsCached.where((e) => e.users.firstWhereOrNull((e) => e.id == '0') == null).toList();
 
     emit(
       state.copyWith(
@@ -160,6 +156,11 @@ class RoomsCubit extends MCubit<RoomsInitial> {
   Future<void> deleteRoom(String id) async {
     await FirebaseFirestore.instance.collection('rooms').doc(id).delete();
     loggerObject.e(id);
+  }
+
+  Future<void> addOrUpdateRoom(types.Room item) async {
+    await saveData([item], clearId: false);
+    await setData();
   }
 
   // void checkRoomsAndDelete() async {

@@ -7,12 +7,15 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 import 'package:fitness_admin_chat/core/strings/enum_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_multi_type/image_multi_type.dart';
 
+import '../../../core/error/error_manager.dart';
 import '../../../core/strings/app_color_manager.dart';
 
+import '../../../features/chat/rooms_bloc/rooms_cubit.dart';
 import 'firebase_chat_core_config.dart';
 import 'util.dart';
 
@@ -147,18 +150,12 @@ class FirebaseChatCore {
 
   /// Removes room document.
   Future<void> deleteRoom(String roomId) async {
-    await getFirebaseFirestore()
-        .collection(config.roomsCollectionName)
-        .doc(roomId)
-        .delete();
+    await getFirebaseFirestore().collection(config.roomsCollectionName).doc(roomId).delete();
   }
 
   /// Removes [types.User] from `users` collection in Firebase.
   Future<void> deleteUserFromFirestore(String userId) async {
-    await getFirebaseFirestore()
-        .collection(config.usersCollectionName)
-        .doc(userId)
-        .delete();
+    await getFirebaseFirestore().collection(config.usersCollectionName).doc(userId).delete();
   }
 
   /// Returns a stream of messages from Firebase for a given room.
@@ -202,7 +199,7 @@ class FirebaseChatCore {
 
               final author = room.users.firstWhere(
                 (u) => u.id == data['authorId'],
-                orElse: () =>  types.User(id: data['authorId'] as String),
+                orElse: () => types.User(id: data['authorId'] as String),
               );
 
               data['author'] = author.toJson();
@@ -309,10 +306,7 @@ class FirebaseChatCore {
           .collection('${config.roomsCollectionName}/$roomId/messages')
           .add(messageMap);
 
-      await getFirebaseFirestore()
-          .collection(config.roomsCollectionName)
-          .doc(roomId)
-          .update(
+      await getFirebaseFirestore().collection(config.roomsCollectionName).doc(roomId).update(
         {
           'updatedAt': FieldValue.serverTimestamp(),
           'latestMessage': messageMap,
@@ -321,16 +315,15 @@ class FirebaseChatCore {
     }
   }
 
-  Future<void> latestSeenRoom(String roomId) async {
-    await getFirebaseFirestore()
-        .collection(config.roomsCollectionName)
-        .doc(roomId)
-        .update(
+  Future<void> latestSeenRoom(types.Room room) async {
+    await getFirebaseFirestore().collection(config.roomsCollectionName).doc(room.id).update(
       {
         'latestSeen${'0'}': FieldValue.serverTimestamp(),
         // 'updatedAt': FieldValue.serverTimestamp(),
       },
     );
+    (room.metadata ?? {})['latestSeen'] = room.updatedAt;
+    await ctx!.read<RoomsCubit>().addOrUpdateRoom(room);
   }
 
   /// Updates a message in the Firestore. Accepts any message and a
@@ -407,8 +400,7 @@ class FirebaseChatCore {
   Future<void> _uploadToFirebase({required String filePath}) async {
     final file = File(filePath);
     final storage = FirebaseStorage.instance;
-    Reference ref =
-        storage.ref().child('audios/${DateTime.now().millisecondsSinceEpoch}.aac');
+    Reference ref = storage.ref().child('audios/${DateTime.now().millisecondsSinceEpoch}.aac');
 
     try {
       await ref.putFile(file);

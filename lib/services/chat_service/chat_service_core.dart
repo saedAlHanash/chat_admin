@@ -7,6 +7,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import '../../core/api_manager/api_service.dart';
 import '../../core/error/error_manager.dart';
 import '../../core/util/shared_preferences.dart';
+import '../../features/chat/rooms_bloc/rooms_cubit.dart';
 import '../../main.dart';
 import 'core/firebase_chat_core.dart';
 
@@ -17,8 +18,6 @@ class ChatServiceCore {
   }
 
   static Future<bool> loginChatUser() async {
-    if (AppSharedPreference.getIsLoginToChatApp) return true;
-
     try {
       await FirebaseChatCore.instance.createUserInFirestore(
         types.User(
@@ -31,7 +30,6 @@ class ChatServiceCore {
           metadata: {'fcm': await getFireToken()},
         ),
       );
-      await AppSharedPreference.cashLoginToChatApp(true);
       return true;
     } catch (e) {
       loggerObject.e('loginChatUser $e');
@@ -45,10 +43,10 @@ class ChatServiceCore {
     return user;
   }
 
-  static Future<bool> latestSeenRoom(String? roomId) async {
-    if (roomId == null) return false;
+  static Future<bool> latestSeenRoom(types.Room? room) async {
+    if (room == null) return false;
     try {
-      await FirebaseChatCore.instance.latestSeenRoom(roomId);
+      await FirebaseChatCore.instance.latestSeenRoom(room);
       return true;
     } catch (e) {
       loggerObject.e('latestSeenRoom $e');
