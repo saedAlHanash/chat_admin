@@ -17,8 +17,6 @@ class ChatServiceCore {
   }
 
   static Future<bool> loginChatUser() async {
-    if (AppSharedPreference.getIsLoginToChatApp) return true;
-
     try {
       await FirebaseChatCore.instance.createUserInFirestore(
         types.User(
@@ -31,7 +29,6 @@ class ChatServiceCore {
           metadata: {'fcm': await getFireToken()},
         ),
       );
-      await AppSharedPreference.cashLoginToChatApp(true);
       return true;
     } catch (e) {
       loggerObject.e('loginChatUser $e');
