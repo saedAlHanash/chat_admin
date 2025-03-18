@@ -310,6 +310,11 @@ class _ChatPageState extends State<ChatPage> {
       body: BlocBuilder<MessagesCubit, MessagesInitial>(
         builder: (context, state) {
           return Chat(
+            customDateHeaderText: (p0) {
+              return p0.year == DateTime.now().year
+                  ? p0.fixTimeZone.formatDateMD
+                  : p0.fixTimeZone.formatDate;
+            },
             textMessageOptions: TextMessageOptions(
               onLinkPressed: (p0) {
                 LauncherHelper.openPage(p0);
@@ -317,6 +322,15 @@ class _ChatPageState extends State<ChatPage> {
             ),
             isAttachmentUploading: _isAttachmentUploading,
             messages: state.result,
+            // dateHeaderBuilder: (p0) {
+            //   return DrawableText(
+            //     text: p0.dateTime.fixTimeZone.formatDate,
+            //     padding: EdgeInsets.symmetric(vertical: 15.0),
+            //     textAlign: TextAlign.center,
+            //     color: AppColorManager.grey,
+            //     matchParent: true,
+            //   );
+            // },
             onAttachmentPressed: _handleAtachmentPressed,
             onMessageTap: _handleMessageTap,
             onMessageLongPress: (context, p0) {

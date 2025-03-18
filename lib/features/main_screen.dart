@@ -56,7 +56,7 @@ class HomeScreenState extends State<HomeScreen> {
         await context.read<MessagesCubit>().state.stream?.cancel();
         if (!context.mounted) return;
         Navigator.pushNamed(context, RouteName.chat, arguments: state.result)
-            .then((value) => ChatServiceCore.latestSeenRoom(state.result?.id));
+            .then((value) => ChatServiceCore.latestSeenRoom(state.result));
       },
       child: DefaultTabController(
         length: 3,
@@ -267,9 +267,7 @@ class HomeScreenState extends State<HomeScreen> {
                           context.read<OpenRoomCubit>().openRoomByUserId(user.id);
                         },
                         leading: CircleImageWidget(
-                          url: (user.imageUrl.isBlank)
-                              ? Assets.imagesAvatar
-                              : user.imageUrl,
+                          url: (user.imageUrl.isBlank) ? Assets.imagesAvatar : user.imageUrl,
                           size: 40.0.r,
                         ),
                         title: DrawableText(
