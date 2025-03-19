@@ -36,7 +36,7 @@ class ChatServiceCore {
       return false;
     }
   }
-
+//I loved you once but it's forever ،
   static Future<types.User?> getUser(String userId) async {
     final user = await (ctx!.read<UsersCubit>()).fetchUser(userId);
     if (user.id == '-1') return null;
