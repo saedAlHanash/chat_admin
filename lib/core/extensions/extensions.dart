@@ -177,7 +177,7 @@ extension DateUtcHelper on DateTime {
   String get formatDate => DateFormat('yyyy/MM/dd', 'en').format(this);
   String get formatDateMD => DateFormat('M/dd', 'en').format(this);
   String get formatDateDY => DateFormat('yyyy/MM', 'en').format(this);
-
+  String get formatDateMonthName => '$monthName ${day}';
   String get formatDateD => DateFormat('dd', 'en').format(this);
 
   String get formatDateToRequest => DateFormat('yyyy-MM-dd', 'en').format(this);

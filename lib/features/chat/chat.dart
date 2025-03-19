@@ -310,11 +310,6 @@ class _ChatPageState extends State<ChatPage> {
       body: BlocBuilder<MessagesCubit, MessagesInitial>(
         builder: (context, state) {
           return Chat(
-            customDateHeaderText: (p0) {
-              return p0.year == DateTime.now().year
-                  ? p0.fixTimeZone.formatDateMD
-                  : p0.fixTimeZone.formatDate;
-            },
             textMessageOptions: TextMessageOptions(
               onLinkPressed: (p0) {
                 LauncherHelper.openPage(p0);
@@ -322,15 +317,45 @@ class _ChatPageState extends State<ChatPage> {
             ),
             isAttachmentUploading: _isAttachmentUploading,
             messages: state.result,
-            // dateHeaderBuilder: (p0) {
-            //   return DrawableText(
-            //     text: p0.dateTime.fixTimeZone.formatDate,
-            //     padding: EdgeInsets.symmetric(vertical: 15.0),
-            //     textAlign: TextAlign.center,
-            //     color: AppColorManager.grey,
-            //     matchParent: true,
-            //   );
-            // },
+            bubbleBuilder: (child, {required message, required nextMessageInGroup}) {
+              final me = message.author.id == '0';
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: me
+                          ? AppColorManager.mainColor
+                          : AppColorManager.mainColor.withValues(alpha: 0.9),
+                      borderRadius: BorderRadiusDirectional.only(
+                        bottomStart: Radius.circular(
+                          !me ? 16.0.r : 0.0.r,
+                        ),
+                        bottomEnd: Radius.circular(
+                          me ? 16.0.r : 0.0.r,
+                        ),
+                        topEnd: Radius.circular(16.0.r),
+                        topStart: Radius.circular(16.0.r),
+                      ),
+                    ),
+                    child: child,
+                  ),
+                  3.0.verticalSpace,
+                  DrawableText(
+                    size: 10.0.sp,
+                    text: DateTime.fromMillisecondsSinceEpoch(message.createdAt ?? 0)
+                        .fixTimeZone
+                        .formatTime,
+                  ),
+                ],
+              );
+            },
+            customDateHeaderText: (p0) {
+              return p0.year == DateTime.now().year
+                  ? p0.fixTimeZone.formatDateMonthName
+                  : '(${p0.year}) ${p0.fixTimeZone.formatDateMonthName}';
+            },
             onAttachmentPressed: _handleAtachmentPressed,
             onMessageTap: _handleMessageTap,
             onMessageLongPress: (context, p0) {
