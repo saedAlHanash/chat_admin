@@ -131,6 +131,7 @@ class FirebaseChatCore {
     await getFirebaseFirestore().collection(config.usersCollectionName).doc(user.id).set({
       'createdAt': FieldValue.serverTimestamp(),
       'firstName': user.firstName,
+      'fitness_id': user.id,
       'imageUrl': user.imageUrl,
       'lastName': user.lastName,
       'lastSeen': FieldValue.serverTimestamp(),
