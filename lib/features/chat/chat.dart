@@ -151,8 +151,7 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  void _handlePreviewDataFetched(
-      types.TextMessage message, types.PreviewData previewData) {
+  void _handlePreviewDataFetched(types.TextMessage message, types.PreviewData previewData) {
     final updatedMessage = message.copyWith(previewData: previewData);
 
     FirebaseChatCore.instance.updateMessage(updatedMessage, widget.room.id);
@@ -198,8 +197,7 @@ class _ChatPageState extends State<ChatPage> {
                 selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
                 selected: true,
-                leading:
-                    ImageMultiType(url: Icons.image, color: AppColorManager.mainColor),
+                leading: ImageMultiType(url: Icons.image, color: AppColorManager.mainColor),
                 title: DrawableText(
                   text: 'Select image',
                   color: AppColorManager.mainColor,
@@ -320,7 +318,9 @@ class _ChatPageState extends State<ChatPage> {
             isAttachmentUploading: _isAttachmentUploading,
             messages: state.result,
             bubbleBuilder: (child, {required message, required nextMessageInGroup}) {
-              final me = message.author.id == '0';
+              final me = widget.room.me == null
+                  ? message.author.id == widget.room.users.first.id
+                  : message.author.id == '0';
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -439,9 +439,7 @@ class _ChatPageState extends State<ChatPage> {
               return AudioMessageBuilder(audioUrl: p0.uri);
             },
             customBottomWidget: widget.room.me != null ? null : const SizedBox(),
-            user: widget.room.me == null
-                ? widget.room.otherUser
-                : const types.User(id: '0'),
+            user: widget.room.me == null ? widget.room.otherUser : const types.User(id: '0'),
           );
         },
       ),
