@@ -151,7 +151,8 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  void _handlePreviewDataFetched(types.TextMessage message, types.PreviewData previewData) {
+  void _handlePreviewDataFetched(
+      types.TextMessage message, types.PreviewData previewData) {
     final updatedMessage = message.copyWith(previewData: previewData);
 
     FirebaseChatCore.instance.updateMessage(updatedMessage, widget.room.id);
@@ -197,7 +198,8 @@ class _ChatPageState extends State<ChatPage> {
                 selectedTileColor: AppColorManager.mainColor.withValues(alpha: 0.1),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
                 selected: true,
-                leading: ImageMultiType(url: Icons.image, color: AppColorManager.mainColor),
+                leading:
+                    ImageMultiType(url: Icons.image, color: AppColorManager.mainColor),
                 title: DrawableText(
                   text: 'Select image',
                   color: AppColorManager.mainColor,
@@ -325,15 +327,13 @@ class _ChatPageState extends State<ChatPage> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: me
-                          ? AppColorManager.mainColor
-                          : AppColorManager.mainColor.withValues(alpha: 0.9),
+                      color: me ? AppColorManager.mainColor : AppColorManager.secondColor,
                       borderRadius: BorderRadiusDirectional.only(
                         bottomStart: Radius.circular(
-                          !me ? 16.0.r : 0.0.r,
+                          me ? 16.0.r : 0.0.r,
                         ),
                         bottomEnd: Radius.circular(
-                          me ? 16.0.r : 0.0.r,
+                          !me ? 16.0.r : 0.0.r,
                         ),
                         topEnd: Radius.circular(16.0.r),
                         topStart: Radius.circular(16.0.r),
@@ -347,6 +347,7 @@ class _ChatPageState extends State<ChatPage> {
                     text: DateTime.fromMillisecondsSinceEpoch(message.createdAt ?? 0)
                         .fixTimeZone
                         .formatTime,
+                    color: AppColorManager.grey,
                   ),
                 ],
               );
@@ -417,18 +418,30 @@ class _ChatPageState extends State<ChatPage> {
             },
             onPreviewDataFetched: _handlePreviewDataFetched,
             onSendPressed: _handleSendPressed,
-            theme: const DarkChatTheme(
+            theme: DarkChatTheme(
               backgroundColor: Colors.white,
               primaryColor: AppColorManager.mainColor,
               dateDividerTextStyle: TextStyle(color: Colors.black54),
               secondaryColor: AppColorManager.secondColor,
               inputBackgroundColor: AppColorManager.mainColor,
+              sentMessageBodyTextStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0.sp,
+                fontWeight: FontWeight.w800,
+              ),
+              receivedMessageBodyTextStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0.sp,
+                fontWeight: FontWeight.w800,
+              ),
             ),
             audioMessageBuilder: (p0, {required messageWidth}) {
               return AudioMessageBuilder(audioUrl: p0.uri);
             },
             customBottomWidget: widget.room.me != null ? null : const SizedBox(),
-            user: widget.room.me == null ? widget.room.otherUser : const types.User(id: '0'),
+            user: widget.room.me == null
+                ? widget.room.otherUser
+                : const types.User(id: '0'),
           );
         },
       ),
