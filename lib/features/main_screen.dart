@@ -267,7 +267,9 @@ class HomeScreenState extends State<HomeScreen> {
                           context.read<OpenRoomCubit>().openRoomByUserId(user.id);
                         },
                         leading: CircleImageWidget(
-                          url: (user.imageUrl.isBlank) ? Assets.imagesAvatar : user.imageUrl,
+                          url: (user.imageUrl.isBlank)
+                              ? Assets.imagesAvatar
+                              : user.imageUrl,
                           size: 40.0.r,
                         ),
                         title: DrawableText(
@@ -276,10 +278,14 @@ class HomeScreenState extends State<HomeScreen> {
                           matchParent: true,
                           drawablePadding: 5.0.w,
                         ),
-                        trailing: ImageMultiType(
-                          url: Icons.arrow_forward_ios,
-                          height: 15.0,
-                          width: 15.0,
+                        subtitle: DrawableText(
+                          text: user.metadata?['email']?.toString() ?? '',
+                          matchParent: true,
+                          drawablePadding: 5.0.w,
+                        ),
+                        trailing: DrawableText(
+                          text: DateTime.fromMillisecondsSinceEpoch(user.createdAt ?? 0)
+                              .formatDate,
                           color: Colors.grey[400]!,
                         ),
                       );

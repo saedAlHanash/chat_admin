@@ -106,7 +106,7 @@ class UsersCubit extends MCubit<UsersInitial> {
       },
     );
 
-    final dataList = data..sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
+    final dataList = data..sort((a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
 
     var usersCached = <types.User>[];
 
