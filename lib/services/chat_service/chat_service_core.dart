@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitness_admin_chat/features/chat/userss_bloc/users_bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -24,7 +25,7 @@ class ChatServiceCore {
               'https://firebasestorage.googleapis.com/v0/b/fitness-strom-1.appspot.com/o/fitness_files%2Fic_launcher-playstore.png?alt=media&token=424968a5-35fb-4060-a39d-5fbd1cb41d99',
           lastName: '',
           role: types.Role.admin,
-          metadata: {'fcm': await getFireToken()},
+          metadata: kIsWeb ? null : {'fcm': await getFireToken()},
         ),
       );
       return true;
