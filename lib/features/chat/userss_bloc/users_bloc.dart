@@ -10,6 +10,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:m_cubit/m_cubit.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../../services/chat_service/core/firebase_chat_core_config.dart';
 import '../../../services/chat_service/core/util.dart';
 
 part 'users_state.dart';
@@ -53,7 +54,7 @@ class UsersCubit extends MCubit<UsersInitial> {
     late final Query<Map<String, dynamic>> query;
 
     query =
-        FirebaseFirestore.instance.collection('users').orderBy('updatedAt', descending: true).where(
+        FirebaseFirestore.instance.collection(FirebaseChatCoreConfig.instance.usersCollectionName).orderBy('updatedAt', descending: true).where(
               'updatedAt',
               isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(
                 state.result.firstOrNull?.updatedAt ?? 0,
@@ -94,7 +95,7 @@ class UsersCubit extends MCubit<UsersInitial> {
   }
 
   Future<types.User> fetchUser(String id) async {
-    final user = await fetchUserModel(FirebaseFirestore.instance, id, 'users');
+    final user = await fetchUserModel(FirebaseFirestore.instance, id);
     return user;
   }
 
@@ -132,7 +133,7 @@ class UsersCubit extends MCubit<UsersInitial> {
   }
 
   Future<void> deleteUser(String id) async {
-    await FirebaseFirestore.instance.collection('users').doc(id).delete();
+    await FirebaseFirestore.instance.collection(FirebaseChatCoreConfig.instance.usersCollectionName).doc(id).delete();
   }
 
   @override

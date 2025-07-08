@@ -8,6 +8,7 @@ import '../../core/api_manager/api_service.dart';
 import '../../core/error/error_manager.dart';
 import '../../main.dart';
 import 'core/firebase_chat_core.dart';
+import 'core/firebase_chat_core_config.dart';
 
 class ChatServiceCore {
   static Future<void> initFirebaseChat() async {
@@ -54,7 +55,9 @@ class ChatServiceCore {
   }
 
   static Future<List<types.User>> getChatUsers() async {
-    final users = await FirebaseFirestore.instance.collection('users').get();
+    final users = await FirebaseFirestore.instance
+        .collection(FirebaseChatCoreConfig.instance.usersCollectionName)
+        .get();
 
     final listUsers = users.docs.map((doc) {
       final data = doc.data();

@@ -6,6 +6,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import '../../../core/api_manager/api_service.dart';
 import '../../../core/error/error_manager.dart';
 import '../../../features/chat/userss_bloc/users_bloc.dart';
+import 'firebase_chat_core_config.dart';
 
 /// Extension with one [toShortString] method.
 extension RoleToShortString on types.Role {
@@ -19,11 +20,10 @@ extension RoomTypeToShortString on types.RoomType {
   String toShortString() => toString().split('.').last;
 }
 
-/// Fetches user from Firebase and returns a promise.
 Future<Map<String, dynamic>> fetchUser(
   FirebaseFirestore instance,
   String userId,
-  String usersCollectionName, {
+ {
   String? role,
 }) async {
   final userFromCache = ctx?.read<UsersCubit>().findUser(userId);
@@ -31,7 +31,7 @@ Future<Map<String, dynamic>> fetchUser(
   if (userFromCache != null) {
     return userFromCache.toJson();
   } else {
-    final doc = await instance.collection(usersCollectionName).doc(userId).get();
+    final doc = await instance.collection(FirebaseChatCoreConfig.instance.usersCollectionName).doc(userId).get();
 
     if (doc.data() == null) {
       return {
@@ -58,7 +58,7 @@ Future<Map<String, dynamic>> fetchUser(
 Future<types.User> fetchUserModel(
   FirebaseFirestore instance,
   String userId,
-  String usersCollectionName, {
+   {
   String? role,
 }) async {
   final userFromCache = ctx?.read<UsersCubit>().findUser(userId);
@@ -66,7 +66,7 @@ Future<types.User> fetchUserModel(
   if (userFromCache != null) {
     return userFromCache;
   } else {
-    final doc = await instance.collection(usersCollectionName).doc(userId).get();
+    final doc = await instance.collection(FirebaseChatCoreConfig.instance.usersCollectionName).doc(userId).get();
     if (doc.data() == null) return types.User.fromJson({'id': '-1'});
     final data = doc.data()!;
 
@@ -82,28 +82,21 @@ Future<types.User> fetchUserModel(
   }
 }
 
-/// Returns a list of [types.Room] created from Firebase query.
-/// If room has 2 participants, sets correct room name and image.
 Future<List<types.Room>> processRoomsQuery(
   QuerySnapshot<Map<String, dynamic>> query,
-  String usersCollectionName,
 ) async {
   final futures = query.docs.map(
     (doc) => processRoomDocument(
       doc,
-      FirebaseFirestore.instance,
-      usersCollectionName,
-    ),
+      FirebaseFirestore.instance,),
   );
 
   return await Future.wait(futures);
 }
 
-/// Returns a [types.Room] created from Firebase document.
 Future<types.Room> processRoomDocument(
   DocumentSnapshot<Map<String, dynamic>> doc,
   FirebaseFirestore instance,
-  String usersCollectionName,
 ) async {
   final data = doc.data()!;
 
@@ -122,7 +115,6 @@ Future<types.Room> processRoomDocument(
       (userId) => fetchUser(
         instance,
         userId as String,
-        usersCollectionName,
         role: userRoles?[userId] as String?,
       ),
     ),

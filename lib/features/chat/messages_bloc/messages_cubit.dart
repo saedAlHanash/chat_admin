@@ -7,6 +7,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:m_cubit/m_cubit.dart';
 
 import '../../../core/util/cheker_helper.dart';
+import '../../../services/chat_service/core/firebase_chat_core_config.dart';
 
 part 'messages_state.dart';
 
@@ -35,7 +36,7 @@ class MessagesCubit extends MCubit<MessagesInitial> {
     // آخر 100 رسالة
     // بحيث تكون جميع الرسائل أكبر من تاريخ آخر رسالة مخزنة
     var query = FirebaseFirestore.instance
-        .collection('rooms/${room.id}/messages')
+        .collection('${FirebaseChatCoreConfig.instance.roomsCollectionName}/${room.id}/messages')
         .orderBy('createdAt', descending: true)
         .limit(100)
         .where(
@@ -104,7 +105,7 @@ class MessagesCubit extends MCubit<MessagesInitial> {
 
   Future<void> deleteMessage(String id) async {
     await FirebaseFirestore.instance
-        .collection('rooms/${state.mRequest.id}/messages')
+        .collection('${FirebaseChatCoreConfig.instance.roomsCollectionName}/${state.mRequest.id}/messages')
         .doc(id)
         .update(
       {

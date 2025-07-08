@@ -22,11 +22,7 @@ import 'util.dart';
 class FirebaseChatCore {
   FirebaseChatCore._privateConstructor();
 
-  FirebaseChatCoreConfig config = const FirebaseChatCoreConfig(
-    null,
-    'rooms',
-    'users',
-  );
+  var config = FirebaseChatCoreConfig.instance;
 
   /// Singleton instance.
   static final FirebaseChatCore instance = FirebaseChatCore._privateConstructor();
@@ -64,11 +60,7 @@ class FirebaseChatCore {
 
     // Check if room already exist.
     if (roomQuery.docs.isNotEmpty) {
-      final room = (await processRoomsQuery(
-        roomQuery,
-        config.usersCollectionName,
-      ))
-          .first;
+      final room = (await processRoomsQuery(roomQuery)).first;
 
       return room;
     }
@@ -84,21 +76,13 @@ class FirebaseChatCore {
 
     // Check if room already exist.
     if (oldRoomQuery.docs.isNotEmpty) {
-      final room = (await processRoomsQuery(
-        oldRoomQuery,
-        config.usersCollectionName,
-      ))
-          .first;
+      final room = (await processRoomsQuery(oldRoomQuery)).first;
 
       return room;
     }
     Map<String, dynamic>? currentUser;
     try {
-      currentUser = await fetchUser(
-        getFirebaseFirestore(),
-        '0',
-        config.usersCollectionName,
-      );
+      currentUser = await fetchUser(getFirebaseFirestore(), '0');
     } catch (e) {
       loggerObject.e('createRoom $e');
     }
@@ -151,12 +135,18 @@ class FirebaseChatCore {
 
   /// Removes room document.
   Future<void> deleteRoom(String roomId) async {
-    await getFirebaseFirestore().collection(config.roomsCollectionName).doc(roomId).delete();
+    await getFirebaseFirestore()
+        .collection(config.roomsCollectionName)
+        .doc(roomId)
+        .delete();
   }
 
   /// Removes [types.User] from `users` collection in Firebase.
   Future<void> deleteUserFromFirestore(String userId) async {
-    await getFirebaseFirestore().collection(config.usersCollectionName).doc(userId).delete();
+    await getFirebaseFirestore()
+        .collection(config.usersCollectionName)
+        .doc(userId)
+        .delete();
   }
 
   /// Returns a stream of messages from Firebase for a given room.
@@ -221,11 +211,7 @@ class FirebaseChatCore {
         .doc(roomId)
         .snapshots()
         .asyncMap(
-          (doc) => processRoomDocument(
-            doc,
-            getFirebaseFirestore(),
-            config.usersCollectionName,
-          ),
+          (doc) => processRoomDocument(doc, getFirebaseFirestore()),
         );
   }
 
@@ -250,10 +236,7 @@ class FirebaseChatCore {
             .where('userIds', arrayContains: '0');
 
     return collection.snapshots().asyncMap(
-          (query) => processRoomsQuery(
-            query,
-            config.usersCollectionName,
-          ),
+          (query) => processRoomsQuery(query),
         );
   }
 
@@ -307,7 +290,10 @@ class FirebaseChatCore {
           .collection('${config.roomsCollectionName}/$roomId/messages')
           .add(messageMap);
 
-      await getFirebaseFirestore().collection(config.roomsCollectionName).doc(roomId).update(
+      await getFirebaseFirestore()
+          .collection(config.roomsCollectionName)
+          .doc(roomId)
+          .update(
         {
           'updatedAt': FieldValue.serverTimestamp(),
           'latestMessage': messageMap,
@@ -317,7 +303,10 @@ class FirebaseChatCore {
   }
 
   Future<void> latestSeenRoom(types.Room room) async {
-    await getFirebaseFirestore().collection(config.roomsCollectionName).doc(room.id).update(
+    await getFirebaseFirestore()
+        .collection(config.roomsCollectionName)
+        .doc(room.id)
+        .update(
       {
         'latestSeen${'0'}': FieldValue.serverTimestamp(),
         // 'updatedAt': FieldValue.serverTimestamp(),
@@ -401,7 +390,8 @@ class FirebaseChatCore {
   Future<void> _uploadToFirebase({required String filePath}) async {
     final file = File(filePath);
     final storage = FirebaseStorage.instance;
-    Reference ref = storage.ref().child('audios/${DateTime.now().millisecondsSinceEpoch}.aac');
+    Reference ref =
+        storage.ref().child('audios/${DateTime.now().millisecondsSinceEpoch}.aac');
 
     try {
       await ref.putFile(file);
