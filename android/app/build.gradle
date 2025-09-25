@@ -34,8 +34,8 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.chi.fitness_admin_chat"
-    compileSdk 35
-    ndkVersion "27.2.12479018"
+    compileSdk 36
+    ndkVersion "29.0.14033849"
 
     compileOptions {
 

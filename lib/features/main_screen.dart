@@ -134,9 +134,7 @@ class HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       final room = state.othersRooms[index];
                       return ListTile(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusGeometry.circular(8.0.r)),
-
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(8.0.r)),
                         onTap: () async {
                           context.read<OpenRoomCubit>().openRoomByRoom(room);
                         },
@@ -200,8 +198,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 textAlign: TextAlign.center,
                                 size: 12.0.sp,
                                 color: Colors.grey,
-                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!)
-                                    .formatDateTimeVertical,
+                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!).formatDateTimeVertical,
                               ),
                       );
                     },
@@ -223,25 +220,32 @@ class HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (_, i) {
                       final room = state.myRooms[i];
                       return ListTile(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusGeometry.circular(8.0.r)),
-                        tileColor: room.isRead
-                            ? AppColorManager.lightGray
-                            : AppColorManager.threadColor.withValues(alpha: 0.1),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(8.0.r)),
+                        tileColor:
+                            room.isRead ? AppColorManager.lightGray : AppColorManager.threadColor.withValues(alpha: 0.1),
                         onTap: () async {
                           context.read<OpenRoomCubit>().openRoomByRoom(room);
                         },
                         leading: CircleImageWidget(
-                          url: (room.otherUser.imageUrl.isBlank)
-                              ? Assets.imagesAvatar
-                              : room.otherUser.imageUrl,
+                          url: (room.otherUser.imageUrl.isBlank) ? Assets.imagesAvatar : room.otherUser.imageUrl,
                           size: 40.0.r,
                         ),
-                        title: DrawableText(
-                          text: room.otherUser.name,
-                          maxLines: 1,
-                          matchParent: true,
-                          drawablePadding: 5.0.w,
+                        title: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            DrawableText(
+                              text: room.otherUser.name,
+                              maxLines: 1,
+                              matchParent: true,
+                            ),
+                            3.0.verticalSpace,
+                            DrawableText(
+                              text: room.otherUser.email,
+                              size: 10.0,
+                              matchParent: true,
+                              color: Colors.grey,
+                            )
+                          ],
                         ),
                         subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
                         trailing: room.updatedAt == null
@@ -250,8 +254,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 textAlign: TextAlign.center,
                                 size: 12.0.sp,
                                 color: Colors.grey,
-                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!)
-                                    .formatDateTimeVertical,
+                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!).formatDateTimeVertical,
                               ),
                       );
                     },
@@ -277,25 +280,22 @@ class HomeScreenState extends State<HomeScreen> {
                           context.read<OpenRoomCubit>().openRoomByUserId(user.id);
                         },
                         leading: CircleImageWidget(
-                          url: (user.imageUrl.isBlank)
-                              ? Assets.imagesAvatar
-                              : user.imageUrl,
+                          url: (user.imageUrl.isBlank) ? Assets.imagesAvatar : user.imageUrl,
                           size: 40.0.r,
                         ),
                         title: DrawableText(
-                          text: user.firstName ?? '',
+                          text: user.name ?? '',
                           maxLines: 1,
                           matchParent: true,
                           drawablePadding: 5.0.w,
                         ),
                         subtitle: DrawableText(
-                          text: user.metadata?['email']?.toString() ?? '',
+                          text: user.email,
                           matchParent: true,
                           drawablePadding: 5.0.w,
                         ),
                         trailing: DrawableText(
-                          text: DateTime.fromMillisecondsSinceEpoch(user.createdAt ?? 0)
-                              .formatDate,
+                          text: DateTime.fromMillisecondsSinceEpoch(user.createdAt ?? 0).formatDate,
                           color: Colors.grey[400]!,
                         ),
                       );
