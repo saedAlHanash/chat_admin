@@ -17,7 +17,8 @@ part 'users_state.dart';
 
 class UsersCubit extends MCubit<UsersInitial> {
   UsersCubit() : super(UsersInitial.initial());
-
+  @override
+  get mState => state;
   @override
   String get nameCache => 'users';
 

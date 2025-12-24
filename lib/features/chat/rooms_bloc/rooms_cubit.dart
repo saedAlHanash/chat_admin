@@ -20,7 +20,8 @@ part 'rooms_state.dart';
 
 class RoomsCubit extends MCubit<RoomsInitial> {
   RoomsCubit() : super(RoomsInitial.initial());
-
+  @override
+  get mState => state;
   @override
   String get nameCache => 'rooms1';
 

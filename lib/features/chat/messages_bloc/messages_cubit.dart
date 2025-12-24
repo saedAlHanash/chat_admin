@@ -13,7 +13,8 @@ part 'messages_state.dart';
 
 class MessagesCubit extends MCubit<MessagesInitial> {
   MessagesCubit() : super(MessagesInitial.initial());
-
+  @override
+  get mState => state;
   @override
   String get nameCache => state.mRequest.id.toString();
 
@@ -121,4 +122,6 @@ class MessagesCubit extends MCubit<MessagesInitial> {
     state.stream?.cancel();
     return () {};
   }
+
+
 }
