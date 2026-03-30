@@ -133,12 +133,10 @@ class MyHttpOverrides extends HttpOverrides {
 class Note {
   static Future initialize() async {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    var androidInitialize =
-        const AndroidInitializationSettings('mipmap/ic_launcher');
+    var androidInitialize = const AndroidInitializationSettings('mipmap/ic_launcher');
     var iOSInitialize = const DarwinInitializationSettings();
-    var initializationsSettings =
-        InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
-    await flutterLocalNotificationsPlugin!.initialize(initializationsSettings);
+    var initializationsSettings = InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+    await flutterLocalNotificationsPlugin!.initialize(settings: initializationsSettings);
   }
 
   static Future showBigTextNotification({
@@ -166,7 +164,11 @@ class Note {
     );
 
     await flutterLocalNotificationsPlugin?.show(
-        (DateTime.now().millisecondsSinceEpoch ~/ 1000), title, body, not);
+      id: (DateTime.now().millisecondsSinceEpoch ~/ 1000),
+      title: title,
+      body: body,
+      notificationDetails: not,
+    );
   }
 }
 
