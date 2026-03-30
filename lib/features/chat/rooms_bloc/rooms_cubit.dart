@@ -13,13 +13,15 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:m_cubit/m_cubit.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../../services/chat_service/core/firebase_chat_core_config.dart';
 import '../../../services/chat_service/core/util.dart';
 
 part 'rooms_state.dart';
 
 class RoomsCubit extends MCubit<RoomsInitial> {
   RoomsCubit() : super(RoomsInitial.initial());
-
+  @override
+  get mState => state;
   @override
   String get nameCache => 'rooms1';
 
@@ -61,7 +63,7 @@ class RoomsCubit extends MCubit<RoomsInitial> {
     // آخر 100 رسالة
     // بحيث تكون جميع الرسائل أكبر من تاريخ آخر رسالة مخزنة
     final query = FirebaseFirestore.instance
-        .collection('rooms')
+        .collection(FirebaseChatCoreConfig.instance.roomsCollectionName)
         .orderBy('updatedAt', descending: true)
         // .limit(100)
         .where(
@@ -78,7 +80,7 @@ class RoomsCubit extends MCubit<RoomsInitial> {
 
     final stream = query.snapshots().listen((snapshot) async {
       //تجميع جميع المحادثات القادمة من ال stream
-      final listRooms = await processRoomsQuery(snapshot, 'users');
+      final listRooms = await processRoomsQuery(snapshot);
       //في حال فارغة لا تكمل
       if (listRooms.isEmpty) return;
 
@@ -154,7 +156,7 @@ class RoomsCubit extends MCubit<RoomsInitial> {
   }
 
   Future<void> deleteRoom(String id) async {
-    await FirebaseFirestore.instance.collection('rooms').doc(id).delete();
+    await FirebaseFirestore.instance.collection(FirebaseChatCoreConfig.instance.roomsCollectionName).doc(id).delete();
     loggerObject.e(id);
   }
 

@@ -175,9 +175,13 @@ extension DateUtcHelper on DateTime {
   }
 
   String get formatDate => DateFormat('yyyy/MM/dd', 'en').format(this);
+
   String get formatDateMD => DateFormat('M/dd', 'en').format(this);
+
   String get formatDateDY => DateFormat('yyyy/MM', 'en').format(this);
+
   String get formatDateMonthName => '$monthName ${day}';
+
   String get formatDateD => DateFormat('dd', 'en').format(this);
 
   String get formatDateToRequest => DateFormat('yyyy-MM-dd', 'en').format(this);
@@ -195,6 +199,7 @@ extension DateUtcHelper on DateTime {
   String get formatDateAther => DateFormat('yyyy-MM-dd HH:mm', 'en').format(this);
 
   String get formatTime => DateFormat('hh:mm a', 'en').format(this);
+
   String get formatTime24 => DateFormat('hh:mm', 'en').format(this);
 
   String get dayName => DateFormat('EEEE').format(this);
@@ -202,6 +207,7 @@ extension DateUtcHelper on DateTime {
   String get monthName => DateFormat('MMMM').format(this);
 
   String get formatDateTime => '$formatDate - $formatTime';
+
   String get formatDateTime24 => '$formatDate - $formatTime24';
 
   String get formatDateTimeVertical => '$formatDate\n$formatTime';
@@ -249,8 +255,7 @@ extension RoomH on types.Room {
 
   types.User get otherUser {
     final u = users.firstWhereOrNull((e) => e.id != '0');
-    return u ??
-        types.User(id: '-1', firstName: '${users.firstOrNull?.id} -${users.lastOrNull?.id}');
+    return u ?? types.User(id: '-1', firstName: '${users.firstOrNull?.id} -${users.lastOrNull?.id}');
   }
 
   int get latestSeen => metadata?['latestSeen'] ?? 0;
@@ -266,6 +271,8 @@ extension RoomH on types.Room {
 
 extension UserH on types.User {
   String get name => '$firstName';
+
+  String get email => metadata?['email']?.toString() ?? '';
 }
 
 extension QueryDocumentSnapshotH on QueryDocumentSnapshot {

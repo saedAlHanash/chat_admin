@@ -17,6 +17,7 @@ import 'package:image_multi_type/image_multi_type.dart';
 import '../core/util/my_style.dart';
 import '../generated/assets.dart';
 import '../services/chat_service/chat_service_core.dart';
+import '../services/chat_service/core/firebase_chat_core.dart';
 import 'chat/messages_bloc/messages_cubit.dart';
 import 'chat/open_room_cubit/open_room_cubit.dart';
 import 'chat/rooms_bloc/rooms_cubit.dart';
@@ -56,7 +57,7 @@ class HomeScreenState extends State<HomeScreen> {
         await context.read<MessagesCubit>().state.stream?.cancel();
         if (!context.mounted) return;
         Navigator.pushNamed(context, RouteName.chat, arguments: state.result)
-            .then((value) => ChatServiceCore.latestSeenRoom(state.result));
+            .then((value) => FirebaseChatCore.instance.latestSeenRoom(state.result!));
       },
       child: DefaultTabController(
         length: 3,
@@ -124,6 +125,7 @@ class HomeScreenState extends State<HomeScreen> {
                     return MyStyle.loadingWidget();
                   }
                   return ListView.separated(
+                    padding: EdgeInsets.all(20.0).r,
                     shrinkWrap: true,
                     separatorBuilder: (context, i) {
                       return Divider(color: Colors.grey[100]);
@@ -132,6 +134,7 @@ class HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       final room = state.othersRooms[index];
                       return ListTile(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(8.0.r)),
                         onTap: () async {
                           context.read<OpenRoomCubit>().openRoomByRoom(room);
                         },
@@ -195,8 +198,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 textAlign: TextAlign.center,
                                 size: 12.0.sp,
                                 color: Colors.grey,
-                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!)
-                                    .formatDateTimeVertical,
+                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!).formatDateTimeVertical,
                               ),
                       );
                     },
@@ -209,30 +211,41 @@ class HomeScreenState extends State<HomeScreen> {
                     return MyStyle.loadingWidget();
                   }
                   return ListView.separated(
+                    padding: EdgeInsets.all(20.0).r,
                     shrinkWrap: true,
                     itemCount: state.myRooms.length,
                     separatorBuilder: (context, i) {
-                      return Divider(
-                        color: Colors.grey[100],
-                      );
+                      return 10.0.verticalSpace;
                     },
                     itemBuilder: (_, i) {
                       final room = state.myRooms[i];
                       return ListTile(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(8.0.r)),
+                        tileColor:
+                            room.isRead ? AppColorManager.lightGray : AppColorManager.threadColor.withValues(alpha: 0.1),
                         onTap: () async {
                           context.read<OpenRoomCubit>().openRoomByRoom(room);
                         },
                         leading: CircleImageWidget(
-                          url: (room.otherUser.imageUrl.isBlank)
-                              ? Assets.imagesAvatar
-                              : room.otherUser.imageUrl,
+                          url: (room.otherUser.imageUrl.isBlank) ? Assets.imagesAvatar : room.otherUser.imageUrl,
                           size: 40.0.r,
                         ),
-                        title: DrawableText(
-                          text: room.otherUser.name,
-                          maxLines: 1,
-                          matchParent: true,
-                          drawablePadding: 5.0.w,
+                        title: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            DrawableText(
+                              text: room.otherUser.name,
+                              maxLines: 1,
+                              matchParent: true,
+                            ),
+                            3.0.verticalSpace,
+                            DrawableText(
+                              text: room.otherUser.email,
+                              size: 10.0,
+                              matchParent: true,
+                              color: Colors.grey,
+                            )
+                          ],
                         ),
                         subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
                         trailing: room.updatedAt == null
@@ -241,8 +254,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 textAlign: TextAlign.center,
                                 size: 12.0.sp,
                                 color: Colors.grey,
-                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!)
-                                    .formatDateTimeVertical,
+                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!).formatDateTimeVertical,
                               ),
                       );
                     },
@@ -252,6 +264,7 @@ class HomeScreenState extends State<HomeScreen> {
               BlocBuilder<UsersCubit, UsersInitial>(
                 builder: (context, state) {
                   return ListView.separated(
+                    padding: EdgeInsets.all(20.0).r,
                     shrinkWrap: true,
                     itemCount: state.result.length,
                     separatorBuilder: (context, i) {
@@ -271,15 +284,18 @@ class HomeScreenState extends State<HomeScreen> {
                           size: 40.0.r,
                         ),
                         title: DrawableText(
-                          text: user.firstName ?? '',
+                          text: user.name ?? '',
                           maxLines: 1,
                           matchParent: true,
                           drawablePadding: 5.0.w,
                         ),
-                        trailing: ImageMultiType(
-                          url: Icons.arrow_forward_ios,
-                          height: 15.0,
-                          width: 15.0,
+                        subtitle: DrawableText(
+                          text: user.email,
+                          matchParent: true,
+                          drawablePadding: 5.0.w,
+                        ),
+                        trailing: DrawableText(
+                          text: DateTime.fromMillisecondsSinceEpoch(user.createdAt ?? 0).formatDate,
                           color: Colors.grey[400]!,
                         ),
                       );

@@ -80,6 +80,16 @@ class PutUrl {
 class DeleteUrl {
   static const removeFavorite = 'favorites';
 }
+String get baseUrl {
+  return live;
+  // return test;
+}
+
+
+const live = 'api.fitnessstorm.org';
+const test = 'api-test.fitnessstorm.org';
+
+bool get isTestMode => baseUrl == test;
 
 const additionalConst = 'api/mobile/';
-const baseUrl = 'api.fitnessstorm.org';
+
