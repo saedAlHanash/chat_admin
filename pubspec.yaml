@@ -28,7 +28,7 @@ dependencies:
   firebase_storage: ^13.4.3
   flutter_chat_types: ^3.6.2
   cloud_firestore: ^6.6.0
-  flutter_chat_ui: ^2.11.1
+  flutter_chat_ui: ^1.6.15
 
   file_picker: ^11.0.2
   http: ^1.6.0
