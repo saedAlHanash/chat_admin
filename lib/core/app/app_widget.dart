@@ -29,10 +29,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     setImageMultiTypeErrorImage(
-      const Opacity(
+       Opacity(
         opacity: 0.3,
         child: ImageMultiType(
-          url: Assets.imagesLogo,
+          url: Assets.images.logo.path,
           height: 30.0,
           width: 30.0,
         ),

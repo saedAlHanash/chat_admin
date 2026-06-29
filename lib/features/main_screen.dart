@@ -146,7 +146,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 top: 0,
                                 child: CircleImageWidget(
                                   url: (room.users.firstOrNull?.imageUrl.isBlank ?? true)
-                                      ? Assets.imagesAvatar
+                                      ? Assets.images.avatar.path
                                       : room.users.firstOrNull?.imageUrl,
                                   size: 35.0.r,
                                 ),
@@ -155,7 +155,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 bottom: 0,
                                 child: CircleImageWidget(
                                   url: (room.users.lastOrNull?.imageUrl.isBlank ?? true)
-                                      ? Assets.imagesAvatar
+                                      ? Assets.images.avatar.path
                                       : room.users.lastOrNull?.imageUrl,
                                   size: 35.0.r,
                                 ),
@@ -227,7 +227,7 @@ class HomeScreenState extends State<HomeScreen> {
                           context.read<OpenRoomCubit>().openRoomByRoom(room);
                         },
                         leading: CircleImageWidget(
-                          url: (room.otherUser.imageUrl.isBlank) ? Assets.imagesAvatar : room.otherUser.imageUrl,
+                          url: (room.otherUser.imageUrl.isBlank) ? Assets.images.avatar.path : room.otherUser.imageUrl,
                           size: 40.0.r,
                         ),
                         title: Column(
@@ -280,7 +280,7 @@ class HomeScreenState extends State<HomeScreen> {
                           context.read<OpenRoomCubit>().openRoomByUserId(user.id);
                         },
                         leading: CircleImageWidget(
-                          url: (user.imageUrl.isBlank) ? Assets.imagesAvatar : user.imageUrl,
+                          url: (user.imageUrl.isBlank) ? Assets.images.avatar.path : user.imageUrl,
                           size: 40.0.r,
                         ),
                         title: DrawableText(

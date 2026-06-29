@@ -299,7 +299,7 @@ class _ChatPageState extends State<ChatPage> {
             child: ListTile(
               leading: CircleImageWidget(
                   url: widget.room.otherUser.imageUrl.isBlank
-                      ? Assets.imagesAvatar
+                      ? Assets.images.avatar.path
                       : widget.room.otherUser.imageUrl,
                   size: 40.0.r),
               title: DrawableText(text: widget.room.otherUser.name, color: Colors.white),

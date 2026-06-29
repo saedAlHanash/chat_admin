@@ -41,7 +41,7 @@ class SplashScreenPage extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.all(1.0.sw / 7),
                 child: Image.asset(
-                  Assets.imagesWhiteLogo,
+                  Assets.images.whiteLogo.path,
                   fit: BoxFit.cover,
                 ),
               ),
