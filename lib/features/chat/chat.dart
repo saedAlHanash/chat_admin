@@ -58,7 +58,7 @@ class _ChatPageState extends State<ChatPage> {
   bool _isAttachmentUploading = false;
 
   void _handleFileSelection() async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.any);
+    final result = await FilePicker.pickFiles(type: FileType.any);
 
     if (result != null && result.files.single.path != null) {
       _setAttachmentUploading(true);
@@ -123,6 +123,13 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _handleMessageTap(BuildContext _, types.Message message) async {
+    if (message is types.TextMessage) {
+      final url = message.text;
+      if (url.startsWith('http')) {
+        LauncherHelper.openPage(url);
+      }
+    }
+
     if (message is types.FileMessage) {
       var localPath = message.uri;
 
@@ -310,11 +317,6 @@ class _ChatPageState extends State<ChatPage> {
       body: BlocBuilder<MessagesCubit, MessagesInitial>(
         builder: (context, state) {
           return Chat(
-            textMessageOptions: TextMessageOptions(
-              onLinkPressed: (p0) {
-                LauncherHelper.openPage(p0);
-              },
-            ),
             isAttachmentUploading: _isAttachmentUploading,
             messages: state.result,
             bubbleBuilder: (child, {required message, required nextMessageInGroup}) {
