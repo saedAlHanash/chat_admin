@@ -14,7 +14,7 @@ import '../files_service/file_upload_service.dart';
 class ChatServiceCore {
   static Future<void> initFirebaseChat() async {
     final mode = isTestMode ? 'test' : 'live';
-    FirebaseChatCore.instance.initialize(
+    await FirebaseChatCore.instance.initialize(
       ChatConfig(
         firestore: FirebaseFirestore.instance,
         currentUserId: () => '0',

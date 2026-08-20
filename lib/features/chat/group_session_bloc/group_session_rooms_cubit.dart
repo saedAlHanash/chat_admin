@@ -30,7 +30,7 @@ class GroupSessionRoomsCubit extends MCubit<GroupSessionRoomsInitial> {
   Future<void> listenGroupRooms() async {
     await state.stream?.cancel();
 
-    final groupStream = await FirebaseChatCore.instance.getAllGroupSessionRoomsStream();
+    final groupStream = FirebaseChatCore.instance.getAllGroupSessionRoomsStream();
 
     final stream = groupStream.listen(
       (rooms) async {

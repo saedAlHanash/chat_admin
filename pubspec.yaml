@@ -23,9 +23,9 @@ dependencies:
       url: https://github.com/saedAlHanash/m_cubit
 
   chat_lib:
-    git:
-      url: https://github.com/saedAlHanash/chat_lib
-  #    path: ../../packages/chat_lib
+#    git:
+#      url: https://github.com/saedAlHanash/chat_lib
+      path: ../../packages/chat_lib
 
   cupertino_icons: ^1.0.9
   firebase_core: ^4.11.0
