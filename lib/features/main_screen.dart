@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chat_lib/chat_lib.dart';
 import 'package:collection/collection.dart';
 import 'package:drawable_text/drawable_text.dart';
 import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
@@ -11,13 +11,15 @@ import 'package:fitness_admin_chat/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_multi_type/circle_image_widget.dart';
 import 'package:image_multi_type/image_multi_type.dart';
 
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
+
+import '../core/api_manager/api_url.dart';
 import '../core/util/my_style.dart';
 import '../generated/assets.dart';
-import '../services/chat_service/chat_service_core.dart';
-import '../services/chat_service/core/firebase_chat_core.dart';
+import 'chat/group_session_bloc/group_session_rooms_cubit.dart';
 import 'chat/messages_bloc/messages_cubit.dart';
 import 'chat/open_room_cubit/open_room_cubit.dart';
 import 'chat/rooms_bloc/rooms_cubit.dart';
@@ -40,7 +42,45 @@ class HomeScreenState extends State<HomeScreen> {
     _debounce = Timer(const Duration(milliseconds: 700), () {
       context.read<UsersCubit>().search(q: val);
       context.read<RoomsCubit>().search(q: val);
+      context.read<GroupSessionRoomsCubit>().search(q: val);
     });
+  }
+
+  Future<void> _exportCache() async {
+    try {
+      final mode = isTestMode ? 'test' : 'live';
+      final dir = await getApplicationDocumentsDirectory();
+      final targetDir = '${dir.path}/$mode';
+      final exportedFiles = await FirebaseChatCore.instance.exportAllSeedFiles(targetDir, pretty: true);
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('تم تصدير الكاش بنجاح ($mode)'),
+          content: SelectableText(
+            'تم حفظ 3 ملفات في المجلد:\n$targetDir\n\n'
+            '1. direct_rooms_seed.json\n'
+            '2. group_rooms_seed.json\n'
+            '3. users_seed.json',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                OpenFilex.open(exportedFiles['directRooms'] ?? dir.path);
+              },
+              child: const Text('فتح الملف'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('حسناً'),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('خطأ في التصدير: $e')));
+    }
   }
 
   @override
@@ -56,13 +96,30 @@ class HomeScreenState extends State<HomeScreen> {
       listener: (context, state) async {
         await context.read<MessagesCubit>().state.stream?.cancel();
         if (!context.mounted) return;
-        Navigator.pushNamed(context, RouteName.chat, arguments: state.result)
-            .then((value) => FirebaseChatCore.instance.latestSeenRoom(state.result!));
+        Navigator.pushNamed(context, RouteName.chat, arguments: state.result).then((value) async {
+          if (state.result != null) {
+            final updatedRoom = await FirebaseChatCore.instance.latestSeenRoom(state.result!);
+            if (context.mounted) {
+              if (updatedRoom.isGroup) {
+                context.read<GroupSessionRoomsCubit>().updateRoom(updatedRoom);
+              } else {
+                context.read<RoomsCubit>().updateRoom(updatedRoom);
+              }
+            }
+          }
+        });
       },
       child: DefaultTabController(
-        length: 3,
+        length: 4,
         child: Scaffold(
           appBar: AppBar(
+            // actions: [
+            //   IconButton(
+            //     icon: const Icon(Icons.file_download_outlined, color: Colors.white),
+            //     tooltip: 'تصدير الكاش (Seed Data)',
+            //     onPressed: _exportCache,
+            //   ),
+            // ],
             title: Container(
               margin: const EdgeInsets.only(top: 7.0),
               child: MyEditTextWidget(
@@ -79,6 +136,8 @@ class HomeScreenState extends State<HomeScreen> {
               ),
             ),
             bottom: TabBar(
+              isScrollable: true,
+              tabAlignment: TabAlignment.center,
               tabs: [
                 Tab(
                   child: DrawableText(
@@ -109,6 +168,13 @@ class HomeScreenState extends State<HomeScreen> {
                 ),
                 Tab(
                   child: DrawableText(
+                    text: 'المجموعات',
+                    color: Colors.white,
+                    size: 16.0.sp,
+                  ),
+                ),
+                Tab(
+                  child: DrawableText(
                     text: 'المستخدمين',
                     color: Colors.white,
                     size: 16.0.sp,
@@ -119,10 +185,21 @@ class HomeScreenState extends State<HomeScreen> {
           ),
           body: TabBarView(
             children: [
+              // 1. Others' Direct Conversations (Monitored)
               BlocBuilder<RoomsCubit, RoomsInitial>(
                 builder: (context, state) {
-                  if (state.statuses.loading) {
+                  loggerObject.w(state.result.length);
+                  if (state.loading) {
                     return MyStyle.loadingWidget();
+                  }
+                  if (state.othersRooms.isEmpty) {
+                    return Center(
+                      child: DrawableText(
+                        text: 'لا توجد محادثات',
+                        color: Colors.grey,
+                        size: 16.0.sp,
+                      ),
+                    );
                   }
                   return ListView.separated(
                     padding: EdgeInsets.all(20.0).r,
@@ -134,7 +211,7 @@ class HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       final room = state.othersRooms[index];
                       return ListTile(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(8.0.r)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
                         onTap: () async {
                           context.read<OpenRoomCubit>().openRoomByRoom(room);
                         },
@@ -159,7 +236,7 @@ class HomeScreenState extends State<HomeScreen> {
                                       : room.users.lastOrNull?.imageUrl,
                                   size: 35.0.r,
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -205,10 +282,21 @@ class HomeScreenState extends State<HomeScreen> {
                   );
                 },
               ),
+
+              // 2. Support Chats (With Admin '0')
               BlocBuilder<RoomsCubit, RoomsInitial>(
                 builder: (context, state) {
-                  if (state.statuses.loading) {
+                  if (state.loading) {
                     return MyStyle.loadingWidget();
+                  }
+                  if (state.myRooms.isEmpty) {
+                    return Center(
+                      child: DrawableText(
+                        text: 'لا توجد محادثات دعم',
+                        color: Colors.grey,
+                        size: 16.0.sp,
+                      ),
+                    );
                   }
                   return ListView.separated(
                     padding: EdgeInsets.all(20.0).r,
@@ -220,9 +308,10 @@ class HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (_, i) {
                       final room = state.myRooms[i];
                       return ListTile(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(8.0.r)),
-                        tileColor:
-                            room.isRead ? AppColorManager.lightGray : AppColorManager.threadColor.withValues(alpha: 0.1),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
+                        tileColor: room.isRead
+                            ? AppColorManager.lightGray
+                            : AppColorManager.threadColor.withValues(alpha: 0.1),
                         onTap: () async {
                           context.read<OpenRoomCubit>().openRoomByRoom(room);
                         },
@@ -244,7 +333,7 @@ class HomeScreenState extends State<HomeScreen> {
                               size: 10.0,
                               matchParent: true,
                               color: Colors.grey,
-                            )
+                            ),
                           ],
                         ),
                         subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
@@ -261,8 +350,103 @@ class HomeScreenState extends State<HomeScreen> {
                   );
                 },
               ),
+
+              // 3. Group Session Chats
+              BlocBuilder<GroupSessionRoomsCubit, GroupSessionRoomsInitial>(
+                builder: (context, state) {
+                  if (state.loading) {
+                    return MyStyle.loadingWidget();
+                  }
+                  if (state.result.isEmpty) {
+                    return Center(
+                      child: DrawableText(
+                        text: 'لا توجد مجموعات جماعية',
+                        color: Colors.grey,
+                        size: 16.0.sp,
+                      ),
+                    );
+                  }
+                  return ListView.separated(
+                    padding: EdgeInsets.all(20.0).r,
+                    shrinkWrap: true,
+                    separatorBuilder: (context, i) => Divider(color: Colors.grey[100]),
+                    itemCount: state.result.length,
+                    itemBuilder: (context, index) {
+                      final room = state.result[index];
+                      final trainerName = room.name?.isNotEmpty == true ? room.name! : 'مجموعة المدرب #${room.id}';
+                      final imageUrl = room.imageUrl;
+                      final memberCount = room.users.length;
+
+                      return ListTile(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
+                        onTap: () async {
+                          context.read<OpenRoomCubit>().openRoomByRoom(room);
+                        },
+                        leading: CircleImageWidget(
+                          url: (imageUrl.isBlank) ? Assets.images.avatar.path : imageUrl,
+                          size: 40.0.r,
+                        ),
+                        title: Row(
+                          children: [
+                            Expanded(
+                              child: DrawableText(
+                                text: trainerName,
+                                maxLines: 1,
+                                fontWeight: FontWeight.bold,
+                                size: 14.0.sp,
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0.w, vertical: 2.0.h),
+                              decoration: BoxDecoration(
+                                color: AppColorManager.mainColor.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12.0.r),
+                              ),
+                              child: DrawableText(
+                                text: '$memberCount عضو',
+                                size: 11.0.sp,
+                                color: AppColorManager.mainColor,
+                                drawableStart: ImageMultiType(
+                                  url: Icons.group,
+                                  height: 14.0.r,
+                                  width: 14.0.r,
+                                  color: AppColorManager.mainColor,
+                                ),
+                                drawablePadding: 4.0.w,
+                              ),
+                            ),
+                          ],
+                        ),
+                        subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
+                        trailing: room.updatedAt == null
+                            ? null
+                            : DrawableText(
+                                textAlign: TextAlign.center,
+                                size: 12.0.sp,
+                                color: Colors.grey,
+                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!).formatDateTimeVertical,
+                              ),
+                      );
+                    },
+                  );
+                },
+              ),
+
+              // 4. Users List
               BlocBuilder<UsersCubit, UsersInitial>(
                 builder: (context, state) {
+                  if (state.loading) {
+                    return MyStyle.loadingWidget();
+                  }
+                  if (state.result.isEmpty) {
+                    return Center(
+                      child: DrawableText(
+                        text: 'لا يوجد مستخدمين',
+                        color: Colors.grey,
+                        size: 16.0.sp,
+                      ),
+                    );
+                  }
                   return ListView.separated(
                     padding: EdgeInsets.all(20.0).r,
                     shrinkWrap: true,
@@ -284,7 +468,7 @@ class HomeScreenState extends State<HomeScreen> {
                           size: 40.0.r,
                         ),
                         title: DrawableText(
-                          text: user.name ?? '',
+                          text: user.name,
                           maxLines: 1,
                           matchParent: true,
                           drawablePadding: 5.0.w,

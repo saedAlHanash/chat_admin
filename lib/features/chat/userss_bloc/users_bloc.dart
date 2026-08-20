@@ -1,146 +1,91 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chat_lib/chat_lib.dart';
+import 'package:chat_lib/chat_lib.dart' as types;
 import 'package:collection/collection.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:fitness_admin_chat/core/extensions/extensions.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:m_cubit/m_cubit.dart';
-import 'package:path_provider/path_provider.dart';
-
-import '../../../services/chat_service/core/firebase_chat_core_config.dart';
-import '../../../services/chat_service/core/util.dart';
 
 part 'users_state.dart';
 
 class UsersCubit extends MCubit<UsersInitial> {
   UsersCubit() : super(UsersInitial.initial());
-  @override
-  get mState => state;
-  @override
-  String get nameCache => 'users';
 
   @override
-  String get filter => '0';
+  String get nameCache => 'users_admin';
+
+  @override
+  bool get withSupperFilet => false;
+
+  List<types.User> _rawUsers = [];
 
   Future<void> getChatUsers() async {
     emit(state.copyWith(statuses: CubitStatuses.loading));
-    await setData();
-
-    if (state.result.isEmpty) await Future.delayed(Duration(seconds: 4));
-
     await users();
   }
 
-  Future<void> saveJsonToFile(List<Map<String, dynamic>> jsonData, String fileName) async {
-    // تحويل القائمة إلى JSON String
-    String jsonString = jsonEncode(jsonData);
-
-    // الحصول على المسار المؤقت لحفظ الملف
-    final directory = await getTemporaryDirectory();
-    final file = await File('${directory.path}/$fileName.json').writeAsString(jsonString);
-
-    // تحديد مرجع التخزين في Firebase Storage
-    final storageRef = FirebaseStorage.instance.ref().child('json_files/$fileName.json');
-
-    // رفع الملف
-    await storageRef.putFile(file);
-    // كتابة البيانات إلى الملف
-  }
-
-  /// Returns a stream of messages from Firebase for a given room.
+  /// Returns a stream of users from Firebase synchronized with local cache.
   Future<void> users() async {
-    late final Query<Map<String, dynamic>> query;
+    await state.stream?.cancel();
 
-    query =
-        FirebaseFirestore.instance.collection(FirebaseChatCoreConfig.instance.usersCollectionName).orderBy('updatedAt', descending: true).where(
-              'updatedAt',
-              isGreaterThan: Timestamp.fromMillisecondsSinceEpoch(
-                state.result.firstOrNull?.updatedAt ?? 0,
-              ),
-            );
-
-    final stream = query.snapshots().listen((snapshot) async {
-      final users = snapshot.docs.map((doc) => doc.user);
-
-      for (var e in users) {
-        if (e.firstName?.toLowerCase() == 'guest') {
-          await deleteUser(e.id);
-        }
-      }
-      if (users.isEmpty) return;
-      await saveData(users, clearId: false);
-
-      if (state.statuses.loading) {
-        emit(state.copyWith(statuses: CubitStatuses.done));
-      }
-
-      if (isClosed) return;
-
-      await setData();
-    });
+    final usersStream = FirebaseChatCore.instance.getUsersStream();
+    final stream = usersStream.listen(
+      (listUsers) async {
+        _rawUsers = List<types.User>.from(listUsers);
+        await processAndEmitUsers();
+      },
+      onError: (e) {
+        emit(state.copyWith(error: e.toString(), statuses: CubitStatuses.done));
+      },
+    );
 
     emit(
       state.copyWith(
         stream: stream,
-        statuses: state.result.isNotEmpty ? CubitStatuses.done : null,
+        statuses: .done
       ),
     );
   }
 
-  types.User? findUser(String id) {
-    final user = state.result.firstWhereOrNull((e) => e.id == id);
-    return user;
-  }
+  Future<void> processAndEmitUsers() async {
+    var filtered = List<types.User>.from(_rawUsers);
 
-  Future<types.User> fetchUser(String id) async {
-    final user = await fetchUserModel(FirebaseFirestore.instance, id);
-    return user;
-  }
+    // Filter out guests
+    filtered.removeWhere((user) => (user.firstName ?? '').toLowerCase() == 'guest');
 
-  Future<void> setData() async {
-    final data = await getListCached(
-      fromJson: types.User.fromJson,
-      deleteFunction: (json) {
-        return json['firstName']?.toString().toLowerCase() == 'guest';
-      },
-    );
+    // Sort by createdAt descending
+    filtered.sort((a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
 
-    final dataList = data..sort((a, b) => (b.createdAt ?? 0).compareTo(a.createdAt ?? 0));
-
-    var usersCached = <types.User>[];
-
-    if (state.search.isEmpty) {
-      usersCached = dataList;
-    } else {
-      usersCached = dataList
-          .where(
-              (room) => (room.firstName ?? '').toLowerCase().contains(state.search.toLowerCase()))
+    if (state.search.isNotEmpty) {
+      filtered = filtered
+          .where((user) =>
+              (user.firstName ?? '').toLowerCase().contains(state.search.toLowerCase()) ||
+              (user.lastName ?? '').toLowerCase().contains(state.search.toLowerCase()))
           .toList();
     }
 
-    emit(state.copyWith(result: usersCached));
+    emit(state.copyWith(result: filtered, statuses: CubitStatuses.done));
   }
 
   Future<void> addUser(types.User e) async {
-    await saveData([e], clearId: false);
+    await ChatCacheManager.instance.cacheUser(e);
   }
 
   void search({required String q}) {
     emit(state.copyWith(search: q));
-    setData();
+    processAndEmitUsers();
   }
 
-  Future<void> deleteUser(String id) async {
-    await FirebaseFirestore.instance.collection(FirebaseChatCoreConfig.instance.usersCollectionName).doc(id).delete();
+  Future<types.User?> fetchUser(String id) async {
+    return await FirebaseChatCore.instance.fetchUser(id);
+  }
+
+  types.User? findUser(String id) {
+    return state.result.firstWhereOrNull((e) => e.id == id);
   }
 
   @override
-  Future<Function> close() async {
-    super.close();
-    state.stream?.cancel();
-    return () {};
+  Future<void> close() async {
+    await state.stream?.cancel();
+    return super.close();
   }
 }

@@ -24,8 +24,6 @@ class GetUrl {
 
   static const getAnnouncements = 'announcements';
 
-
-
   static const slider = 'slider';
 
   static const favorite = 'favorites';
@@ -42,7 +40,7 @@ class GetUrl {
   static var categoryById = 'category';
   static var subCategoryById = 'subCategory';
 
-  static var coupon ='coupon';
+  static var coupon = 'coupon';
 }
 
 class PostUrl {
@@ -80,16 +78,15 @@ class PutUrl {
 class DeleteUrl {
   static const removeFavorite = 'favorites';
 }
+
 String get baseUrl {
   return live;
   // return test;
 }
 
-
 const live = 'api.fitnessstorm.org';
 const test = 'api-test.fitnessstorm.org';
 
-bool get isTestMode => baseUrl == test;
+bool get isTestMode => true || baseUrl == test;
 
 const additionalConst = 'api/mobile/';
-

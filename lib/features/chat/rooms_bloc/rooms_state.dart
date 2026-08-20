@@ -1,7 +1,7 @@
 part of 'rooms_cubit.dart';
 
 class RoomsInitial extends AbstractState<List<types.Room>> {
-  final StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? stream;
+  final StreamSubscription? stream;
   final String search;
   final List<types.Room> myRooms;
   final List<types.Room> othersRooms;
@@ -40,7 +40,6 @@ class RoomsInitial extends AbstractState<List<types.Room>> {
 
   bool get notRead {
     final room = myRooms.firstWhereOrNull((e) => e.isNotRead);
-    // loggerObject.w(room?.id);
     return room != null;
   }
 
@@ -52,16 +51,17 @@ class RoomsInitial extends AbstractState<List<types.Room>> {
     String? error,
     String? search,
     bool? request,
-    StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? stream,
+    StreamSubscription? stream,
   }) {
     return RoomsInitial(
-        statuses: statuses ?? this.statuses,
-        result: result ?? this.result,
-        error: error ?? this.error,
-        search: search ?? this.search,
-        request: request ?? this.request,
-        myRooms: myRooms ?? this.myRooms,
-        othersRooms: othersRooms ?? this.othersRooms,
-        stream: stream ?? this.stream);
+      statuses: statuses ?? this.statuses,
+      result: result ?? this.result,
+      error: error ?? this.error,
+      search: search ?? this.search,
+      request: request ?? this.request,
+      myRooms: myRooms ?? this.myRooms,
+      othersRooms: othersRooms ?? this.othersRooms,
+      stream: stream ?? this.stream,
+    );
   }
 }

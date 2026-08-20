@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:chat_lib/chat_lib.dart';
+import 'package:collection/collection.dart';
 import 'package:drawable_text/drawable_text.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 import 'package:fitness_admin_chat/features/chat/sound_record.dart';
 import 'package:fitness_admin_chat/features/chat/util.dart';
@@ -20,10 +22,10 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../core/helper/launcher_helper.dart';
 import '../../core/strings/app_color_manager.dart';
+import '../../core/util/my_style.dart';
 import '../../core/util/snack_bar_message.dart';
 import '../../core/widgets/app_bar/app_bar_widget.dart';
 import '../../generated/assets.dart';
-import '../../services/chat_service/core/firebase_chat_core.dart';
 import 'messages_bloc/messages_cubit.dart';
 import 'my_room_object.dart';
 
@@ -37,16 +39,17 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  // late final
-  List<types.Message>? initialMessage;
-
   late final MyRoomObject myRoomObject;
+
+  bool get isGroup => widget.room.isGroup;
 
   @override
   void initState() {
+    final otherFcm = isGroup ? '' : ((widget.room.otherUser.metadata ?? {})['fcm']?.toString() ?? '');
+
     myRoomObject = MyRoomObject(
       roomId: widget.room.id,
-      fcmToken: (widget.room.otherUser.metadata ?? {})['fcm'] ?? '',
+      fcmToken: otherFcm,
     );
 
     context.read<MessagesCubit>().getChatRoomMessage(widget.room);
@@ -62,15 +65,17 @@ class _ChatPageState extends State<ChatPage> {
       _setAttachmentUploading(true);
       final name = result.files.single.name;
       final filePath = result.files.single.path!;
-      final file = File(filePath);
 
       try {
-        final reference = FirebaseStorage.instance.ref(name);
-        await reference.putFile(file);
-        final uri = await reference.getDownloadURL();
+        final mimeType = lookupMimeType(filePath);
+        final uri = await FirebaseChatCore.instance.uploadFile(
+          filePath,
+          mimeType: mimeType,
+          customArgs: {'compress': false},
+        );
 
         final message = types.PartialFile(
-          mimeType: lookupMimeType(filePath),
+          mimeType: mimeType,
           name: name,
           size: result.files.single.size,
           uri: uri,
@@ -100,9 +105,11 @@ class _ChatPageState extends State<ChatPage> {
       final name = result.name;
 
       try {
-        final reference = FirebaseStorage.instance.ref(name);
-        await reference.putFile(file);
-        final uri = await reference.getDownloadURL();
+        final uri = await FirebaseChatCore.instance.uploadFile(
+          result.path,
+          mimeType: 'image/jpeg',
+          customArgs: {'compress': true, 'compressionQuality': 70},
+        );
 
         final message = types.PartialImage(
           height: image.height.toDouble(),
@@ -133,9 +140,6 @@ class _ChatPageState extends State<ChatPage> {
 
       if (message.uri.startsWith('http')) {
         try {
-          final updatedMessage = message.copyWith(isLoading: true);
-          FirebaseChatCore.instance.updateMessage(updatedMessage, widget.room.id);
-
           final client = http.Client();
           final request = await client.get(Uri.parse(message.uri));
           final bytes = request.bodyBytes;
@@ -146,30 +150,20 @@ class _ChatPageState extends State<ChatPage> {
             final file = File(localPath);
             await file.writeAsBytes(bytes);
           }
-        } finally {
-          final updatedMessage = message.copyWith(isLoading: false);
-          FirebaseChatCore.instance.updateMessage(updatedMessage, widget.room.id);
-        }
+        } catch (_) {}
       }
 
       await OpenFilex.open(localPath);
     }
   }
 
-  void _handlePreviewDataFetched(types.TextMessage message, types.PreviewData previewData) {
-    final updatedMessage = message.copyWith(previewData: previewData);
-
-    FirebaseChatCore.instance.updateMessage(updatedMessage, widget.room.id);
-  }
-
   void _handleSendPressed(types.PartialText message) {
-    if (myRoomObject.needToSendNotification) {
+    if (myRoomObject.needToSendNotification && myRoomObject.fcmToken.isNotEmpty) {
       sendNotificationMessage(
         myRoomObject,
         ChatNotification(body: message.text, title: 'رسالة جديدة'),
       ).then((value) {
         if (value) {
-          ///for send notification to first message
           myRoomObject.needToSendNotification = false;
         }
       });
@@ -230,7 +224,7 @@ class _ChatPageState extends State<ChatPage> {
                   fontWeight: FontWeight.bold,
                 ),
                 onTap: () {
-                  Navigator.pop(context); // إغلاق الـ BottomSheet
+                  Navigator.pop(context);
                   _handleFileSelection();
                 },
               ),
@@ -274,20 +268,24 @@ class _ChatPageState extends State<ChatPage> {
     _setAttachmentUploading(true);
     try {
       final name = '${DateTime.now().millisecondsSinceEpoch}.aac';
-      final reference = FirebaseStorage.instance.ref().child(
-            'audios/${DateTime.now().millisecondsSinceEpoch}.aac',
-          );
-      await reference.putFile(audio);
-      final uri = await reference.getDownloadURL();
+      final uri = await FirebaseChatCore.instance.uploadFile(
+        audio.path,
+        mimeType: 'audio/aac',
+      );
 
       final message = types.PartialAudio(
         size: audio.lengthSync(),
         uri: uri,
-        duration: Duration(seconds: 0),
+        duration: const Duration(seconds: 0),
         name: name,
       );
 
       await FirebaseChatCore.instance.sendMessage(message, widget.room.id);
+      try {
+        audio.delete();
+      } catch (e) {
+        loggerObject.e('delete audio file $e');
+      }
       _setAttachmentUploading(false);
     } finally {
       _setAttachmentUploading(false);
@@ -296,6 +294,14 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final titleText = isGroup
+        ? (widget.room.name?.isNotEmpty == true ? widget.room.name! : 'مجموعة المدرب #${widget.room.id}')
+        : widget.room.otherUser.name;
+
+    final imageUrl = isGroup ? widget.room.imageUrl : widget.room.otherUser.imageUrl;
+
+    final isSpectator = !isGroup && !widget.room.isSupport;
+
     return Scaffold(
       appBar: AppBarWidget(
         actions: [
@@ -303,38 +309,61 @@ class _ChatPageState extends State<ChatPage> {
             width: .9.sw,
             child: ListTile(
               leading: CircleImageWidget(
-                  url: widget.room.otherUser.imageUrl.isBlank
-                      ? Assets.images.avatar.path
-                      : widget.room.otherUser.imageUrl,
-                  size: 40.0.r),
-              title: DrawableText(text: widget.room.otherUser.name, color: Colors.white),
+                url: (imageUrl.isBlank) ? Assets.images.avatar.path : imageUrl,
+                size: 40.0.r,
+              ),
+              title: DrawableText(
+                text: titleText,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+              subtitle: isGroup
+                  ? DrawableText(
+                      text: '${widget.room.users.length} أعضاء',
+                      color: Colors.white70,
+                      size: 11.0.sp,
+                    )
+                  : null,
             ),
           ),
         ],
       ),
       body: BlocBuilder<MessagesCubit, MessagesInitial>(
         builder: (context, state) {
+          if (state.loading) {
+            return MyStyle.loadingWidget();
+          }
           return Chat(
             isAttachmentUploading: _isAttachmentUploading,
             messages: state.result,
             bubbleBuilder: (child, {required message, required nextMessageInGroup}) {
-              final me = widget.room.me == null
-                  ? message.author.id == widget.room.users.first.id
+              final me = isSpectator
+                  ? message.author.id == widget.room.users.firstOrNull?.id
                   : message.author.id == '0';
+
+              final authorName = message.author.firstName ?? '';
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (isGroup && !me && authorName.isNotEmpty) ...[
+                    Padding(
+                      padding: EdgeInsetsDirectional.only(start: 8.0.w, bottom: 2.0.h),
+                      child: DrawableText(
+                        text: authorName,
+                        size: 11.0.sp,
+                        color: AppColorManager.mainColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                   Container(
                     decoration: BoxDecoration(
                       color: me ? AppColorManager.mainColor : AppColorManager.secondColor,
                       borderRadius: BorderRadiusDirectional.only(
-                        bottomStart: Radius.circular(
-                          me ? 16.0.r : 0.0.r,
-                        ),
-                        bottomEnd: Radius.circular(
-                          !me ? 16.0.r : 0.0.r,
-                        ),
+                        bottomStart: Radius.circular(me ? 16.0.r : 0.0.r),
+                        bottomEnd: Radius.circular(!me ? 16.0.r : 0.0.r),
                         topEnd: Radius.circular(16.0.r),
                         topStart: Radius.circular(16.0.r),
                       ),
@@ -344,9 +373,7 @@ class _ChatPageState extends State<ChatPage> {
                   3.0.verticalSpace,
                   DrawableText(
                     size: 10.0.sp,
-                    text: DateTime.fromMillisecondsSinceEpoch(message.createdAt ?? 0)
-                        .fixTimeZone
-                        .formatTime,
+                    text: DateTime.fromMillisecondsSinceEpoch(message.createdAt ?? 0).fixTimeZone.formatTime,
                     color: AppColorManager.grey,
                   ),
                 ],
@@ -416,7 +443,6 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               );
             },
-            onPreviewDataFetched: _handlePreviewDataFetched,
             onSendPressed: _handleSendPressed,
             theme: DarkChatTheme(
               backgroundColor: Colors.white,
@@ -438,8 +464,10 @@ class _ChatPageState extends State<ChatPage> {
             audioMessageBuilder: (p0, {required messageWidth}) {
               return AudioMessageBuilder(audioUrl: p0.uri);
             },
-            customBottomWidget: widget.room.me != null ? null : const SizedBox(),
-            user: widget.room.me == null ? widget.room.otherUser : const types.User(id: '0'),
+            customBottomWidget: isSpectator ? const SizedBox() : null,
+            user: isSpectator
+                ? (widget.room.users.firstOrNull ?? const types.User(id: '0'))
+                : const types.User(id: '0'),
           );
         },
       ),

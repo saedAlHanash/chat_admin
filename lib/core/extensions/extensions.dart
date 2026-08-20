@@ -1,7 +1,6 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collection/collection.dart';
+import 'package:chat_lib/chat_lib.dart';
 import 'package:drawable_text/drawable_text.dart';
 import 'package:fitness_admin_chat/core/strings/app_color_manager.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_multi_type/image_multi_type.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:m_cubit/m_cubit.dart';
 
@@ -246,61 +244,6 @@ extension ScrollMax on ScrollController {
   bool get isMax => position.maxScrollExtent == offset;
 
   bool get isMin => offset == 0;
-}
-
-extension RoomH on types.Room {
-  types.User? get me => users.firstWhereOrNull((e) => e.id == '0');
-
-  String get usersName => users.map((e) => e.name).join(' ');
-
-  types.User get otherUser {
-    final u = users.firstWhereOrNull((e) => e.id != '0');
-    return u ?? types.User(id: '-1', firstName: '${users.firstOrNull?.id} -${users.lastOrNull?.id}');
-  }
-
-  int get latestSeen => metadata?['latestSeen'] ?? 0;
-
-  bool get isRead {
-    if ((lastMessages ?? []).isEmpty) return true;
-    final latestMessage = lastMessages!.first;
-    return ((latestMessage.author.id == '0') || ((latestSeen - (updatedAt ?? 0)) >= 0));
-  }
-
-  bool get isNotRead => !isRead;
-}
-
-extension UserH on types.User {
-  String get name => '$firstName';
-
-  String get email => metadata?['email']?.toString() ?? '';
-}
-
-extension QueryDocumentSnapshotH on QueryDocumentSnapshot {
-  Map<String, dynamic> message(types.Room room) {
-    final data = this.data() as Map<String, dynamic>;
-
-    final author = room.users.firstWhere(
-      (u) => u.id == data['authorId'],
-      orElse: () => types.User(id: data['authorId'] as String),
-    );
-
-    data['author'] = author.toJson();
-    data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
-    data['id'] = id;
-    data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
-    return data;
-  }
-
-  types.User get user {
-    final data = this.data() as Map<String, dynamic>;
-
-    data['id'] = id;
-    data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
-    data['lastSeen'] = data['lastSeen']?.millisecondsSinceEpoch;
-    data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
-
-    return types.User.fromJson(data);
-  }
 }
 
 extension MessageH on types.Message {

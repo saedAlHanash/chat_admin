@@ -1,7 +1,7 @@
 part of 'messages_cubit.dart';
 
 class MessagesInitial extends AbstractState<List<types.Message>> {
-  final StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? stream;
+  final StreamSubscription? stream;
 
   const MessagesInitial({
     required super.result,
@@ -32,12 +32,13 @@ class MessagesInitial extends AbstractState<List<types.Message>> {
     CubitStatuses? statuses,
     List<types.Message>? result,
     types.Room? request,
-    StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? stream,
+    StreamSubscription? stream,
   }) {
     return MessagesInitial(
-        statuses: statuses ?? this.statuses,
-        result: result ?? this.result,
-        request: request ?? this.request,
-        stream: stream ?? this.stream);
+      statuses: statuses ?? this.statuses,
+      result: result ?? this.result,
+      request: request ?? this.request,
+      stream: stream ?? this.stream,
+    );
   }
 }

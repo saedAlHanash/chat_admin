@@ -1,19 +1,34 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chat_lib/chat_lib.dart';
+import 'package:chat_lib/chat_lib.dart' as types;
+import 'package:fitness_admin_chat/core/api_manager/api_url.dart';
 import 'package:fitness_admin_chat/features/chat/userss_bloc/users_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import '../../core/api_manager/api_service.dart';
 import '../../core/error/error_manager.dart';
 import '../../main.dart';
-import 'core/firebase_chat_core.dart';
-import 'core/firebase_chat_core_config.dart';
+
+import '../files_service/file_upload_service.dart';
 
 class ChatServiceCore {
   static Future<void> initFirebaseChat() async {
-    loginChatUser();
-    return;
+    final mode = isTestMode ? 'test' : 'live';
+    FirebaseChatCore.instance.initialize(
+      ChatConfig(
+        firestore: FirebaseFirestore.instance,
+        currentUserId: () => '0',
+        isTestMode: isTestMode,
+        directRoomsSeedAssetPath: 'assets/seed/$mode/direct_rooms_seed.json',
+        groupRoomsSeedAssetPath: 'assets/seed/$mode/group_rooms_seed.json',
+        usersSeedAssetPath: 'assets/seed/$mode/users_seed.json',
+        uploadDelegate: (filePath, {mimeType, customArgs}) async {
+          return await FileUploadService.upload(filePath, mimeType: mimeType, customArgs: customArgs);
+        },
+      ),
+    );
+
+    await loginChatUser();
   }
 
   static Future<bool> loginChatUser() async {
@@ -36,10 +51,9 @@ class ChatServiceCore {
     }
   }
 
-//I loved you once but it's forever ،
   static Future<types.User?> getUser(String userId) async {
     final user = await (ctx!.read<UsersCubit>()).fetchUser(userId);
-    if (user.id == '-1') return null;
+    if (user == null || user.id == '-1') return null;
     return user;
   }
 
@@ -52,24 +66,5 @@ class ChatServiceCore {
       loggerObject.e('latestSeenRoom $e');
       return false;
     }
-  }
-
-  static Future<List<types.User>> getChatUsers() async {
-    final users = await FirebaseFirestore.instance
-        .collection(FirebaseChatCoreConfig.instance.usersCollectionName)
-        .get();
-
-    final listUsers = users.docs.map((doc) {
-      final data = doc.data();
-
-      data['id'] = doc.id;
-      data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
-      data['lastSeen'] = data['lastSeen']?.millisecondsSinceEpoch;
-      data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
-
-      return types.User.fromJson(data);
-    }).toList();
-
-    return listUsers;
   }
 }

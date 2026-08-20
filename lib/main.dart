@@ -17,12 +17,12 @@ import 'core/error/error_manager.dart';
 import 'core/injection/injection_container.dart' as di;
 import 'core/injection/injection_container.dart';
 import 'core/util/shared_preferences.dart';
+import 'features/chat/group_session_bloc/group_session_rooms_cubit.dart';
 import 'features/chat/messages_bloc/messages_cubit.dart';
 import 'features/chat/open_room_cubit/open_room_cubit.dart';
 import 'features/chat/rooms_bloc/rooms_cubit.dart';
 import 'features/chat/userss_bloc/users_bloc.dart';
 import 'firebase_options.dart';
-import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 //adb shell setprop debug.firebase.analytics.app com.slf.sadaf
@@ -67,7 +67,9 @@ void main() async {
         BlocProvider(create: (_) => sl<OpenRoomCubit>()),
         BlocProvider(
           create: (_) => sl<RoomsCubit>()..getChatRooms(),
-          // lazy: true,
+        ),
+        BlocProvider(
+          create: (_) => sl<GroupSessionRoomsCubit>()..getGroupRooms(),
         ),
         BlocProvider(create: (_) => sl<MessagesCubit>()),
       ],

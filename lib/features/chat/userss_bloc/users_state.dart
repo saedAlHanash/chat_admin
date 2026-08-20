@@ -1,7 +1,7 @@
 part of 'users_bloc.dart';
 
 class UsersInitial extends AbstractState<List<types.User>> {
-  final StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? stream;
+  final StreamSubscription? stream;
   final String search;
 
   const UsersInitial({
@@ -10,11 +10,10 @@ class UsersInitial extends AbstractState<List<types.User>> {
     super.request,
     super.error,
     this.stream,
-
     this.search = '',
   });
 
-  bool get mRequest => request as bool;
+  bool? get mRequest => request as bool?;
 
   @override
   List<Object?> get props => [
@@ -29,28 +28,25 @@ class UsersInitial extends AbstractState<List<types.User>> {
   factory UsersInitial.initial() {
     return const UsersInitial(
       result: [],
-
       statuses: CubitStatuses.init,
     );
   }
 
-
   UsersInitial copyWith({
     CubitStatuses? statuses,
     List<types.User>? result,
-    List<types.User>? myUsers,
-    List<types.User>? othersUsers,
     String? error,
     String? search,
     bool? request,
-    StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? stream,
+    StreamSubscription? stream,
   }) {
     return UsersInitial(
-        statuses: statuses ?? this.statuses,
-        result: result ?? this.result,
-        error: error ?? this.error,
-        search: search ?? this.search,
-        request: request ?? this.request,
-        stream: stream ?? this.stream);
+      statuses: statuses ?? this.statuses,
+      result: result ?? this.result,
+      error: error ?? this.error,
+      search: search ?? this.search,
+      request: request ?? this.request,
+      stream: stream ?? this.stream,
+    );
   }
 }

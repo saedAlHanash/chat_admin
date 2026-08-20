@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.73"
+  archive:
+    dependency: transitive
+    description:
+      name: archive
+      sha256: be169cf6ac481e052c4538715d88841d567150dfe1df38aaec76461a4e7b39f2
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
   args:
     dependency: transitive
     description:
@@ -89,6 +97,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  chat_lib:
+    dependency: "direct main"
+    description:
+      path: "../../packages/chat_lib"
+      relative: true
+    source: path
+    version: "0.0.1"
   clock:
     dependency: transitive
     description:
@@ -306,30 +321,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.1"
-  firebase_storage:
-    dependency: "direct main"
-    description:
-      name: firebase_storage
-      sha256: f732bbcd82d21cfbe49b6fe5f4c50334f5f3660a151f004f58da388f8e39e6d3
-      url: "https://pub.dev"
-    source: hosted
-    version: "13.4.3"
-  firebase_storage_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_storage_platform_interface
-      sha256: "2515a8d16be44fffb3782669543804a651e73f637bb668db77d76a5bd38c396f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.0.3"
-  firebase_storage_web:
-    dependency: transitive
-    description:
-      name: firebase_storage_web
-      sha256: "05813d665afa2c2bafaba62c97dc1b510886b1b4fcec49bf05934bd78795c6e7"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.11.9"
   fixnum:
     dependency: transitive
     description:
@@ -370,11 +361,58 @@ packages:
   flutter_chat_ui:
     dependency: "direct main"
     description:
-      name: flutter_chat_ui
-      sha256: "168a4231464ad00a17ea5f0813f1b58393bdd4035683ea4dc37bbe26be62891e"
+      path: "packages/flutter_chat_ui-1.6.15"
+      relative: true
+    source: path
+    version: "1.6.15"
+  flutter_image_compress:
+    dependency: "direct main"
+    description:
+      name: flutter_image_compress
+      sha256: "98a48c05a7add6869c6838270e862124a4d571f9dd5d0cf209ed03a71b20ea84"
       url: "https://pub.dev"
     source: hosted
-    version: "1.6.15"
+    version: "2.5.1"
+  flutter_image_compress_common:
+    dependency: transitive
+    description:
+      name: flutter_image_compress_common
+      sha256: "76869e4d5f3d65f3431e7edff0b2d8ad1eea68b49c6a37772fdb1ae6016da9ed"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
+  flutter_image_compress_macos:
+    dependency: transitive
+    description:
+      name: flutter_image_compress_macos
+      sha256: "0d2a842d2e544828fb32bda16dcfccb3149107df568898a4936d78232e486847"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
+  flutter_image_compress_ohos:
+    dependency: transitive
+    description:
+      name: flutter_image_compress_ohos
+      sha256: "1491bb7bcfdf59e3b127c263c116cfbf8ed3afade6e7fa691d9622e838ed7e48"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3+1"
+  flutter_image_compress_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_image_compress_platform_interface
+      sha256: bbefb7967bda565004fdabdb3300dcbfb40c7ef8402675d23206e5bddc358178
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
+  flutter_image_compress_web:
+    dependency: transitive
+    description:
+      name: flutter_image_compress_web
+      sha256: "91cc58e091a1e09c7683d216d579e2b964119a8527fc43b64dfdb00f1acc94ec"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5+1"
   flutter_link_previewer:
     dependency: transitive
     description:
@@ -537,6 +575,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.3"
+  hive_ce:
+    dependency: transitive
+    description:
+      name: hive_ce
+      sha256: "8e9980e68643afb1e765d3af32b47996552a64e190d03faf622cea07c1294418"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.19.3"
+  hive_ce_flutter:
+    dependency: transitive
+    description:
+      name: hive_ce_flutter
+      sha256: "2677e95a333ff15af43ccd06af7eb7abbf1a4f154ea071997f3de4346cae913a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.4"
   hive_flutter:
     dependency: transitive
     description:
@@ -569,6 +623,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  image:
+    dependency: "direct main"
+    description:
+      name: image
+      sha256: "1976370a4df3091bb0f72409c187ad1f9132a818bc6b95ca59c0bae1c75c688e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.9.2"
   image_multi_type:
     dependency: "direct main"
     description:
@@ -649,6 +711,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.20.3"
+  isolate_channel:
+    dependency: transitive
+    description:
+      name: isolate_channel
+      sha256: a9d3d620695bc984244dafae00b95e4319d6974b2d77f4b9e1eb4f2efe099094
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.1"
   json_annotation:
     dependency: transitive
     description:
@@ -946,6 +1016,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  posix:
+    dependency: transitive
+    description:
+      name: posix
+      sha256: bc1bad54ad2b735816e31f8d4600cfde6c7839975085ddfbca48b6c9f7c4044e
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.5.2"
   provider:
     dependency: transitive
     description:
@@ -1320,5 +1398,5 @@ packages:
     source: hosted
     version: "6.5.0"
 sdks:
-  dart: ">=3.10.0 <4.0.0"
+  dart: ">=3.12.2 <4.0.0"
   flutter: ">=3.38.1"

@@ -1,6 +1,6 @@
 part of 'open_room_cubit.dart';
 
-class OpenRoomInitial extends AbstractState<Room?> {
+class OpenRoomInitial extends AbstractState<types.Room?> {
   const OpenRoomInitial({
     required super.result,
     super.error,
@@ -17,7 +17,7 @@ class OpenRoomInitial extends AbstractState<Room?> {
   }
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         statuses,
         error,
         if (result != null) result!,
@@ -26,17 +26,15 @@ class OpenRoomInitial extends AbstractState<Room?> {
 
   OpenRoomInitial copyWith({
     CubitStatuses? statuses,
-    Room? result,
+    types.Room? result,
     String? error,
     dynamic request,
-    // Room?? open_roomParam,
   }) {
     return OpenRoomInitial(
       statuses: statuses ?? this.statuses,
       result: result ?? this.result,
       error: error ?? this.error,
       request: request ?? this.request,
-      // open_roomParam: open_roomParam ?? this.open_roomParam,
     );
   }
 }
