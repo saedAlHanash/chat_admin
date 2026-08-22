@@ -464,6 +464,25 @@ class _ChatPageState extends State<ChatPage> {
             audioMessageBuilder: (p0, {required messageWidth}) {
               return AudioMessageBuilder(audioUrl: p0.uri);
             },
+            emptyState: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.chat_bubble_outline_rounded,
+                    size: 64.0.r,
+                    color: Colors.grey[350],
+                  ),
+                  16.0.verticalSpace,
+                  DrawableText(
+                    text: 'لا توجد رسائل في هذه الغرفة حالياً',
+                    color: Colors.grey,
+                    size: 15.0.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ],
+              ),
+            ),
             customBottomWidget: isSpectator ? const SizedBox() : null,
             user: isSpectator
                 ? (widget.room.users.firstOrNull ?? const types.User(id: '0'))

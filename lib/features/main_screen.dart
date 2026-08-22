@@ -23,6 +23,7 @@ import 'chat/group_session_bloc/group_session_rooms_cubit.dart';
 import 'chat/messages_bloc/messages_cubit.dart';
 import 'chat/open_room_cubit/open_room_cubit.dart';
 import 'chat/rooms_bloc/rooms_cubit.dart';
+import 'chat/ui/widgets/chat_timestamp_widget.dart';
 import 'chat/userss_bloc/users_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -35,6 +36,16 @@ class HomeScreen extends StatefulWidget {
 class HomeScreenState extends State<HomeScreen> {
   ///Timer to delay request search
   Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UsersCubit>().getChatUsers();
+      context.read<RoomsCubit>().getChatRooms();
+      context.read<GroupSessionRoomsCubit>().getGroupRooms();
+    });
+  }
 
   ///search in DB and render list widget
   void searchFun(String val) {
@@ -271,12 +282,7 @@ class HomeScreenState extends State<HomeScreen> {
                         subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
                         trailing: room.updatedAt == null
                             ? null
-                            : DrawableText(
-                                textAlign: TextAlign.center,
-                                size: 12.0.sp,
-                                color: Colors.grey,
-                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!).formatDateTimeVertical,
-                              ),
+                            : ChatTimestampWidget(timestamp: room.updatedAt),
                       );
                     },
                   );
@@ -337,14 +343,7 @@ class HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
-                        trailing: room.updatedAt == null
-                            ? null
-                            : DrawableText(
-                                textAlign: TextAlign.center,
-                                size: 12.0.sp,
-                                color: Colors.grey,
-                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!).formatDateTimeVertical,
-                              ),
+                        trailing: ChatTimestampWidget(timestamp: room.updatedAt),
                       );
                     },
                   );
@@ -386,45 +385,39 @@ class HomeScreenState extends State<HomeScreen> {
                           url: (imageUrl.isBlank) ? Assets.images.avatar.path : imageUrl,
                           size: 40.0.r,
                         ),
-                        title: Row(
-                          children: [
-                            Expanded(
-                              child: DrawableText(
-                                text: trainerName,
-                                maxLines: 1,
-                                fontWeight: FontWeight.bold,
-                                size: 14.0.sp,
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0.w, vertical: 2.0.h),
-                              decoration: BoxDecoration(
-                                color: AppColorManager.mainColor.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12.0.r),
-                              ),
-                              child: DrawableText(
-                                text: '$memberCount عضو',
-                                size: 11.0.sp,
-                                color: AppColorManager.mainColor,
-                                drawableStart: ImageMultiType(
-                                  url: Icons.group,
-                                  height: 14.0.r,
-                                  width: 14.0.r,
-                                  color: AppColorManager.mainColor,
-                                ),
-                                drawablePadding: 4.0.w,
-                              ),
-                            ),
-                          ],
+                        title: DrawableText(
+                          text: trainerName,
+                          maxLines: 1,
+                          fontWeight: FontWeight.bold,
+                          size: 14.0.sp,
                         ),
                         subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
                         trailing: room.updatedAt == null
                             ? null
-                            : DrawableText(
-                                textAlign: TextAlign.center,
-                                size: 12.0.sp,
-                                color: Colors.grey,
-                                text: DateTime.fromMillisecondsSinceEpoch(room.updatedAt!).formatDateTimeVertical,
+                            : Column(
+                                spacing: 7.0,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 8.0.w, vertical: 2.0.h),
+                                    decoration: BoxDecoration(
+                                      color: AppColorManager.mainColor.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(12.0.r),
+                                    ),
+                                    child: DrawableText(
+                                      text: '$memberCount عضو',
+                                      size: 11.0.sp,
+                                      color: AppColorManager.mainColor,
+                                      drawableStart: ImageMultiType(
+                                        url: Icons.group,
+                                        height: 14.0.r,
+                                        width: 14.0.r,
+                                        color: AppColorManager.mainColor,
+                                      ),
+                                      drawablePadding: 4.0.w,
+                                    ),
+                                  ),
+                                  ChatTimestampWidget(timestamp: room.updatedAt),
+                                ],
                               ),
                       );
                     },
