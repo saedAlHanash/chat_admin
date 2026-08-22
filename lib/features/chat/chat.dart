@@ -9,6 +9,7 @@ import 'package:fitness_admin_chat/core/extensions/extensions.dart';
 import 'package:fitness_admin_chat/features/chat/sound_record.dart';
 import 'package:fitness_admin_chat/features/chat/util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -292,6 +293,66 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  void _handleMessageLongPress(BuildContext context, types.Message message) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (BuildContext bottomSheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40.w,
+                  height: 4.h,
+                  margin: EdgeInsets.only(bottom: 16.h),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2.r),
+                  ),
+                ),
+                if (message is types.TextMessage) ...[
+                  ListTile(
+                    leading: const Icon(Icons.copy_rounded, color: AppColorManager.mainColor),
+                    title: DrawableText(
+                      text: 'نسخ النص',
+                      fontWeight: FontWeight.w600,
+                    ),
+                    onTap: () {
+                      Navigator.pop(bottomSheetContext);
+                      Clipboard.setData(ClipboardData(text: message.text));
+                      NoteMessage.showSuccessSnackBar(
+                        context: context,
+                        message: 'تم نسخ النص',
+                      );
+                    },
+                  ),
+                ],
+                ListTile(
+                  leading: const Icon(Icons.delete_rounded, color: AppColorManager.red),
+                  title: DrawableText(
+                    text: 'حذف الرسالة',
+                    color: AppColorManager.red,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  onTap: () {
+                    Navigator.pop(bottomSheetContext);
+                    context.read<MessagesCubit>().deleteMessage(message.id);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final titleText = isGroup
@@ -336,47 +397,172 @@ class _ChatPageState extends State<ChatPage> {
           return Chat(
             isAttachmentUploading: _isAttachmentUploading,
             messages: state.result,
+            showUserAvatars: true,
+            showUserNames: true,
+            avatarBuilder: (user) {
+              final avatarUrl = user.imageUrl ?? '';
+              return Padding(
+                padding: EdgeInsetsDirectional.only(end: 8.w),
+                child: CircleImageWidget(
+                  url: avatarUrl.isBlank ? Assets.images.avatar.path : avatarUrl,
+                  size: 24.0.r,
+                ),
+              );
+            },
+            imageMessageBuilder: (imageMessage, {required messageWidth}) {
+              final me = isSpectator
+                  ? imageMessage.author.id == widget.room.users.firstOrNull?.id
+                  : imageMessage.author.id == '0';
+              final timeText = DateTime.fromMillisecondsSinceEpoch(imageMessage.createdAt ?? 0).fixTimeZone.formatTime;
+              final radius = BorderRadius.only(
+                topLeft: Radius.circular(16.0.r),
+                topRight: Radius.circular(16.0.r),
+                bottomLeft: Radius.circular(me ? 16.0.r : 4.0.r),
+                bottomRight: Radius.circular(me ? 4.0.r : 16.0.r),
+              );
+
+              return Container(
+                constraints: BoxConstraints(
+                  maxWidth: 260.w,
+                  maxHeight: 320.h,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: radius,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: radius,
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      ImageMultiType(
+                        url: imageMessage.uri,
+                        fit: BoxFit.cover,
+                        width: 260.w,
+                        height: 280.h,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [
+                                Colors.black.withValues(alpha: 0.65),
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.4),
+                                  borderRadius: BorderRadius.circular(10.r),
+                                ),
+                                child: DrawableText(
+                                  size: 9.5.sp,
+                                  text: timeText,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
             bubbleBuilder: (child, {required message, required nextMessageInGroup}) {
+              final isImage = message.type == types.MessageType.image;
+              if (isImage) {
+                return child;
+              }
+
               final me = isSpectator
                   ? message.author.id == widget.room.users.firstOrNull?.id
                   : message.author.id == '0';
 
-              final authorName = message.author.firstName ?? '';
+              final radius = BorderRadius.only(
+                topLeft: Radius.circular(16.0.r),
+                topRight: Radius.circular(16.0.r),
+                bottomLeft: Radius.circular(me ? 16.0.r : 4.0.r),
+                bottomRight: Radius.circular(me ? 4.0.r : 16.0.r),
+              );
+              final timeText = DateTime.fromMillisecondsSinceEpoch(message.createdAt ?? 0).fixTimeZone.formatTime;
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (isGroup && !me && authorName.isNotEmpty) ...[
+              return Container(
+                decoration: BoxDecoration(
+                  color: me ? AppColorManager.mainColor : Colors.white,
+                  borderRadius: radius,
+                  border: me
+                      ? null
+                      : Border.all(
+                          color: Colors.black.withValues(alpha: 0.06),
+                          width: 0.8,
+                        ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: me
+                          ? AppColorManager.mainColor.withValues(alpha: 0.15)
+                          : Colors.black.withValues(alpha: 0.04),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  children: [
                     Padding(
-                      padding: EdgeInsetsDirectional.only(start: 8.0.w, bottom: 2.0.h),
-                      child: DrawableText(
-                        text: authorName,
-                        size: 11.0.sp,
-                        color: AppColorManager.mainColor,
-                        fontWeight: FontWeight.bold,
+                      padding: EdgeInsetsDirectional.only(
+                        bottom: 14.h,
+                        start: me ? 2.w : 5.w,
+                        end: me ? 5.w : 2.w,
+                      ),
+                      child: child,
+                    ),
+                    Positioned(
+                      bottom: 5.h,
+                      right: me ? 10.w : null,
+                      left: me ? null : 10.w,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (message.metadata?['isEdited'] == true) ...[
+                            DrawableText(
+                              size: 8.5.sp,
+                              text: '(معدلة) ',
+                              color: me
+                                  ? Colors.white.withValues(alpha: 0.6)
+                                  : const Color(0xFF94A3B8),
+                            ),
+                          ],
+                          DrawableText(
+                            size: 9.5.sp,
+                            text: timeText,
+                            color: me
+                                ? Colors.white.withValues(alpha: 0.6)
+                                : const Color(0xFF94A3B8),
+                          ),
+                        ],
                       ),
                     ),
                   ],
-                  Container(
-                    decoration: BoxDecoration(
-                      color: me ? AppColorManager.mainColor : AppColorManager.secondColor,
-                      borderRadius: BorderRadiusDirectional.only(
-                        bottomStart: Radius.circular(me ? 16.0.r : 0.0.r),
-                        bottomEnd: Radius.circular(!me ? 16.0.r : 0.0.r),
-                        topEnd: Radius.circular(16.0.r),
-                        topStart: Radius.circular(16.0.r),
-                      ),
-                    ),
-                    child: child,
-                  ),
-                  3.0.verticalSpace,
-                  DrawableText(
-                    size: 10.0.sp,
-                    text: DateTime.fromMillisecondsSinceEpoch(message.createdAt ?? 0).fixTimeZone.formatTime,
-                    color: AppColorManager.grey,
-                  ),
-                ],
+                ),
               );
             },
             customDateHeaderText: (p0) {
@@ -386,9 +572,7 @@ class _ChatPageState extends State<ChatPage> {
             },
             onAttachmentPressed: _handleAtachmentPressed,
             onMessageTap: _handleMessageTap,
-            onMessageLongPress: (context, p0) {
-              showShortListMenu(ctx: context, id: p0.id);
-            },
+            onMessageLongPress: _handleMessageLongPress,
             customMessageBuilder: (p0, {required messageWidth}) {
               final text = p0.metadata?['text']?.toString() ?? '';
               final start = DateTime.tryParse(p0.metadata?['start']?.toString() ?? '');
@@ -444,21 +628,67 @@ class _ChatPageState extends State<ChatPage> {
               );
             },
             onSendPressed: _handleSendPressed,
-            theme: DarkChatTheme(
-              backgroundColor: Colors.white,
+            theme: DefaultChatTheme(
+              backgroundColor: const Color(0xFFF4F6F8),
               primaryColor: AppColorManager.mainColor,
-              dateDividerTextStyle: TextStyle(color: Colors.black54),
-              secondaryColor: AppColorManager.secondColor,
-              inputBackgroundColor: AppColorManager.mainColor,
+              secondaryColor: Colors.white,
+              messageBorderRadius: 18,
+              messageInsetsHorizontal: 14,
+              messageInsetsVertical: 9,
+              messageMaxWidth: 300,
+              userAvatarImageBackgroundColor: const Color(0xFFECEFF1),
+              userNameTextStyle: TextStyle(
+                fontSize: 12.0.sp,
+                fontWeight: FontWeight.w700,
+                color: AppColorManager.mainColor,
+                height: 1.3,
+              ),
+              dateDividerMargin: const EdgeInsets.symmetric(vertical: 14),
+              dateDividerTextStyle: TextStyle(
+                color: const Color(0xFF8A94A6),
+                fontSize: 11.0.sp,
+                fontWeight: FontWeight.w600,
+              ),
               sentMessageBodyTextStyle: TextStyle(
                 color: Colors.white,
-                fontSize: 16.0.sp,
-                fontWeight: FontWeight.w800,
+                fontSize: 14.0.sp,
+                fontWeight: FontWeight.w500,
+                height: 1.45,
               ),
               receivedMessageBodyTextStyle: TextStyle(
+                color: const Color(0xFF1E293B),
+                fontSize: 14.0.sp,
+                fontWeight: FontWeight.w500,
+                height: 1.45,
+              ),
+              inputBackgroundColor: Colors.white,
+              inputMargin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+              inputPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+              inputTextCursorColor: AppColorManager.mainColor,
+              inputTextColor: const Color(0xFF1E293B),
+              inputTextStyle: TextStyle(
+                color: const Color(0xFF1E293B),
+                fontSize: 14.0.sp,
+                height: 1.4,
+              ),
+              inputTextDecoration: InputDecoration(
+                hintText: 'اكتب رسالتك...',
+                hintStyle: TextStyle(
+                  color: const Color(0xFF94A3B8),
+                  fontSize: 13.5.sp,
+                ),
+                fillColor: const Color(0xFFF1F5F9),
+                filled: true,
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24.0.r),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              sendButtonIcon: Icon(
+                Icons.arrow_upward_rounded,
                 color: Colors.white,
-                fontSize: 16.0.sp,
-                fontWeight: FontWeight.w800,
+                size: 20.r,
               ),
             ),
             audioMessageBuilder: (p0, {required messageWidth}) {
@@ -492,31 +722,4 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
-}
-
-void showShortListMenu({required String id, required BuildContext ctx}) {
-  final RenderBox box = ctx.findRenderObject() as RenderBox;
-  final localPosition = box.localToGlobal(Offset.zero);
-
-  showMenu(
-    context: ctx,
-    position: RelativeRect.fromLTRB(
-      localPosition.dx,
-      (localPosition.dy + 50.0.h),
-      localPosition.dx,
-      localPosition.dy,
-    ),
-    items: [
-      PopupMenuItem(
-        value: 1,
-        onTap: () {
-          ctx.read<MessagesCubit>().deleteMessage(id);
-        },
-        child: ListTile(
-          leading: const ImageMultiType(url: Icons.delete, color: AppColorManager.red),
-          trailing: DrawableText(text: 'Delete', color: Colors.red),
-        ),
-      ),
-    ],
-  );
 }
