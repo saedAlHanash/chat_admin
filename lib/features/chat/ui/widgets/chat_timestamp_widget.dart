@@ -36,11 +36,11 @@ class ChatTimestampWidget extends StatelessWidget {
     if (date.isToday) {
       dateText = date.formatTime;
     } else if (date.isYesterday) {
-      dateText = 'Yesterday}';
+      dateText = 'Yesterday';
     } else if (date.year == now.year) {
-      dateText = '${DateFormat('yyyy/MM/dd', 'en').format(date)}';
+      dateText = DateFormat('yyyy/MM/dd', 'en').format(date);
     } else {
-      dateText = '${DateFormat('yyyy/MM/dd', 'en').format(date)}';
+      dateText = DateFormat('yyyy/MM/dd', 'en').format(date);
     }
 
     return DrawableText(

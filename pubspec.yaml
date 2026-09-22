@@ -23,40 +23,40 @@ dependencies:
       url: https://github.com/saedAlHanash/m_cubit
 
   chat_lib:
-    git:
-      url: https://github.com/saedAlHanash/chat_lib
-#      path: ../../packages/chat_lib
+#    git:
+#      url: https://github.com/saedAlHanash/chat_lib
+    path: ../../packages/chat_lib
 
   cupertino_icons: ^1.0.9
-  firebase_core: ^4.11.0
-  firebase_messaging: ^16.4.1
+  firebase_core: ^4.15.0
+  firebase_messaging: ^16.7.0
   flutter_chat_types: ^3.6.2
-  cloud_firestore: ^6.6.0
+  cloud_firestore: ^6.10.0
   flutter_chat_ui:
     path: ./packages/flutter_chat_ui-1.6.15
 
-  file_picker: ^11.0.2
+  file_picker: ^13.1.0
   http: ^1.6.0
-  image_picker: ^1.2.2
+  image_picker: ^1.2.3
   intl: ^0.20.3
   collection: ^1.19.1
-  mime: ^2.0.0
+  mime: ^2.1.0
   open_filex: ^4.7.0
   flutter_image_compress: ^2.5.1
   image: ^4.5.4
   path_provider: ^2.1.6
-  get_it: ^9.2.1
+  get_it: ^9.3.0
   shared_preferences: ^2.5.5
   flutter_screenutil: ^5.9.3
-  logger: ^2.7.0
+  logger: ^2.8.0
   path: ^1.9.1
-  flutter_local_notifications: ^22.0.1
+  flutter_local_notifications: ^22.3.1
   awesome_dialog: ^3.3.0
   url_launcher: ^6.3.2
   flutter_bloc: ^9.1.1
   flutter_sound: ^9.30.0
-  just_audio: ^0.10.5
-  permission_handler: ^12.0.3
+  just_audio: ^0.10.6
+  permission_handler: ^13.0.2
 
 dev_dependencies:
   flutter_test:

@@ -25,6 +25,7 @@ class _SyncScreenPageState extends State<SyncScreenPage> {
   Future<void> _startSync() async {
     try {
       await FirebaseChatCore.instance.syncSeedData(
+        force: true,
         onProgress: (step, progress) {
           if (mounted) {
             setState(() {

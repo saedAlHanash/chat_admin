@@ -47,6 +47,7 @@ class GroupSessionRoomsCubit extends MCubit<GroupSessionRoomsInitial> {
 
   Future<void> processAndEmitRooms() async {
     var filtered = List<types.Room>.from(_rawRooms);
+    filtered.removeWhere((e) => e.isDeleted);
 
     if (state.search.isNotEmpty) {
       filtered.removeWhere(

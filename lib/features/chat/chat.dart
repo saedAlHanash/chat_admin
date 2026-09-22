@@ -60,12 +60,13 @@ class _ChatPageState extends State<ChatPage> {
   bool _isAttachmentUploading = false;
 
   void _handleFileSelection() async {
-    final result = await FilePicker.pickFiles(type: FileType.any);
+    final result = await FilePicker.pickFile(type: FileType.any);
 
-    if (result != null && result.files.single.path != null) {
+    if (result != null && result.path != null) {
       _setAttachmentUploading(true);
-      final name = result.files.single.name;
-      final filePath = result.files.single.path!;
+      final name = result.name;
+      final filePath = result.path!;
+      final fileSize = (await result.length()) ?? 0;
 
       try {
         final mimeType = lookupMimeType(filePath);
@@ -78,12 +79,11 @@ class _ChatPageState extends State<ChatPage> {
         final message = types.PartialFile(
           mimeType: mimeType,
           name: name,
-          size: result.files.single.size,
+          size: fileSize,
           uri: uri,
         );
 
         FirebaseChatCore.instance.sendMessage(message, widget.room.id);
-        _setAttachmentUploading(false);
       } finally {
         _setAttachmentUploading(false);
       }

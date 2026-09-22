@@ -203,88 +203,98 @@ class HomeScreenState extends State<HomeScreen> {
                   if (state.loading) {
                     return MyStyle.loadingWidget();
                   }
-                  if (state.othersRooms.isEmpty) {
-                    return Center(
-                      child: DrawableText(
-                        text: 'لا توجد محادثات',
-                        color: Colors.grey,
-                        size: 16.0.sp,
-                      ),
-                    );
-                  }
-                  return ListView.separated(
-                    padding: EdgeInsets.all(20.0).r,
-                    shrinkWrap: true,
-                    separatorBuilder: (context, i) {
-                      return Divider(color: Colors.grey[100]);
-                    },
-                    itemCount: state.othersRooms.length,
-                    itemBuilder: (context, index) {
-                      final room = state.othersRooms[index];
-                      return ListTile(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
-                        onTap: () async {
-                          context.read<OpenRoomCubit>().openRoomByRoom(room);
-                        },
-                        leading: SizedBox(
-                          width: 40.0.w,
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                top: 0,
-                                child: CircleImageWidget(
-                                  url: (room.users.firstOrNull?.imageUrl.isBlank ?? true)
-                                      ? Assets.images.avatar.path
-                                      : room.users.firstOrNull?.imageUrl,
-                                  size: 35.0.r,
+                  return Column(
+                    children: [
+                      const _RoomsFilterChipsWidget(),
+                      if (state.othersRooms.isEmpty)
+                        Expanded(
+                          child: Center(
+                            child: DrawableText(
+                              text: state.filterType == RoomFilterType.unread
+                                  ? 'لا توجد محادثات غير مقروءة'
+                                  : 'لا توجد محادثات',
+                              color: Colors.grey,
+                              size: 16.0.sp,
+                            ),
+                          ),
+                        )
+                      else
+                        Expanded(
+                          child: ListView.separated(
+                            padding: EdgeInsets.all(20.0).r,
+                            separatorBuilder: (context, i) {
+                              return Divider(color: Colors.grey[100]);
+                            },
+                            itemCount: state.othersRooms.length,
+                            itemBuilder: (context, index) {
+                              final room = state.othersRooms[index];
+                              return ListTile(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
+                                onTap: () async {
+                                  context.read<OpenRoomCubit>().openRoomByRoom(room);
+                                },
+                                leading: SizedBox(
+                                  width: 40.0.w,
+                                  child: Stack(
+                                    children: [
+                                      Positioned(
+                                        top: 0,
+                                        child: CircleImageWidget(
+                                          url: (room.users.firstOrNull?.imageUrl.isBlank ?? true)
+                                              ? Assets.images.avatar.path
+                                              : room.users.firstOrNull?.imageUrl,
+                                          size: 35.0.r,
+                                        ),
+                                      ),
+                                      Positioned(
+                                        bottom: 0,
+                                        child: CircleImageWidget(
+                                          url: (room.users.lastOrNull?.imageUrl.isBlank ?? true)
+                                              ? Assets.images.avatar.path
+                                              : room.users.lastOrNull?.imageUrl,
+                                          size: 35.0.r,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                child: CircleImageWidget(
-                                  url: (room.users.lastOrNull?.imageUrl.isBlank ?? true)
-                                      ? Assets.images.avatar.path
-                                      : room.users.lastOrNull?.imageUrl,
-                                  size: 35.0.r,
+                                title: Column(
+                                  children: [
+                                    DrawableText(
+                                      text: room.users.firstOrNull?.name ?? '',
+                                      maxLines: 1,
+                                      matchParent: true,
+                                      drawablePadding: 5.0.w,
+                                      drawableStart: ImageMultiType(
+                                        url: Icons.person,
+                                        height: 17.0.r,
+                                        width: 17.0.r,
+                                        color: AppColorManager.mainColor,
+                                      ),
+                                    ),
+                                    DrawableText(
+                                      text: room.users.lastOrNull?.name ?? '',
+                                      maxLines: 1,
+                                      matchParent: true,
+                                      drawablePadding: 5.0.w,
+                                      drawableStart: ImageMultiType(
+                                        url: Icons.person,
+                                        color: AppColorManager.mainColor,
+                                        height: 17.0.r,
+                                        width: 17.0.r,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
+                                subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
+                                trailing: room.updatedAt == null
+                                    ? null
+                                    : ChatTimestampWidget(timestamp: room.updatedAt),
+                              );
+                            },
                           ),
                         ),
-                        title: Column(
-                          children: [
-                            DrawableText(
-                              text: room.users.firstOrNull?.name ?? '',
-                              maxLines: 1,
-                              matchParent: true,
-                              drawablePadding: 5.0.w,
-                              drawableStart: ImageMultiType(
-                                url: Icons.person,
-                                height: 17.0.r,
-                                width: 17.0.r,
-                                color: AppColorManager.mainColor,
-                              ),
-                            ),
-                            DrawableText(
-                              text: room.users.lastOrNull?.name ?? '',
-                              maxLines: 1,
-                              matchParent: true,
-                              drawablePadding: 5.0.w,
-                              drawableStart: ImageMultiType(
-                                url: Icons.person,
-                                color: AppColorManager.mainColor,
-                                height: 17.0.r,
-                                width: 17.0.r,
-                              ),
-                            ),
-                          ],
-                        ),
-                        subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
-                        trailing: room.updatedAt == null
-                            ? null
-                            : ChatTimestampWidget(timestamp: room.updatedAt),
-                      );
-                    },
+                    ],
                   );
                 },
               ),
@@ -295,57 +305,67 @@ class HomeScreenState extends State<HomeScreen> {
                   if (state.loading) {
                     return MyStyle.loadingWidget();
                   }
-                  if (state.myRooms.isEmpty) {
-                    return Center(
-                      child: DrawableText(
-                        text: 'لا توجد محادثات دعم',
-                        color: Colors.grey,
-                        size: 16.0.sp,
-                      ),
-                    );
-                  }
-                  return ListView.separated(
-                    padding: EdgeInsets.all(20.0).r,
-                    shrinkWrap: true,
-                    itemCount: state.myRooms.length,
-                    separatorBuilder: (context, i) {
-                      return 10.0.verticalSpace;
-                    },
-                    itemBuilder: (_, i) {
-                      final room = state.myRooms[i];
-                      return ListTile(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
-                        tileColor: room.isRead
-                            ? AppColorManager.lightGray
-                            : AppColorManager.threadColor.withValues(alpha: 0.1),
-                        onTap: () async {
-                          context.read<OpenRoomCubit>().openRoomByRoom(room);
-                        },
-                        leading: CircleImageWidget(
-                          url: (room.otherUser.imageUrl.isBlank) ? Assets.images.avatar.path : room.otherUser.imageUrl,
-                          size: 40.0.r,
-                        ),
-                        title: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            DrawableText(
-                              text: room.otherUser.name,
-                              maxLines: 1,
-                              matchParent: true,
-                            ),
-                            3.0.verticalSpace,
-                            DrawableText(
-                              text: room.otherUser.email,
-                              size: 10.0,
-                              matchParent: true,
+                  return Column(
+                    children: [
+                      const _RoomsFilterChipsWidget(),
+                      if (state.myRooms.isEmpty)
+                        Expanded(
+                          child: Center(
+                            child: DrawableText(
+                              text: state.filterType == RoomFilterType.unread
+                                  ? 'لا توجد محادثات دعم غير مقروءة'
+                                  : 'لا توجد محادثات دعم',
                               color: Colors.grey,
+                              size: 16.0.sp,
                             ),
-                          ],
+                          ),
+                        )
+                      else
+                        Expanded(
+                          child: ListView.separated(
+                            padding: EdgeInsets.all(20.0).r,
+                            itemCount: state.myRooms.length,
+                            separatorBuilder: (context, i) {
+                              return 10.0.verticalSpace;
+                            },
+                            itemBuilder: (_, i) {
+                              final room = state.myRooms[i];
+                              return ListTile(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0.r)),
+                                tileColor: room.isRead
+                                    ? AppColorManager.lightGray
+                                    : AppColorManager.threadColor.withValues(alpha: 0.1),
+                                onTap: () async {
+                                  context.read<OpenRoomCubit>().openRoomByRoom(room);
+                                },
+                                leading: CircleImageWidget(
+                                  url: (room.otherUser.imageUrl.isBlank) ? Assets.images.avatar.path : room.otherUser.imageUrl,
+                                  size: 40.0.r,
+                                ),
+                                title: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    DrawableText(
+                                      text: room.otherUser.name,
+                                      maxLines: 1,
+                                      matchParent: true,
+                                    ),
+                                    3.0.verticalSpace,
+                                    DrawableText(
+                                      text: room.otherUser.email,
+                                      size: 10.0,
+                                      matchParent: true,
+                                      color: Colors.grey,
+                                    ),
+                                  ],
+                                ),
+                                subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
+                                trailing: ChatTimestampWidget(timestamp: room.updatedAt),
+                              );
+                            },
+                          ),
                         ),
-                        subtitle: room.lastMessages?.firstOrNull?.latestMessage(room),
-                        trailing: ChatTimestampWidget(timestamp: room.updatedAt),
-                      );
-                    },
+                    ],
                   );
                 },
               ),
@@ -482,6 +502,91 @@ class HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RoomsFilterChipsWidget extends StatelessWidget {
+  const _RoomsFilterChipsWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<RoomsCubit, RoomsInitial>(
+      builder: (context, state) {
+        final currentFilter = state.filterType;
+
+        return Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 10.0.h),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey.withValues(alpha: 0.15),
+                width: 1.0,
+              ),
+            ),
+          ),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildChip(
+                  context: context,
+                  label: 'الكل',
+                  isSelected: currentFilter == RoomFilterType.all,
+                  onTap: () {
+                    context.read<RoomsCubit>().setFilter(RoomFilterType.all);
+                  },
+                ),
+                8.0.horizontalSpace,
+                _buildChip(
+                  context: context,
+                  label: 'غير المقروءة',
+                  isSelected: currentFilter == RoomFilterType.unread,
+                  onTap: () {
+                    context.read<RoomsCubit>().setFilter(RoomFilterType.unread);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildChip({
+    required BuildContext context,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final selectedColor = AppColorManager.mainColor;
+    final unselectedBg = Colors.grey.withValues(alpha: 0.12);
+    final unselectedTextColor = Colors.grey[800]!;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20.0.r),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 6.0.h),
+        decoration: BoxDecoration(
+          color: isSelected ? selectedColor.withValues(alpha: 0.15) : unselectedBg,
+          borderRadius: BorderRadius.circular(20.0.r),
+          border: Border.all(
+            color: isSelected ? selectedColor : Colors.transparent,
+            width: 1.0,
+          ),
+        ),
+        child: DrawableText(
+          text: label,
+          size: 13.0.sp,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+          color: isSelected ? selectedColor : unselectedTextColor,
         ),
       ),
     );
