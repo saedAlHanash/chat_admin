@@ -50,8 +50,8 @@ class RoomsCubit extends MCubit<RoomsInitial> {
   Future<void> processAndEmitRooms() async {
     var filtered = List<types.Room>.from(_rawRooms);
 
-    // Remove invalid rooms
-    filtered.removeWhere((e) => e.users.any((ee) => ee.id == '-1'));
+    // Remove invalid, empty, and soft-deleted rooms
+    filtered.removeWhere((e) => e.isDeleted || e.users.isEmpty || e.users.any((ee) => ee.id == '-1'));
 
     if (state.search.isNotEmpty) {
       filtered.removeWhere(
@@ -63,10 +63,16 @@ class RoomsCubit extends MCubit<RoomsInitial> {
     filtered.sort((a, b) => (b.updatedAt ?? 0).compareTo(a.updatedAt ?? 0));
 
     // Support rooms (myRooms): rooms containing support user '0'
-    final myRooms = filtered.where((e) => e.users.any((u) => u.id == '0')).toList();
+    var myRooms = filtered.where((e) => e.users.any((u) => u.id == '0')).toList();
 
     // Others' rooms (othersRooms): conversations between trainers & users
-    final othersRooms = filtered.where((e) => !e.users.any((u) => u.id == '0')).toList();
+    var othersRooms = filtered.where((e) => !e.users.any((u) => u.id == '0')).toList();
+
+    // Apply local filter (All vs Unread)
+    if (state.filterType == RoomFilterType.unread) {
+      myRooms = myRooms.where((e) => e.isNotRead).toList();
+      othersRooms = othersRooms.where((e) => e.isNotRead).toList();
+    }
 
     emit(
       state.copyWith(
@@ -76,6 +82,12 @@ class RoomsCubit extends MCubit<RoomsInitial> {
         statuses: CubitStatuses.done,
       ),
     );
+  }
+
+  void setFilter(RoomFilterType filterType) {
+    if (state.filterType == filterType) return;
+    emit(state.copyWith(filterType: filterType));
+    processAndEmitRooms();
   }
 
   void updateRoom(types.Room room) {

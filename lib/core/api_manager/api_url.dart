@@ -87,6 +87,6 @@ String get baseUrl {
 const live = 'api.fitnessstorm.org';
 const test = 'api-test.fitnessstorm.org';
 
-bool get isTestMode => true || baseUrl == test;
+bool get isTestMode => baseUrl == test;
 
 const additionalConst = 'api/mobile/';

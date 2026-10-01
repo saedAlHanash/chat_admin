@@ -4,6 +4,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart';
 import '../features/chat/chat.dart';
 import '../features/main_screen.dart';
 import '../features/splash/ui/pages/splash_screen.dart';
+import '../features/sync/ui/pages/sync_screen.dart';
 
 class AppRoutes {
   static Route<dynamic> routes(RouteSettings settings) {
@@ -21,6 +22,9 @@ class AppRoutes {
         //region
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       //endregion
+
+      case RouteName.sync:
+        return MaterialPageRoute(builder: (_) => const SyncScreenPage());
 
       case RouteName.chat:
         //region
@@ -44,4 +48,5 @@ class RouteName {
   static const splash = '/';
   static const chat = '/1';
   static const home = '/2';
+  static const sync = '/sync';
 }

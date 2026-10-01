@@ -63,14 +63,10 @@ void main() async {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => sl<UsersCubit>()..getChatUsers()),
+        BlocProvider(create: (_) => sl<UsersCubit>()),
         BlocProvider(create: (_) => sl<OpenRoomCubit>()),
-        BlocProvider(
-          create: (_) => sl<RoomsCubit>()..getChatRooms(),
-        ),
-        BlocProvider(
-          create: (_) => sl<GroupSessionRoomsCubit>()..getGroupRooms(),
-        ),
+        BlocProvider(create: (_) => sl<RoomsCubit>()),
+        BlocProvider(create: (_) => sl<GroupSessionRoomsCubit>()),
         BlocProvider(create: (_) => sl<MessagesCubit>()),
       ],
       child: const MyApp(),

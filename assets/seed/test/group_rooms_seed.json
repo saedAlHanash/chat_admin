@@ -1,1 +1,351 @@
-[]
+[
+    {
+        "id": "69",
+        "name": "مجموعة الكوتش غادة الباجى",
+        "type": "group",
+        "adminId": "69",
+        "createdAt": 1786878946000,
+        "metadata": {
+            "adminId": "69",
+            "category": "groupSession",
+            "isOnline2462": false,
+            "latestSeen2462": 1786880097732,
+            "isOnline2378": false,
+            "latestSeen2378": 1787014107913,
+            "isOnline2474": false,
+            "latestSeen2474": 1787146406562,
+            "isOnline69": false,
+            "isOnline2472": false,
+            "isOnline419": false,
+            "latestSeen419": 1787215397031,
+            "isOnline0": false,
+            "latestSeen0": 1787397893126,
+            "latestSeen2472": 1787399543406,
+            "isOnline2265": false,
+            "latestSeen2265": 1788383582363,
+            "latestSeen69": 1788383739801,
+            "isOnline2476": false,
+            "latestSeen2476": 1788384954373,
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/hMeEMsIDVwZCuPeCM8eghhvrCjTQJAsRrnj1MlUy.png",
+        "userPermissions": {
+            "2265": {
+                "canSendMedia": true,
+                "isBanned": false,
+                "canSendMessages": true
+            },
+            "279": {
+                "canSendMessages": true,
+                "isBanned": false,
+                "canSendMedia": true
+            },
+            "66": {
+                "canSendMessages": true,
+                "isBanned": false,
+                "canSendMedia": true
+            },
+            "2462": {
+                "canSendMedia": true,
+                "canSendMessages": true,
+                "isBanned": false
+            },
+            "1817": {
+                "canSendMessages": true,
+                "isBanned": false,
+                "canSendMedia": true
+            },
+            "81": {
+                "isBanned": false,
+                "canSendMedia": true,
+                "canSendMessages": true
+            },
+            "2095": {
+                "canSendMedia": true,
+                "isBanned": false,
+                "canSendMessages": true
+            },
+            "2474": {
+                "canSendMedia": true,
+                "isBanned": false,
+                "canSendMessages": true
+            },
+            "419": {
+                "isBanned": false,
+                "canSendMedia": true,
+                "canSendMessages": true
+            },
+            "2378": {
+                "canSendMedia": true,
+                "isBanned": false,
+                "canSendMessages": true
+            },
+            "2434": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "69": {
+                "isBanned": false,
+                "canSendMessages": true,
+                "canSendMedia": true
+            },
+            "266": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "384": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "2476": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            }
+        },
+        "updatedAt": 1788431110000,
+        "users": [
+            "69",
+            "2462",
+            "2474",
+            "2434",
+            "419",
+            "1817",
+            "66",
+            "81",
+            "279",
+            "266",
+            "2472",
+            "384",
+            "2476",
+            "8697"
+        ],
+        "lastMessages": [
+            {
+                "text": "اهلا",
+                "type": "text",
+                "authorId": "69",
+                "createdAt": 1788383670254,
+                "updatedAt": 1788383670254,
+                "author": {
+                    "id": "69",
+                    "firstName": "User 69",
+                    "role": "user"
+                },
+                "id": "69"
+            }
+        ]
+    },
+    {
+        "id": "51",
+        "name": "مجموعة الكوتش Salma Elwia",
+        "type": "group",
+        "adminId": "51",
+        "createdAt": 1787211187000,
+        "metadata": {
+            "adminId": "51",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/OXsSRMmy0oxmrrcFW5bFwoJI8ARd1OMISz6d2NoT.png",
+        "userPermissions": {
+            "51": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "384": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            }
+        },
+        "updatedAt": 1788018307000,
+        "users": [
+            "51",
+            "384"
+        ]
+    },
+    {
+        "id": "79",
+        "name": "مجموعة الكوتش مريم عسيلة",
+        "type": "group",
+        "adminId": "79",
+        "createdAt": 1787938392000,
+        "metadata": {
+            "adminId": "79",
+            "category": "groupSession",
+            "latestSeen0": 1788012876857,
+            "isOnline0": false,
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/lNuPJnxieIF6sf913Sf3BebNnB8Bx4ENTYuH9RGD.png",
+        "userPermissions": {
+            "79": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "8664": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "384": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            }
+        },
+        "updatedAt": 1788016275000,
+        "users": [
+            "79",
+            "8664",
+            "384"
+        ]
+    },
+    {
+        "id": "50",
+        "name": "مجموعة الكوتش Sabrin",
+        "type": "group",
+        "adminId": "50",
+        "createdAt": 1787211179000,
+        "metadata": {
+            "adminId": "50",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/qAbH49yXCVWWkpkER5ebYMpGDxSV3S9taz1pU57e.png",
+        "userPermissions": {
+            "2265": {
+                "canSendMedia": true,
+                "isBanned": false,
+                "canSendMessages": true
+            },
+            "50": {
+                "canSendMedia": true,
+                "canSendMessages": true,
+                "isBanned": false
+            },
+            "2434": {
+                "isBanned": false,
+                "canSendMessages": true,
+                "canSendMedia": true
+            },
+            "419": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "384": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            }
+        },
+        "updatedAt": 1788016228000,
+        "users": [
+            "50",
+            "2434",
+            "2265",
+            "419",
+            "384"
+        ]
+    },
+    {
+        "id": "48",
+        "name": "مجموعة الكوتش Kholouod Zagia",
+        "type": "group",
+        "adminId": "48",
+        "createdAt": 1788016171000,
+        "metadata": {
+            "adminId": "48",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/dBSq7DZdW3bEp7G4em3H7XyJTo17eRDAmgEUl0B1.png",
+        "userPermissions": {
+            "48": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "384": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            }
+        },
+        "updatedAt": 1788016172000,
+        "users": [
+            "48",
+            "384"
+        ]
+    },
+    {
+        "id": "78",
+        "name": "مجموعة الكوتش Amal",
+        "type": "group",
+        "adminId": "78",
+        "createdAt": 1788015822000,
+        "metadata": {
+            "adminId": "78",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/WjKDAdoEC1SdbX78va0wfvlNe0lvi84ziBt3oCKz.png",
+        "userPermissions": {
+            "78": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "384": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            }
+        },
+        "updatedAt": 1788015824000,
+        "users": [
+            "78",
+            "384"
+        ]
+    },
+    {
+        "id": "66",
+        "name": "مجموعة الكوتش Mostafa Mohamed",
+        "type": "group",
+        "adminId": "66",
+        "createdAt": 1787211189000,
+        "updatedAt": 1787211189000,
+        "userPermissions": {
+            "66": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            }
+        },
+        "metadata": {
+            "adminId": "66",
+            "category": "groupSession",
+            "isOnline0": false,
+            "latestSeen0": 1787392719368,
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/2XgwKVqURQZ97KwB3Y2SrjBmdGRchmugvfCsrsjj.png",
+        "users": [
+            "66"
+        ]
+    }
+]

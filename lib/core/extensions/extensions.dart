@@ -210,6 +210,40 @@ extension DateUtcHelper on DateTime {
 
   String get formatDateTimeVertical => '$formatDate\n$formatTime';
 
+  /// Standard chat timestamp format:
+  /// - Today: "02:30 PM"
+  /// - Yesterday: "Yesterday 02:30 PM"
+  /// - Current Year: "Apr 12, 02:30 PM"
+  /// - Other Year: "2024/04/12 02:30 PM"
+  String get formatChatTimestamp {
+    final now = DateTime.now();
+    if (isToday) {
+      return formatTime;
+    }
+    if (isYesterday) {
+      return 'Yesterday\n$formatTime';
+    }
+    if (year == now.year) {
+      return '${DateFormat('MMM d', 'en').format(this)}\n$formatTime';
+    }
+    return '${DateFormat('yyyy/MM/dd', 'en').format(this)}\n$formatTime';
+  }
+
+  /// Compact single-line chat timestamp:
+  String get formatChatTimestampCompact {
+    final now = DateTime.now();
+    if (isToday) {
+      return formatTime;
+    }
+    if (isYesterday) {
+      return 'Yesterday';
+    }
+    if (year == now.year) {
+      return DateFormat('MMM d', 'en').format(this);
+    }
+    return DateFormat('yyyy/MM/dd', 'en').format(this);
+  }
+
   DateTime addFromNow({int? year, int? month, int? day, int? hour, int? minute, int? second}) {
     return DateTime(
       this.year + (year ?? 0),

@@ -1,1 +1,920 @@
-[]
+[
+    {
+        "id": "50",
+        "name": "مجموعة الكوتش صابرين",
+        "type": "group",
+        "adminId": "50",
+        "createdAt": 1788427271000,
+        "metadata": {
+            "adminId": "50",
+            "category": "groupSession",
+            "isOnline384": false,
+            "isOnline8707": false,
+            "latestSeen8707": 1788687832024,
+            "latestSeen384": 1788881417478,
+            "isOnline266": false,
+            "latestSeen266": 1788976833110,
+            "isOnline50": false,
+            "isOnline8773": false,
+            "latestSeen8773": 1789417514893,
+            "latestSeen50": 1789433883361,
+            "isOnline81": false,
+            "latestSeen0": 1789884308310,
+            "isOnline0": false,
+            "latestSeen81": 1789995189977,
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/BbsvYx3NCbCCEULAGorwGKdsV3vyOss6aRWkrMWL.png",
+        "userPermissions": {
+            "81": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "8707": {
+                "isBanned": false,
+                "canSendMedia": true,
+                "canSendMessages": true
+            },
+            "384": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "862": {
+                "canSendMessages": true,
+                "isBanned": false,
+                "canSendMedia": true
+            },
+            "8773": {
+                "canSendMedia": true,
+                "canSendMessages": true,
+                "isBanned": false
+            },
+            "419": {
+                "canSendMessages": true,
+                "isBanned": false,
+                "canSendMedia": true
+            },
+            "8805": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            }
+        },
+        "updatedAt": 1789888058000,
+        "users": [
+            "50",
+            "266",
+            "384",
+            "391",
+            "419",
+            "8496",
+            "8529",
+            "8707",
+            "8773",
+            "81",
+            "862",
+            "8805"
+        ],
+        "lastMessages": [
+            {
+                "authorId": "8773",
+                "text": "🔥🔥🔥",
+                "type": "text",
+                "createdAt": 1789417513362,
+                "updatedAt": 1789417513362,
+                "author": {
+                    "id": "8773",
+                    "firstName": "User 8773",
+                    "role": "user"
+                },
+                "id": "50"
+            }
+        ]
+    },
+    {
+        "id": "69",
+        "name": "مجموعة الكوتش غادة الباجى",
+        "type": "group",
+        "adminId": "69",
+        "createdAt": 1788427077000,
+        "metadata": {
+            "adminId": "69",
+            "category": "groupSession",
+            "isOnline2265": false,
+            "isOnline8693": false,
+            "isOnline8697": false,
+            "latestSeen8697": 1788428046697,
+            "isOnline8698": false,
+            "latestSeen8698": 1788433563597,
+            "latestSeen8693": 1788443412778,
+            "isOnline384": false,
+            "isOnline0": false,
+            "isOnline8705": false,
+            "latestSeen8705": 1788621103588,
+            "latestSeen2265": 1788635113560,
+            "isOnline69": false,
+            "latestSeen384": 1788878503007,
+            "latestSeen69": 1789806302815,
+            "latestSeen0": 1789884287533,
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/jkRktI7YO5xgSNIsC4MKiNPT51fzsugP0G5kmsNG.png",
+        "userPermissions": {
+            "8705": {
+                "isBanned": false,
+                "canSendMedia": true,
+                "canSendMessages": true
+            },
+            "384": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            }
+        },
+        "updatedAt": 1789806298969,
+        "users": [
+            "69",
+            "384",
+            "419",
+            "2265",
+            "7787",
+            "8693",
+            "8695",
+            "8705"
+        ],
+        "lastMessages": [
+            {
+                "authorId": "69",
+                "text": "Hello",
+                "type": "text",
+                "createdAt": 1789806298969,
+                "updatedAt": 1789806298969,
+                "author": {
+                    "id": "69",
+                    "firstName": "User 69",
+                    "role": "user"
+                },
+                "id": "69"
+            }
+        ]
+    },
+    {
+        "id": "79",
+        "name": "مجموعة الكوتش مريم عسيلة",
+        "type": "group",
+        "adminId": "79",
+        "createdAt": 1788427306000,
+        "metadata": {
+            "adminId": "79",
+            "category": "groupSession",
+            "isOnline384": false,
+            "isOnline0": false,
+            "isOnline8707": false,
+            "latestSeen8707": 1788688298273,
+            "latestSeen384": 1788896998686,
+            "isOnline266": false,
+            "isOnline8496": false,
+            "latestSeen8496": 1788950670987,
+            "isOnline8773": false,
+            "isOnline79": false,
+            "latestSeen8773": 1789420158726,
+            "isOnline81": false,
+            "latestSeen266": 1789845732570,
+            "latestSeen81": 1789884232088,
+            "latestSeen0": 1789884299050,
+            "latestSeen79": 1789925318612,
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/lNuPJnxieIF6sf913Sf3BebNnB8Bx4ENTYuH9RGD.png",
+        "userPermissions": {
+            "384": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "8707": {
+                "canSendMessages": true,
+                "isBanned": false,
+                "canSendMedia": true
+            },
+            "8496": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "266": {
+                "isBanned": false,
+                "canSendMessages": true,
+                "canSendMedia": true
+            },
+            "8773": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            }
+        },
+        "updatedAt": 1789647039102,
+        "users": [
+            "79",
+            "81",
+            "262",
+            "266",
+            "384",
+            "391",
+            "419",
+            "8496",
+            "8529",
+            "8655",
+            "8664",
+            "8707",
+            "8773"
+        ],
+        "lastMessages": [
+            {
+                "authorId": "79",
+                "text": "‏حبيبتي Lena أهلا فيك ومرحبا و الله \n‏تنورينا\nمواعد\n‏يوم الاثنين الأربعاء الخميس الجمعة حياك الله حبيبتي وألف هلا ومرحبا فيك",
+                "type": "text",
+                "createdAt": 1789647039102,
+                "updatedAt": 1789647039102,
+                "author": {
+                    "id": "79",
+                    "firstName": "User 79",
+                    "role": "user"
+                },
+                "id": "79"
+            }
+        ]
+    },
+    {
+        "id": "51",
+        "name": "مجموعة الكوتش سلمى عليوة",
+        "type": "group",
+        "adminId": "51",
+        "createdAt": 1788427277000,
+        "metadata": {
+            "adminId": "51",
+            "category": "groupSession",
+            "isOnline8773": false,
+            "latestSeen8773": 1789296417302,
+            "isOnline81": false,
+            "latestSeen81": 1789749271441,
+            "latestSeen0": 1789884304156,
+            "isOnline0": false,
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/OTTU735jAy1pajY30O12o8mubuF44OfLTGGPZt7h.png",
+        "userPermissions": {
+            "419": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "8773": {
+                "isBanned": false,
+                "canSendMessages": true,
+                "canSendMedia": true
+            },
+            "81": {
+                "canSendMedia": true,
+                "canSendMessages": true,
+                "isBanned": false
+            },
+            "384": {
+                "canSendMedia": true,
+                "canSendMessages": true,
+                "isBanned": false
+            },
+            "471": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            }
+        },
+        "updatedAt": 1789469627000,
+        "users": [
+            "51",
+            "384",
+            "8773",
+            "419",
+            "81",
+            "471"
+        ],
+        "lastMessages": [
+            {
+                "authorId": "8773",
+                "text": "حجزت معاكى مجموعه",
+                "type": "text",
+                "createdAt": 1789295835504,
+                "updatedAt": 1789295835504,
+                "author": {
+                    "id": "8773",
+                    "firstName": "User 8773",
+                    "role": "user"
+                },
+                "id": "51"
+            }
+        ]
+    },
+    {
+        "id": "48",
+        "name": "مجموعة الكوتش خلود زقية",
+        "type": "group",
+        "adminId": "48",
+        "createdAt": 1788427265000,
+        "metadata": {
+            "adminId": "48",
+            "category": "groupSession",
+            "isOnline8707": false,
+            "latestSeen8707": 1788687860572,
+            "isOnline8773": false,
+            "latestSeen8773": 1789296412094,
+            "latestSeen0": 1789884311180,
+            "isOnline0": false,
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/dBSq7DZdW3bEp7G4em3H7XyJTo17eRDAmgEUl0B1.png",
+        "userPermissions": {
+            "8707": {
+                "canSendMedia": true,
+                "canSendMessages": true,
+                "isBanned": false
+            },
+            "8773": {
+                "isBanned": false,
+                "canSendMessages": true,
+                "canSendMedia": true
+            },
+            "384": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            }
+        },
+        "updatedAt": 1789326854000,
+        "users": [
+            "48",
+            "262",
+            "384",
+            "419",
+            "8707",
+            "8773"
+        ],
+        "lastMessages": [
+            {
+                "text": "اهلا كوتش خلود",
+                "type": "text",
+                "authorId": "8773",
+                "createdAt": 1789295422008,
+                "updatedAt": 1789295422008,
+                "author": {
+                    "id": "8773",
+                    "firstName": "User 8773",
+                    "role": "user"
+                },
+                "id": "48"
+            }
+        ]
+    },
+    {
+        "id": "78",
+        "type": "group",
+        "adminId": "78",
+        "createdAt": 1788616317000,
+        "metadata": {
+            "adminId": "78",
+            "category": "groupSession",
+            "isOnline8705": false,
+            "latestSeen8705": 1788620854521,
+            "isOnline384": false,
+            "latestSeen384": 1788685159838,
+            "isOnline8707": false,
+            "latestSeen8707": 1788687589860,
+            "isOnline8752": false,
+            "latestSeen8752": 1788937146497,
+            "isOnline266": false,
+            "latestSeen266": 1789030464054,
+            "isOnline8773": false,
+            "latestSeen8773": 1789296434813,
+            "latestSeen0": 1789884314384,
+            "isOnline0": false,
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "https://api.fitnessstorm.org/storage/app/public/trainersImagesNew/WjKDAdoEC1SdbX78va0wfvlNe0lvi84ziBt3oCKz.png",
+        "name": "مجموعة الكوتش أمل",
+        "userPermissions": {
+            "8752": {
+                "isBanned": false,
+                "canSendMedia": true,
+                "canSendMessages": true
+            },
+            "78": {
+                "canSendMessages": true,
+                "isBanned": false,
+                "canSendMedia": true
+            },
+            "8702": {
+                "canSendMessages": true,
+                "isBanned": false,
+                "canSendMedia": true
+            },
+            "8707": {
+                "isBanned": false,
+                "canSendMedia": true,
+                "canSendMessages": true
+            },
+            "266": {
+                "canSendMedia": true,
+                "isBanned": false,
+                "canSendMessages": true
+            },
+            "8705": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            },
+            "8496": {
+                "isBanned": false,
+                "canSendMessages": true,
+                "canSendMedia": true
+            },
+            "8773": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            }
+        },
+        "updatedAt": 1789296433778,
+        "users": [
+            "78",
+            "8702",
+            "266",
+            "8705",
+            "8496",
+            "8707",
+            "8752",
+            "8773"
+        ],
+        "lastMessages": [
+            {
+                "type": "text",
+                "authorId": "8773",
+                "text": "اهلا كوتش أمل",
+                "createdAt": 1789296433778,
+                "updatedAt": 1789296433778,
+                "author": {
+                    "id": "8773",
+                    "firstName": "User 8773",
+                    "role": "user"
+                },
+                "id": "78"
+            }
+        ]
+    },
+    {
+        "id": "73",
+        "type": "group",
+        "adminId": "73",
+        "createdAt": 1788616312000,
+        "updatedAt": 1788616312000,
+        "userPermissions": {
+            "73": {
+                "canSendMessages": true,
+                "canSendMedia": true,
+                "isBanned": false
+            }
+        },
+        "metadata": {
+            "adminId": "73",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "https://api.fitnessstorm.org/storage/app/public/trainersImagesNew/4QFBMRkkiOWAEMCAaYzQPpon0mVDVYJRT6vNbRPi.png",
+        "name": "مجموعة الكوتش خديجة طوله",
+        "users": [
+            "73"
+        ]
+    },
+    {
+        "id": "80",
+        "name": "مجموعة الكوتش كياني",
+        "type": "group",
+        "adminId": "80",
+        "createdAt": 1788427314000,
+        "updatedAt": 1788427314000,
+        "metadata": {
+            "adminId": "80",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/qUpe9dNoO6dT2mEPfk1WInngY9IDvYYuvXMsd1ik.png",
+        "users": [
+            "80"
+        ]
+    },
+    {
+        "id": "77",
+        "name": "مجموعة الكوتش فراس الشامى",
+        "type": "group",
+        "adminId": "77",
+        "createdAt": 1788427305000,
+        "updatedAt": 1788427305000,
+        "metadata": {
+            "adminId": "77",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/PSeWdXsmpG7aP4JNkVruvcBTIlEKWJO1wbV5mfvK.png",
+        "users": [
+            "77"
+        ]
+    },
+    {
+        "id": "76",
+        "name": "مجموعة الكوتش فيزي",
+        "type": "group",
+        "adminId": "76",
+        "createdAt": 1788427304000,
+        "updatedAt": 1788427304000,
+        "metadata": {
+            "adminId": "76",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/ANAIriv5bXPLk77KSfdw6ycufvaSukLixd98zvPl.png",
+        "users": [
+            "76"
+        ]
+    },
+    {
+        "id": "75",
+        "name": "مجموعة الكوتش هبه علي",
+        "type": "group",
+        "adminId": "75",
+        "createdAt": 1788427303000,
+        "updatedAt": 1788427303000,
+        "metadata": {
+            "adminId": "75",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/gJzjpYFN2UJHRfctWgpgtETKP585WOjil8VZSELo.png",
+        "users": [
+            "75"
+        ]
+    },
+    {
+        "id": "68",
+        "name": "مجموعة الكوتش ميج",
+        "type": "group",
+        "adminId": "68",
+        "createdAt": 1788427295000,
+        "updatedAt": 1788427295000,
+        "metadata": {
+            "adminId": "68",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/NzslVxnFHGFcvVHrwyAYWzVg3c33emrmBzKx29r5.png",
+        "users": [
+            "68"
+        ]
+    },
+    {
+        "id": "67",
+        "name": "مجموعة الكوتش فرح حسون",
+        "type": "group",
+        "adminId": "67",
+        "createdAt": 1788427293000,
+        "updatedAt": 1788427293000,
+        "metadata": {
+            "adminId": "67",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/BsAciEPjhiHRnd5m3IiFyZ5IPPC9clJxejKJOAx1.png",
+        "users": [
+            "67"
+        ]
+    },
+    {
+        "id": "66",
+        "name": "مجموعة الكوتش مصطفى محمد",
+        "type": "group",
+        "adminId": "66",
+        "createdAt": 1788427292000,
+        "updatedAt": 1788427292000,
+        "metadata": {
+            "adminId": "66",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/bZVg9809DjfczFM7TF3i1ny1sY9ThqGjLXrnEebf.png",
+        "users": [
+            "66"
+        ]
+    },
+    {
+        "id": "64",
+        "name": "مجموعة الكوتش حسام بدر",
+        "type": "group",
+        "adminId": "64",
+        "createdAt": 1788427290000,
+        "updatedAt": 1788427290000,
+        "metadata": {
+            "adminId": "64",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/4VjuFFKTYMkviTrhbw13H9pbyIyldh1hmuh8Qot6.png",
+        "users": [
+            "64"
+        ]
+    },
+    {
+        "id": "59",
+        "name": "مجموعة الكوتش أحمد عبد الغنى",
+        "type": "group",
+        "adminId": "59",
+        "createdAt": 1788427289000,
+        "updatedAt": 1788427289000,
+        "metadata": {
+            "adminId": "59",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/BXrt9iPBhIZL1rnHA24AqttH43LnEMkSfgeRCb2g.png",
+        "users": [
+            "59"
+        ]
+    },
+    {
+        "id": "57",
+        "name": "مجموعة الكوتش رهف مهند",
+        "type": "group",
+        "adminId": "57",
+        "createdAt": 1788427287000,
+        "updatedAt": 1788427287000,
+        "metadata": {
+            "adminId": "57",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/0pu9gry5Aw4g9eEkNWtmuEHU9h4fXMgTjXwzDrgt.png",
+        "users": [
+            "57"
+        ]
+    },
+    {
+        "id": "56",
+        "name": "مجموعة الكوتش تمارا عماد",
+        "type": "group",
+        "adminId": "56",
+        "createdAt": 1788427285000,
+        "updatedAt": 1788427285000,
+        "metadata": {
+            "adminId": "56",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/UH7kfNQhMjofVELww3A7bi1WspW7bSyuXPlWneCC.png",
+        "users": [
+            "56"
+        ]
+    },
+    {
+        "id": "55",
+        "name": "مجموعة الكوتش ريما سلمان",
+        "type": "group",
+        "adminId": "55",
+        "createdAt": 1788427283000,
+        "updatedAt": 1788427283000,
+        "metadata": {
+            "adminId": "55",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/K7bsLqpgh6Gg0Wy4WinasEH1GewNXGPzn34x71Fb.png",
+        "users": [
+            "55"
+        ]
+    },
+    {
+        "id": "54",
+        "name": "مجموعة الكوتش دعاء دحدولى",
+        "type": "group",
+        "adminId": "54",
+        "createdAt": 1788427282000,
+        "updatedAt": 1788427282000,
+        "metadata": {
+            "adminId": "54",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/W59UmOEfrTmOHJtzaIEcjdkpzsgTgCckn6ZnAOET.png",
+        "users": [
+            "54"
+        ]
+    },
+    {
+        "id": "53",
+        "name": "مجموعة الكوتش إيزابيل",
+        "type": "group",
+        "adminId": "53",
+        "createdAt": 1788427280000,
+        "updatedAt": 1788427280000,
+        "metadata": {
+            "adminId": "53",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/oU1yrJ0zym23uCzRANqCBzX83gt9bynWk4WhG85p.png",
+        "users": [
+            "53"
+        ]
+    },
+    {
+        "id": "52",
+        "name": "مجموعة الكوتش هبة",
+        "type": "group",
+        "adminId": "52",
+        "createdAt": 1788427279000,
+        "updatedAt": 1788427279000,
+        "metadata": {
+            "adminId": "52",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/kOcUYkwxt4AM0n25bb8AAfjp8LJLZie2WPoFg1F3.png",
+        "users": [
+            "52"
+        ]
+    },
+    {
+        "id": "49",
+        "name": "مجموعة الكوتش حوراء الهاشمى",
+        "type": "group",
+        "adminId": "49",
+        "createdAt": 1788427269000,
+        "updatedAt": 1788427269000,
+        "metadata": {
+            "adminId": "49",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/7aL3l9VEcG3qS53TR4LZIXENDTTno373BemQtn6o.png",
+        "users": [
+            "49"
+        ]
+    },
+    {
+        "id": "31",
+        "name": "مجموعة الكوتش اسماعيل الكضاشي",
+        "type": "group",
+        "adminId": "31",
+        "createdAt": 1788427263000,
+        "updatedAt": 1788427263000,
+        "metadata": {
+            "adminId": "31",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/7HRxKvoELvAcAEKCflIGuU8VT1G7pHjyeDdkBF10.jpg",
+        "users": [
+            "31"
+        ]
+    },
+    {
+        "id": "30",
+        "name": "مجموعة الكوتش رشاد قزاز",
+        "type": "group",
+        "adminId": "30",
+        "createdAt": 1788427261000,
+        "updatedAt": 1788427261000,
+        "metadata": {
+            "adminId": "30",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/hsLIzdI3Yik7CzwHJQpMT5nZwX5m8YkbU6lEvuK5.png",
+        "users": [
+            "30"
+        ]
+    },
+    {
+        "id": "29",
+        "name": "مجموعة الكوتش ضحى ضرغام",
+        "type": "group",
+        "adminId": "29",
+        "createdAt": 1788427260000,
+        "updatedAt": 1788427260000,
+        "metadata": {
+            "adminId": "29",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/L5Zcxxq1iFhHBL4iTZeetiCnEFdpwiHAvIFomzfg.png",
+        "users": [
+            "29"
+        ]
+    },
+    {
+        "id": "28",
+        "name": "مجموعة الكوتش عبد العظيم",
+        "type": "group",
+        "adminId": "28",
+        "createdAt": 1788427257000,
+        "updatedAt": 1788427257000,
+        "metadata": {
+            "adminId": "28",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/i2G2eviRhIIeazwB68QVdLcnkhA5J5wyf1nL5j4j.png",
+        "users": [
+            "28"
+        ]
+    },
+    {
+        "id": "26",
+        "name": "مجموعة الكوتش ريتا كمار",
+        "type": "group",
+        "adminId": "26",
+        "createdAt": 1788427255000,
+        "updatedAt": 1788427255000,
+        "metadata": {
+            "adminId": "26",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/8rgMR5v11vLqO3nDre5L2NSXdL2r1rtz7imCiJX5.png",
+        "users": [
+            "26"
+        ]
+    },
+    {
+        "id": "25",
+        "name": "مجموعة الكوتش نسرين خورى",
+        "type": "group",
+        "adminId": "25",
+        "createdAt": 1788427253000,
+        "updatedAt": 1788427253000,
+        "metadata": {
+            "adminId": "25",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/hZ6JFOIfzUEfUU1IfsGP2sfquTVmzDWTli5hmhtY.png",
+        "users": [
+            "25"
+        ]
+    },
+    {
+        "id": "24",
+        "name": "مجموعة الكوتش مريم خالد",
+        "type": "group",
+        "adminId": "24",
+        "createdAt": 1788427251000,
+        "updatedAt": 1788427251000,
+        "metadata": {
+            "adminId": "24",
+            "category": "groupSession",
+            "latestSeen": 0,
+            "isOnline": false
+        },
+        "imageUrl": "storage/app/public/trainersImagesNew/5XainRZgU5i26dWCXsuBXBe45W50phnTsvCPTU75.png",
+        "users": [
+            "24"
+        ]
+    }
+]

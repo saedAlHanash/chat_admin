@@ -27,8 +27,6 @@ class ChatServiceCore {
         },
       ),
     );
-
-    await loginChatUser();
   }
 
   static Future<bool> loginChatUser() async {
