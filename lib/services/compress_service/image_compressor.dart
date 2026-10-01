@@ -16,7 +16,8 @@ class ImageCompressor implements CompressorBase {
       final bytes = await file.readAsBytes();
       final compressedBytes = await compressImage(bytes);
 
-      final String extension = Platform.isIOS ? 'jpg' : 'webp';
+      final bool isIOS = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+      final String extension = isIOS ? 'jpg' : 'webp';
       final String targetPath = '${file.parent.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.$extension';
 
       final compressedFile = File(targetPath);
@@ -42,12 +43,13 @@ class ImageCompressor implements CompressorBase {
     if (bytes.isEmpty) return bytes;
 
     try {
+      final bool isIOS = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
       // إضافة فحص إضافي للتأكد من أن البيانات هي صورة صالحة قبل إرسالها للـ Native
       final result = await FlutterImageCompress.compressWithList(
         bytes,
         quality: 40,
         keepExif: true,
-        format: Platform.isIOS ? CompressFormat.jpeg : CompressFormat.webp,
+        format: isIOS ? CompressFormat.jpeg : CompressFormat.webp,
       );
 
       return result;

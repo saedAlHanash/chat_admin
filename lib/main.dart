@@ -22,6 +22,7 @@ import 'features/chat/messages_bloc/messages_cubit.dart';
 import 'features/chat/open_room_cubit/open_room_cubit.dart';
 import 'features/chat/rooms_bloc/rooms_cubit.dart';
 import 'features/chat/userss_bloc/users_bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'firebase_options.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -34,15 +35,16 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await Note.initialize();
+  if (!kIsWeb) {
+    await Note.initialize();
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
   await initializeDateFormatting('en', null);
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true,
     cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
     ignoreUndefinedProperties: true,
   );
-
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await SharedPreferences.getInstance().then((value) {
     AppSharedPreference.init(value);
@@ -59,7 +61,9 @@ void main() async {
 
   await ChatServiceCore.initFirebaseChat();
 
-  HttpOverrides.global = MyHttpOverrides();
+  if (!kIsWeb) {
+    HttpOverrides.global = MyHttpOverrides();
+  }
   runApp(
     MultiBlocProvider(
       providers: [

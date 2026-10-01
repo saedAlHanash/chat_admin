@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
 class PickImageHelper {
@@ -29,7 +29,7 @@ class PickImageHelper {
   }
 
   void removeImageFiles({required String path}) {
-    if (path.isEmpty) return;
+    if (path.isEmpty || kIsWeb) return;
     try {
       File(path).delete();
     } on Exception catch (_) {}

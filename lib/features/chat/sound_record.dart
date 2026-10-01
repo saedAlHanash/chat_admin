@@ -6,6 +6,7 @@ import 'package:fitness_admin_chat/core/api_manager/api_service.dart';
 import 'package:fitness_admin_chat/core/strings/app_color_manager.dart';
 import 'package:fitness_admin_chat/core/strings/enum_manager.dart';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -223,8 +224,20 @@ class _AudioMessageBuilderState extends State<AudioMessageBuilder> {
   }
 
   Future<void> _initAudio() async {
-    String path = await _getCachedAudioPath(widget.audioUrl);
-    await _audioPlayer.setFilePath(path);
+    try {
+      if (kIsWeb) {
+        await _audioPlayer.setUrl(widget.audioUrl);
+      } else {
+        try {
+          String path = await _getCachedAudioPath(widget.audioUrl);
+          await _audioPlayer.setFilePath(path);
+        } catch (_) {
+          await _audioPlayer.setUrl(widget.audioUrl);
+        }
+      }
+    } catch (e) {
+      debugPrint("Audio init error: $e");
+    }
 
     _audioPlayer.durationStream.listen((d) {
       if (d != null) setState(() => _duration = d);

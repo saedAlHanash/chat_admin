@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LauncherHelper {
@@ -28,6 +27,7 @@ class LauncherHelper {
     var androidUrl = "whatsapp://send?phone=$contact&text=$text";
     var iosUrl = "https://wa.me/$contact?text=${Uri.parse(text ?? '')}";
 
-    await launchUrl(Uri.parse(Platform.isIOS ? iosUrl : androidUrl));
+    final isIOS = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+    await launchUrl(Uri.parse(isIOS ? iosUrl : (kIsWeb ? iosUrl : androidUrl)));
   }
 }
